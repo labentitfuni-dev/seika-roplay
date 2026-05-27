@@ -126,7 +126,24 @@
     .rv-section{margin-bottom:16px}
     .rv-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-weight:700}
     .rv-box{background:#f8f8f8;border-radius:12px;padding:14px;font-size:14px;line-height:1.6;color:#333;white-space:pre-wrap}
+    .rv-tr-meta{font-size:11px;color:#aaa;text-align:right;margin-top:4px}
     audio{width:100%;margin-top:0;border-radius:8px}
+
+    /* ─ 評価カード ─ */
+    .ev-score-wrap{text-align:center;padding:12px 0 8px}
+    .ev-score{font-size:52px;font-weight:900;line-height:1}
+    .ev-score-unit{font-size:15px;color:#888;margin-left:3px;font-weight:600}
+    .ev-card{border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:14px;line-height:1.6}
+    .ev-card-title{font-weight:700;font-size:11px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+    .ev-item{padding:2px 0;color:#333;padding-left:12px;text-indent:-12px}
+    .ev-item::before{content:'・'}
+    .ev-good{background:#f0fdf4;border:1px solid #bbf7d0}
+    .ev-good .ev-card-title{color:#16a34a}
+    .ev-imp{background:#fffbeb;border:1px solid #fde68a}
+    .ev-imp .ev-card-title{color:#d97706}
+    .ev-advice{background:#faf5ff;border:1px solid #e9d5ff}
+    .ev-advice .ev-card-title{color:#7c3aed}
+    .ev-loading{color:#aaa;font-size:14px;padding:8px 2px}
 
     /* ─ 履歴 ─ */
     .tab-bar{display:flex;background:#f5f5f5;border-radius:10px;padding:3px;margin-bottom:16px}
@@ -323,7 +340,7 @@
     </div>
     <div class="rv-section">
       <div class="rv-label">🤖 Claude 評価</div>
-      <div class="rv-box" id="rv-eval">評価生成中…</div>
+      <div id="rv-eval"><div class="ev-loading">評価生成中…</div></div>
       <button class="btn btn-gray" style="margin-top:10px" onclick="copyPrompt()">📋 Claudeへコピーして詳細評価</button>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
@@ -1010,7 +1027,7 @@ function openReview() {
   }
   document.getElementById('rv-audio').src = audioUrl;
   document.getElementById('rv-tr').textContent   = '認識中…';
-  document.getElementById('rv-eval').textContent = '評価生成中…';
+  document.getElementById('rv-eval').innerHTML   = '<div class="ev-loading">評価生成中…</div>';
   document.getElementById('rv-next-btn').textContent = isFT ? '⏱ フリートークに戻る' : '▶ 次の問題へ';
   nav('s-review');
   savePractice();
@@ -1018,7 +1035,15 @@ function openReview() {
   if (isFT) saveFTHist(histItem); else saveQAHist(histItem);
   setTimeout(() => {
     const t = transcript || '（文字起こしが取得できませんでした）';
-    document.getElementById('rv-tr').textContent = t;
+    const len = t.replace(/\s/g,'').length;
+    const trEl = document.getElementById('rv-tr');
+    trEl.textContent = t;
+    if (len > 0 && !t.startsWith('（')) {
+      const meta = document.createElement('div');
+      meta.className = 'rv-tr-meta';
+      meta.textContent = len + '字';
+      trEl.parentNode.appendChild(meta);
+    }
     updateHistTr(isFT, recId, t);
     runEval(t, isFT);
   }, 700);
@@ -1031,41 +1056,159 @@ function runEval(t, isFT) {
   const el  = document.getElementById('rv-eval');
   const key = localStorage.getItem('api_key');
   if (key) {
-    callClaude(key, t, isFT).then(r => el.textContent = r).catch(() => { el.textContent = localEval(t, isFT); });
+    callClaude(key, t, isFT)
+      .then(r  => { el.innerHTML = renderEval(r); })
+      .catch(() => { el.innerHTML = renderEval(localEval(t, isFT)); });
   } else {
-    el.textContent = localEval(t, isFT);
+    el.innerHTML = renderEval(localEval(t, isFT));
   }
 }
+
 function localEval(t, isFT) {
-  if (!t || t.startsWith('（')) return '録音を聴いて振り返りましょう。「コピーして詳細評価」でClaudeに詳しいフィードバックを依頼できます。';
+  if (!t || t.startsWith('（')) {
+    return 'SCORE: -\nGOOD:\n・録音を聴いて内容を確認しましょう\nIMPROVE:\n・APIキーを設定するとClaudeが詳細評価します\nADVICE:\n「コピーして詳細評価」ボタンでClaudeに貼り付けてください';
+  }
   const len = t.replace(/\s/g,'').length;
-  let score = 60, pts = [];
-  if (len >= 60)      { score += 15; pts.push('✅ 十分な長さで話せています（' + len + '字）'); }
-  else if (len >= 25) { score += 5;  pts.push('💡 もう少し詳しく話すと良いでしょう（' + len + '字）'); }
-  else                {              pts.push('⚠️ 回答が短すぎます（' + len + '字）'); }
-  if (/[0-9０-９]/.test(t))                { score += 8;  pts.push('✅ 数字を活用した具体的な説明ができています'); }
-  if (/ありがとう|よろしく|申し訳/.test(t)) { score += 5;  pts.push('✅ 丁寧な言葉遣いが使えています'); }
-  if (/[？?]/.test(t))                     { score += 7;  pts.push('✅ 質問を活用した対話型トークができています'); }
-  if (/例えば|具体的|たとえば/.test(t))     { score += 5;  pts.push('✅ 具体例を活用しています'); }
-  return 'スコア: ' + Math.min(score,100) + ' / 100\n\n' + pts.join('\n');
+  let score = 50;
+  const good = [], improve = [];
+
+  // 話量
+  if      (len >= 100) { score += 15; good.push('十分な量を話せています（' + len + '字）'); }
+  else if (len >= 50)  { score += 8;  good.push('ある程度話せています（' + len + '字）'); }
+  else                 {              improve.push('回答をもっと詳しく話しましょう（' + len + '字）'); }
+
+  // 論理構造: 結論→理由→具体例
+  const hasConclusion = /まず|結論|要は|つまり|ポイントは/.test(t);
+  const hasReason     = /なぜなら|理由は|〜ので|〜から|〜ため/.test(t);
+  const hasExample    = /例えば|具体的に|たとえば|事例|実績|実際に/.test(t);
+  if (hasConclusion) { score += 5; }
+  if (hasReason)     { score += 5; }
+  if (hasExample)    { score += 7; good.push('具体例を使って説得力を高めています'); }
+  else               {             improve.push('「例えば〜」など具体例を加えると伝わりやすくなります'); }
+  if (hasConclusion && hasReason) { score += 5; good.push('結論→理由の論理構造で話せています'); }
+  else if (!hasConclusion)        { improve.push('最初に結論を述べてから理由・具体例の順で話しましょう'); }
+
+  // 数字の活用
+  if (/[0-9０-９]/.test(t)) { score += 10; good.push('数字・データを使った具体的な説明ができています'); }
+  else                       {              improve.push('数字や実績を入れると説得力が増します'); }
+
+  // 対話・質問
+  if (/[？?]/.test(t))                             { score += 8; good.push('質問を使った対話型トークができています'); }
+  else                                              { improve.push('お客様への質問を入れて会話を深めましょう'); }
+
+  // 丁寧語
+  if (/ありがとう|よろしく|申し訳|ございます/.test(t)) { score += 5; good.push('丁寧な言葉遣いができています'); }
+
+  const s = Math.min(score, 100);
+  if (good.length    === 0) good.push('チャレンジできています');
+  if (improve.length === 0) improve.push('さらに磨きをかけていきましょう');
+
+  const advice = s >= 80 ? '高水準です！相手の反応に応じた柔軟な切り返しを練習しましょう'
+               : s >= 60 ? '良い調子です。数字と具体例をもっと積極的に使ってみましょう'
+               :           '基本から固めましょう。まず「結論→理由→具体例」の順で話す練習をしてください';
+
+  return 'SCORE: ' + s
+    + '\nGOOD:\n・' + good.join('\n・')
+    + '\nIMPROVE:\n・' + improve.join('\n・')
+    + '\nADVICE:\n' + advice;
 }
+
 async function callClaude(key, t, isFT) {
   const context = isFT
     ? 'フリートーク（' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '）'
     : '営業質問（' + curLv + '）：' + curQ;
+  const timeStr = curLimit >= 60 ? '1分' : curLimit + '秒';
+  const prompt = `あなたはM&A営業のプロトレーナーです。以下のロールプレイを厳しく・具体的に評価してください。
+
+【種類】${context}
+【制限時間】${timeStr}
+【回答（文字起こし）】
+${t}
+
+以下の観点で評価し、必ず下記フォーマットのみで回答してください：
+
+SCORE: [0〜100の整数]
+GOOD:
+・[良かった点1（具体的に）]
+・[良かった点2（具体的に）]
+IMPROVE:
+・[改善点1（どう直すか具体的に）]
+・[改善点2（どう直すか具体的に）]
+ADVICE:
+[次回練習時の一言（20〜30字）]
+
+評価観点：
+- 論理構造（結論→理由→具体例の順になっているか）
+- 数字・根拠の活用（具体性があるか）
+- 顧客への共感・傾聴姿勢
+- 質問・対話の技術
+- 言葉の明確さと簡潔さ`;
+
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001', max_tokens: 600,
-      messages: [{ role: 'user', content:
-        '営業トレーナーとして以下のトークを評価してください。\n\n【種類】' + context + '\n【制限時間】' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '\n【回答】' + t + '\n\n①総合スコア（100点満点）\n②良い点（2〜3つ）\n③改善点（2〜3つ）\n④一言アドバイス\nを日本語で簡潔にお願いします。'
-      }]
+      model: 'claude-haiku-4-5-20251001', max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }]
     })
   });
   const d = await res.json();
   return d.content?.[0]?.text || '評価を取得できませんでした';
 }
+
+function renderEval(text) {
+  const scoreM = text.match(/SCORE:\s*(\d+|-)/);
+  const goodM  = text.match(/GOOD:\n([\s\S]*?)(?=IMPROVE:|ADVICE:|$)/);
+  const impM   = text.match(/IMPROVE:\n([\s\S]*?)(?=ADVICE:|$)/);
+  const advM   = text.match(/ADVICE:\n([\s\S]*?)$/);
+
+  if (!scoreM) {
+    return '<div class="rv-box" style="white-space:pre-wrap">' + escHtml(text) + '</div>';
+  }
+
+  const scoreNum = parseInt(scoreM[1]);
+  const scoreColor = scoreNum >= 80 ? '#16a34a' : scoreNum >= 60 ? '#ca8a04' : '#dc2626';
+
+  const toItems = block => (block || '').trim().split('\n')
+    .map(l => l.replace(/^・\s*/,'').trim()).filter(Boolean);
+
+  let html = '';
+
+  if (!isNaN(scoreNum)) {
+    html += `<div class="ev-score-wrap"><span class="ev-score" style="color:${scoreColor}">${scoreNum}</span><span class="ev-score-unit">/ 100</span></div>`;
+  }
+
+  const goodItems = toItems(goodM ? goodM[1] : '');
+  if (goodItems.length) {
+    html += `<div class="ev-card ev-good"><div class="ev-card-title">✅ 良かった点</div>`;
+    goodItems.forEach(l => { html += `<div class="ev-item">${escHtml(l)}</div>`; });
+    html += `</div>`;
+  }
+
+  const impItems = toItems(impM ? impM[1] : '');
+  if (impItems.length) {
+    html += `<div class="ev-card ev-imp"><div class="ev-card-title">💡 改善点</div>`;
+    impItems.forEach(l => { html += `<div class="ev-item">${escHtml(l)}</div>`; });
+    html += `</div>`;
+  }
+
+  const advice = advM ? advM[1].trim() : '';
+  if (advice) {
+    html += `<div class="ev-card ev-advice"><div class="ev-card-title">🎯 次回へのアドバイス</div><div class="ev-item">${escHtml(advice)}</div></div>`;
+  }
+
+  return html || '<div class="rv-box" style="white-space:pre-wrap">' + escHtml(text) + '</div>';
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 function copyPrompt() {
   const t = document.getElementById('rv-tr').textContent;
   const isFT = mode === 'ft';
@@ -1073,7 +1216,7 @@ function copyPrompt() {
     ? 'フリートーク（' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '制限）'
     : '営業質問（' + curLv + '）：' + curQ;
   navigator.clipboard.writeText(
-    '営業トレーナーとして以下のトークを評価してください。\n\n【種類】' + ctx + '\n【制限時間】' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '\n\n【回答（文字起こし）】\n' + t + '\n\n① 総合スコア（100点満点）と理由\n② 良い点（2〜3つ）\n③ 改善点（2〜3つ）\n④ 模範回答の例文\n⑤ 次回に向けた一言アドバイス'
+    'M&A営業のプロトレーナーとして以下のロールプレイを評価してください。\n\n【種類】' + ctx + '\n【制限時間】' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '\n\n【回答（文字起こし）】\n' + t + '\n\n① 総合スコア（100点満点）と理由\n② 良かった点（2〜3つ、具体的に）\n③ 改善点（2〜3つ、どう直すか具体的に）\n④ 次回へのアドバイス（一言）\n\n評価観点：論理構造（結論→理由→具体例）・数字の活用・顧客への共感・質問の技術・言葉の明確さ'
   ).then(() => toast('コピーしました！Claudeに貼り付けてください ✅'));
 }
 
