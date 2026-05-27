@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <title>SEIKA ロープレツール</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN',sans-serif;
+      background:#fff;color:#111;min-height:100vh;max-width:480px;margin:0 auto;
+    }
+    .screen{display:none;flex-direction:column;min-height:100vh}
+    .screen.active{display:flex}
+
+    /* ─ ヘッダー ─ */
+    .hdr{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 16px;border-bottom:1px solid #eee;background:#fff;
+      position:sticky;top:0;z-index:10;
+    }
+    .hdr-title{font-size:16px;font-weight:700;color:#111}
+    .hdr-back{background:none;border:none;font-size:20px;cursor:pointer;color:#555;padding:4px 8px}
+    .hdr-act{background:none;border:none;font-size:13px;cursor:pointer;color:#888;padding:4px 8px;font-weight:600}
+
+    /* ─ ボディ ─ */
+    .body{flex:1;padding:20px 16px;overflow-y:auto}
+
+    /* ─ ホーム ─ */
+    .stat-bar{
+      display:flex;gap:0;margin-bottom:24px;
+      background:#f5f5f5;border-radius:12px;overflow:hidden;
+    }
+    .stat-cell{flex:1;text-align:center;padding:12px 6px;border-right:1px solid #eee}
+    .stat-cell:last-child{border-right:none}
+    .stat-n{font-size:22px;font-weight:800;color:#333;line-height:1}
+    .stat-l{font-size:10px;color:#888;margin-top:2px}
+
+    /* ─ メインボタン ─ */
+    .main-btn{
+      display:flex;align-items:center;gap:14px;
+      width:100%;padding:20px 18px;border-radius:14px;border:none;
+      text-align:left;cursor:pointer;margin-bottom:12px;
+      transition:opacity .15s;
+    }
+    .main-btn:active{opacity:.75}
+    .main-btn-qa{background:#111;color:#fff}
+    .main-btn-ft{background:#f0f0f0;color:#111;border:1.5px solid #ddd}
+    .main-btn-icon{font-size:28px;line-height:1;flex-shrink:0}
+    .main-btn-text{flex:1}
+    .main-btn-title{font-size:16px;font-weight:700;display:block}
+    .main-btn-sub{font-size:12px;opacity:.6;margin-top:2px;display:block}
+
+    /* ─ サブリンク ─ */
+    .sub-links{display:flex;gap:0;margin-top:8px}
+    .sub-link{
+      flex:1;text-align:center;padding:12px;
+      background:none;border:none;font-size:13px;
+      color:#888;cursor:pointer;font-weight:600;
+    }
+    .sub-link:active{color:#111}
+
+    /* ─ 問題カード ─ */
+    .q-wrap{flex:1;display:flex;flex-direction:column;padding:20px 16px}
+    .q-meta{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+    .badge{
+      display:inline-block;padding:3px 10px;border-radius:100px;
+      font-size:11px;font-weight:700;
+    }
+    .badge-s{background:#fee2e2;color:#dc2626}
+    .badge-a{background:#ffedd5;color:#ea580c}
+    .badge-b{background:#fef9c3;color:#ca8a04}
+    .badge-c{background:#dcfce7;color:#16a34a}
+    .badge-d{background:#ede9fe;color:#7c3aed}
+    .badge-time{background:#f1f5f9;color:#475569}
+    .q-text{
+      font-size:22px;font-weight:800;line-height:1.5;
+      flex:1;display:flex;align-items:center;
+    }
+    .q-actions{display:flex;flex-direction:column;gap:10px;padding-top:16px}
+
+    /* ─ フリートーク選択 ─ */
+    .ft-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+    .ft-cell{
+      padding:28px 16px;border-radius:14px;border:1.5px solid #eee;
+      text-align:center;cursor:pointer;background:#fff;
+      transition:all .15s;
+    }
+    .ft-cell:active{background:#f5f5f5;border-color:#bbb}
+    .ft-cell-n{font-size:38px;font-weight:900;color:#111;line-height:1}
+    .ft-cell-u{font-size:13px;color:#888;margin-top:4px}
+
+    /* ─ 録音画面 ─ */
+    .rec-screen{
+      flex:1;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      padding:32px 24px;text-align:center;
+    }
+    .cnt{font-size:96px;font-weight:900;line-height:1;letter-spacing:-3px;transition:color .3s}
+    .cnt-ok{color:#16a34a}.cnt-w{color:#ca8a04}.cnt-d{color:#dc2626}
+    .prog-wrap{width:100%;height:3px;background:#eee;border-radius:99px;overflow:hidden;margin:16px 0}
+    .prog-bar{height:100%;background:#111;border-radius:99px;transition:width .1s linear}
+    .rec-label{
+      display:flex;align-items:center;gap:6px;
+      font-size:13px;font-weight:700;color:#dc2626;
+      margin:8px 0 24px;
+    }
+    .rec-dot{width:8px;height:8px;border-radius:50%;background:#dc2626;animation:blink 1s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+    .q-mini{font-size:12px;color:#888;margin-bottom:4px;min-height:16px;line-height:1.4}
+    .timer-hint{font-size:13px;font-weight:700;color:#555;margin-bottom:16px}
+
+    /* ─ ボタン共通 ─ */
+    .btn{
+      width:100%;padding:16px;border-radius:12px;border:none;
+      font-size:15px;font-weight:700;cursor:pointer;
+      transition:opacity .15s;
+    }
+    .btn:active{opacity:.75}
+    .btn-black{background:#111;color:#fff}
+    .btn-gray{background:#f0f0f0;color:#111;border:1.5px solid #ddd}
+    .btn-red{background:#dc2626;color:#fff}
+    .btn-sub{background:none;border:none;font-size:14px;color:#888;cursor:pointer;padding:10px}
+
+    /* ─ 振り返り ─ */
+    .rv-section{margin-bottom:16px}
+    .rv-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-weight:700}
+    .rv-box{background:#f8f8f8;border-radius:12px;padding:14px;font-size:14px;line-height:1.6;color:#333;white-space:pre-wrap}
+    audio{width:100%;margin-top:0;border-radius:8px}
+
+    /* ─ 履歴 ─ */
+    .tab-bar{display:flex;background:#f5f5f5;border-radius:10px;padding:3px;margin-bottom:16px}
+    .tab-btn{
+      flex:1;padding:8px;border:none;border-radius:8px;
+      font-size:13px;font-weight:700;cursor:pointer;
+      background:transparent;color:#888;transition:all .15s;
+    }
+    .tab-btn.active{background:#fff;color:#111;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+    .hist-item{padding:14px 0;border-bottom:1px solid #f0f0f0}
+    .hist-item:last-child{border-bottom:none}
+    .hist-meta{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+    .hist-q{font-size:14px;font-weight:600;color:#222;margin-bottom:4px;line-height:1.4}
+    .hist-tr{font-size:12px;color:#888;margin-bottom:8px;line-height:1.5}
+    .date-hdr{font-size:11px;color:#aaa;letter-spacing:.5px;margin:16px 0 8px;font-weight:700}
+    .empty{text-align:center;padding:48px 20px;color:#aaa;font-size:14px}
+    .audio-btn{
+      background:#f5f5f5;border:none;color:#555;padding:8px 14px;
+      border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;
+      width:100%;text-align:left;transition:background .15s;
+    }
+    .audio-btn:active{background:#eee}
+
+    /* ─ 設定 ─ */
+    .set-section{margin-bottom:24px}
+    .set-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:8px}
+    .inp{
+      width:100%;background:#f5f5f5;border:1.5px solid #eee;
+      color:#111;padding:12px 14px;border-radius:10px;
+      font-size:14px;outline:none;margin-bottom:10px;
+    }
+    .inp:focus{border-color:#bbb}
+    .tog-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f0f0f0}
+    .tog-row:last-child{border-bottom:none}
+    .tog-label{font-size:14px;color:#111}
+    .tog-wrap{position:relative;width:44px;height:24px;flex-shrink:0}
+    .tog-wrap input{display:none}
+    .tog-track{position:absolute;inset:0;border-radius:24px;background:#ddd;cursor:pointer;transition:background .2s}
+    .tog-track::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+    input:checked~.tog-track{background:#111}
+    input:checked~.tog-track::after{left:23px}
+    .lv-filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .lv-fb{
+      padding:6px 13px;border-radius:100px;border:1.5px solid #ddd;
+      font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:#888;
+      transition:all .15s;
+    }
+    .lv-fb.sel-ALL,.lv-fb.sel-S,.lv-fb.sel-A,.lv-fb.sel-B,.lv-fb.sel-C,.lv-fb.sel-D{
+      background:#111;color:#fff;border-color:#111;
+    }
+    .set-note{font-size:12px;color:#aaa;margin-top:6px;line-height:1.5}
+
+    /* ─ Toast ─ */
+    #toast{
+      position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);
+      background:#222;color:#fff;padding:10px 20px;border-radius:100px;
+      font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .25s,transform .25s;
+      white-space:nowrap;pointer-events:none;
+    }
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  </style>
+</head>
+<body>
+
+<!-- ══ HOME ══ -->
+<div id="s-home" class="screen active">
+  <div class="hdr">
+    <span class="hdr-title">🎯 SEIKA ロープレ</span>
+    <button class="hdr-act" onclick="nav('s-settings')">設定</button>
+  </div>
+  <div class="body">
+    <div class="stat-bar">
+      <div class="stat-cell"><div class="stat-n" id="h-today">0</div><div class="stat-l">今日</div></div>
+      <div class="stat-cell"><div class="stat-n" id="h-total">0</div><div class="stat-l">累計</div></div>
+      <div class="stat-cell"><div class="stat-n" id="h-streak">0</div><div class="stat-l">連続🔥</div></div>
+      <div class="stat-cell"><div class="stat-n" id="h-qn">400</div><div class="stat-l">問題数</div></div>
+    </div>
+
+    <button class="main-btn main-btn-qa" onclick="startQA()">
+      <span class="main-btn-icon">🎤</span>
+      <span class="main-btn-text">
+        <span class="main-btn-title">即興 Q&amp;A</span>
+        <span class="main-btn-sub">400問ランダム ／ 10秒・30秒</span>
+      </span>
+    </button>
+
+    <button class="main-btn main-btn-ft" onclick="nav('s-ft-select')">
+      <span class="main-btn-icon">⏱</span>
+      <span class="main-btn-text">
+        <span class="main-btn-title">フリートーク</span>
+        <span class="main-btn-sub">5秒・10秒・30秒・1分</span>
+      </span>
+    </button>
+
+    <div class="sub-links">
+      <button class="sub-link" onclick="showHistory('qa')">📋 Q&amp;A記録</button>
+      <button class="sub-link" onclick="showHistory('ft')">📋 フリートーク記録</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ QUESTION ══ -->
+<div id="s-question" class="screen">
+  <div class="hdr">
+    <button class="hdr-back" onclick="goHome()">←</button>
+    <span class="hdr-title">即興 Q&amp;A</span>
+    <button class="hdr-act" onclick="pickQ()">別の問題</button>
+  </div>
+  <div class="q-wrap">
+    <div class="q-meta">
+      <span class="badge badge-s" id="q-lv">S級</span>
+      <span class="badge badge-time" id="q-tbadge">⏱ 30秒</span>
+    </div>
+    <div class="q-text" id="q-text">---</div>
+    <div class="q-actions">
+      <button class="btn btn-black" onclick="beginRec()">🎤 録音開始</button>
+      <button class="btn btn-gray" onclick="pickQ()">⏭ 別の問題</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FREE TALK SELECT ══ -->
+<div id="s-ft-select" class="screen">
+  <div class="hdr">
+    <button class="hdr-back" onclick="goHome()">←</button>
+    <span class="hdr-title">フリートーク</span>
+    <div style="width:60px"></div>
+  </div>
+  <div class="body">
+    <p style="font-size:14px;color:#888;margin-bottom:16px">タイマーを選んでください</p>
+    <div class="ft-grid">
+      <div class="ft-cell" onclick="startFT(5)">
+        <div class="ft-cell-n">5</div><div class="ft-cell-u">秒</div>
+      </div>
+      <div class="ft-cell" onclick="startFT(10)">
+        <div class="ft-cell-n">10</div><div class="ft-cell-u">秒</div>
+      </div>
+      <div class="ft-cell" onclick="startFT(30)">
+        <div class="ft-cell-n">30</div><div class="ft-cell-u">秒</div>
+      </div>
+      <div class="ft-cell" onclick="startFT(60)">
+        <div class="ft-cell-n">1</div><div class="ft-cell-u">分</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RECORD ══ -->
+<div id="s-record" class="screen">
+  <div class="hdr">
+    <div style="width:60px"></div>
+    <span class="hdr-title" id="r-title">録音中</span>
+    <div style="width:60px"></div>
+  </div>
+  <div class="rec-screen">
+    <div class="q-mini" id="r-q-mini"></div>
+    <div class="timer-hint" id="r-timer-lbl"></div>
+    <div class="prog-wrap"><div class="prog-bar" id="r-prog" style="width:100%"></div></div>
+    <div class="cnt cnt-ok" id="r-cnt">30</div>
+    <div class="rec-label" id="r-rec-row" style="visibility:hidden">
+      <div class="rec-dot"></div><span>録音中</span>
+    </div>
+    <button class="btn btn-red" id="r-stop" style="display:none;width:200px;margin:0 auto" onclick="stopRec()">⏹ 停止・保存</button>
+    <button class="btn-sub" onclick="cancelRec()">キャンセル</button>
+  </div>
+</div>
+
+<!-- ══ REVIEW ══ -->
+<div id="s-review" class="screen">
+  <div class="hdr">
+    <button class="hdr-back" onclick="reviewBack()">←</button>
+    <span class="hdr-title">振り返り</span>
+    <div style="width:60px"></div>
+  </div>
+  <div class="body">
+    <div class="rv-section" id="rv-q-box">
+      <div class="rv-label">問題</div>
+      <div class="rv-box" style="font-weight:700">
+        <span class="badge badge-s" id="rv-lv" style="margin-right:6px"></span><span id="rv-q"></span>
+        <div style="margin-top:8px"><span class="badge badge-time" id="rv-tbadge"></span></div>
+      </div>
+    </div>
+    <div class="rv-section" id="rv-ft-box" style="display:none">
+      <div class="rv-label">フリートーク</div>
+      <div class="rv-box"><span class="badge badge-time" id="rv-ft-dur"></span></div>
+    </div>
+    <div class="rv-section">
+      <div class="rv-label">🔊 録音を聴く</div>
+      <audio id="rv-audio" controls style="width:100%;border-radius:8px"></audio>
+    </div>
+    <div class="rv-section">
+      <div class="rv-label">📝 文字起こし</div>
+      <div class="rv-box" id="rv-tr">認識中…</div>
+    </div>
+    <div class="rv-section">
+      <div class="rv-label">🤖 Claude 評価</div>
+      <div class="rv-box" id="rv-eval">評価生成中…</div>
+      <button class="btn btn-gray" style="margin-top:10px" onclick="copyPrompt()">📋 Claudeへコピーして詳細評価</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+      <button class="btn btn-black" id="rv-next-btn" onclick="reviewNext()">▶ 次の問題へ</button>
+      <button class="btn btn-gray" onclick="goHome()">ホームへ戻る</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HISTORY ══ -->
+<div id="s-history" class="screen">
+  <div class="hdr">
+    <button class="hdr-back" onclick="goHome()">←</button>
+    <span class="hdr-title">練習記録</span>
+    <button class="hdr-act" style="color:#dc2626" onclick="clearCurrentHistory()">削除</button>
+  </div>
+  <div class="body">
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-qa" onclick="switchHistTab('qa')">🎤 Q&amp;A</button>
+      <button class="tab-btn" id="tab-ft" onclick="switchHistTab('ft')">⏱ フリートーク</button>
+    </div>
+    <div id="hist-qa-body"></div>
+    <div id="hist-ft-body" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ══ SETTINGS ══ -->
+<div id="s-settings" class="screen">
+  <div class="hdr">
+    <button class="hdr-back" onclick="nav('s-home')">←</button>
+    <span class="hdr-title">設定</span>
+    <div style="width:60px"></div>
+  </div>
+  <div class="body">
+    <div class="set-section">
+      <div class="set-label">Claude APIキー（任意）</div>
+      <input type="password" class="inp" id="cfg-key" placeholder="sk-ant-...">
+      <button class="btn btn-black" style="width:auto;padding:10px 24px;font-size:13px;border-radius:10px" onclick="saveKey()">保存</button>
+      <p class="set-note">設定すると録音後にClaudeが自動評価します。未設定でも「コピーして詳細評価」が使えます。</p>
+    </div>
+    <div class="set-section">
+      <div class="set-label">Q&amp;A タイマー設定</div>
+      <div class="tog-row">
+        <span class="tog-label">ランダム（10秒 / 30秒）</span>
+        <label class="tog-wrap"><input type="checkbox" id="cfg-rnd" checked><span class="tog-track"></span></label>
+      </div>
+      <p class="set-note" style="margin-top:8px">OFFにすると常に30秒になります。</p>
+    </div>
+    <div class="set-section">
+      <div class="set-label">Q&amp;A レベルフィルター</div>
+      <div class="lv-filters">
+        <button class="lv-fb" id="lf-ALL" onclick="setFilter('ALL')">全レベル</button>
+        <button class="lv-fb" id="lf-S" onclick="setFilter('S')">S級</button>
+        <button class="lv-fb" id="lf-A" onclick="setFilter('A')">A級</button>
+        <button class="lv-fb" id="lf-B" onclick="setFilter('B')">B級</button>
+        <button class="lv-fb" id="lf-C" onclick="setFilter('C')">C級</button>
+        <button class="lv-fb" id="lf-D" onclick="setFilter('D')">D級</button>
+      </div>
+    </div>
+    <div class="set-section">
+      <div class="set-label">バージョン情報</div>
+      <p class="set-note">SEIKA ロープレツール v4.0<br>400問（S〜D級）・録音はブラウザに保存されます</p>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const QUESTIONS = [
+  { q: "「どのようなご用件ですか？」", lv: "S級" },
+  { q: "「今忙しいので」", lv: "S級" },
+  { q: "「結構です」", lv: "S級" },
+  { q: "「必要ありません」", lv: "S級" },
+  { q: "「資料を送ってください」", lv: "S級" },
+  { q: "「どんな会社ですか？」", lv: "S級" },
+  { q: "「何のサービスですか？」", lv: "S級" },
+  { q: "「担当者に回しますね」", lv: "S級" },
+  { q: "「うちには合わないと思います」", lv: "S級" },
+  { q: "「今は考えていません」", lv: "S級" },
+  { q: "「検討します」", lv: "S級" },
+  { q: "「また連絡します」", lv: "S級" },
+  { q: "「社長は不在です」", lv: "S級" },
+  { q: "「どこで弊社を知りましたか？」", lv: "S級" },
+  { q: "「他にもこういう電話来るんですよね」", lv: "S級" },
+  { q: "「料金はいくらですか？」", lv: "A級" },
+  { q: "「実績はありますか？」", lv: "A級" },
+  { q: "「他社と何が違うんですか？」", lv: "A級" },
+  { q: "「具体的にどんなアポを取ってくれるんですか？」", lv: "A級" },
+  { q: "「うちはすでに営業チームがいます」", lv: "A級" },
+  { q: "「アポの質はどうやって担保するんですか？」", lv: "A級" },
+  { q: "「成果が出なかった場合はどうなりますか？」", lv: "A級" },
+  { q: "「契約期間はどのくらいですか？」", lv: "A級" },
+  { q: "「今は別の会社に頼んでいます」", lv: "A級" },
+  { q: "「なぜうちに電話してきたんですか？」", lv: "A級" },
+  { q: "「会社はいつ設立しましたか？」", lv: "A級" },
+  { q: "「社員は何人いますか？」", lv: "A級" },
+  { q: "「どんな業種のアポが取れますか？」", lv: "A級" },
+  { q: "「月に何件取れますか？」", lv: "A級" },
+  { q: "「最低何件保証できますか？」", lv: "A級" },
+  { q: "「支払い方法は何ですか？」", lv: "A級" },
+  { q: "「まず一度会えますか？」", lv: "A級" },
+  { q: "「電話だけで決められません」", lv: "A級" },
+  { q: "「上の者に確認します」", lv: "A級" },
+  { q: "「稟議が必要です」", lv: "A級" },
+  { q: "「テレアポって効果あるんですか？」", lv: "B級" },
+  { q: "「アポを取った後のフォローはありますか？」", lv: "B級" },
+  { q: "「どんな企業にアプローチできますか？」", lv: "B級" },
+  { q: "「リストはどこから持ってきますか？」", lv: "B級" },
+  { q: "「個人情報の扱いはどうなっていますか？」", lv: "B級" },
+  { q: "「断られたときはどう対応するんですか？」", lv: "B級" },
+  { q: "「業界知識はありますか？」", lv: "B級" },
+  { q: "「M&Aの内容を理解して電話できますか？」", lv: "B級" },
+  { q: "「スクリプトで電話するんですか？」", lv: "B級" },
+  { q: "「以前アポ代行を使って失敗したことがあります」", lv: "B級" },
+  { q: "「うちの商材は難しいと思いますよ」", lv: "B級" },
+  { q: "「アポ代行って質が低いイメージがある」", lv: "B級" },
+  { q: "「自分たちでやった方が早くないですか？」", lv: "B級" },
+  { q: "「費用対効果を数字で教えてください」", lv: "B級" },
+  { q: "「試しに少額からできますか？」", lv: "B級" },
+  { q: "「他にどんな会社を担当していますか？」", lv: "B級" },
+  { q: "「競合他社も使っていますか？」", lv: "B級" },
+  { q: "「解約はいつでもできますか？」", lv: "B級" },
+  { q: "「担当者は変わりますか？」", lv: "B級" },
+  { q: "「報告書は出ますか？」", lv: "B級" },
+  { q: "「松前さん自身が電話するんですか？」", lv: "C級" },
+  { q: "「何人のスタッフがいますか？」", lv: "C級" },
+  { q: "「どんなトークをするんですか？」", lv: "C級" },
+  { q: "「録音は取っていますか？」", lv: "C級" },
+  { q: "「どのくらいで結果が出ますか？」", lv: "C級" },
+  { q: "「今期の予算がもうないです」", lv: "C級" },
+  { q: "「来期また連絡してください」", lv: "C級" },
+  { q: "「うちは紹介営業だけでやっています」", lv: "C級" },
+  { q: "「社長が営業嫌いなので」", lv: "C級" },
+  { q: "「過去にトラブルになったことはありますか？」", lv: "C級" },
+  { q: "「保証はありますか？」", lv: "C級" },
+  { q: "「なぜこの事業を始めたんですか？」", lv: "C級" },
+  { q: "「将来的にどんな会社にしたいですか？」", lv: "C級" },
+  { q: "「何歳ですか？」", lv: "C級" },
+  { q: "「営業経験はどのくらいありますか？」", lv: "C級" },
+  { q: "「どんな人がアポを取るんですか？」", lv: "C級" },
+  { q: "「研修や教育はどうやっていますか？」", lv: "C級" },
+  { q: "「他のアポ代行との違いを具体的に教えてください」", lv: "C級" },
+  { q: "「なぜうちの業界を選んだんですか？」", lv: "C級" },
+  { q: "「御社の強みを一言で言うと？」", lv: "C級" },
+  { q: "「あなた自身は何者ですか？」", lv: "D級" },
+  { q: "「その自信はどこから来るんですか？」", lv: "D級" },
+  { q: "「失敗したことはありますか？」", lv: "D級" },
+  { q: "「うちを使うメリットを3つ言えますか？」", lv: "D級" },
+  { q: "「逆に使わないとどうなりますか？」", lv: "D級" },
+  { q: "「今すぐ決める理由はありますか？」", lv: "D級" },
+  { q: "「うちの課題をどう理解していますか？」", lv: "D級" },
+  { q: "「業界の現状をどう見ていますか？」", lv: "D級" },
+  { q: "「M&A市場はこれからどうなると思いますか？」", lv: "D級" },
+  { q: "「アポ代行市場の問題点は何だと思いますか？」", lv: "D級" },
+  { q: "「既存のアポ代行と何が根本的に違うんですか？」", lv: "D級" },
+  { q: "「うちの社長に何を伝えたいですか？」", lv: "D級" },
+  { q: "「もし断られたら次にどうしますか？」", lv: "D級" },
+  { q: "「この仕事に誇りを持っていますか？」", lv: "D級" },
+  { q: "「長く付き合える会社ですか？」", lv: "D級" },
+  { q: "「一番大切にしていることは何ですか？」", lv: "D級" },
+  { q: "「なぜ他の人にはできないんですか？」", lv: "D級" },
+  { q: "「本当に結果が出ると確信していますか？」", lv: "D級" },
+  { q: "「うちが損をするリスクはありますか？」", lv: "D級" },
+  { q: "「社長と話す価値はありますか？正直に言ってください」", lv: "D級" },
+  { q: "「今電話してきた理由は何ですか？本音で」", lv: "D級" },
+  { q: "「あなたに頼む理由を一言で言えますか？」", lv: "D級" },
+  { q: "「この電話で一番伝えたいことは何ですか？」", lv: "D級" },
+  { q: "「もし自分がうちの社長だったら依頼しますか？」", lv: "D級" },
+  { q: "「なぜこの仕事をしているんですか？」", lv: "D級" },
+  { q: "「今から外出します」", lv: "S級" },
+  { q: "「折り返しますので連絡先を教えてください」", lv: "S級" },
+  { q: "「どちら様ですか？」（受付）", lv: "S級" },
+  { q: "「営業のお電話ですか？」", lv: "S級" },
+  { q: "「今は手が離せないのですが」", lv: "S級" },
+  { q: "「興味ないです」", lv: "S級" },
+  { q: "「うちには関係ない話だと思います」", lv: "S級" },
+  { q: "「何分くらいのお話ですか？」", lv: "S級" },
+  { q: "「もう少し詳しく聞かせてください」", lv: "S級" },
+  { q: "「今すぐ判断できません」", lv: "S級" },
+  { q: "「電話よりメールでもらえますか？」", lv: "S級" },
+  { q: "「概要だけ教えてもらえますか？」", lv: "S級" },
+  { q: "「会社のパンフレットはありますか？」", lv: "S級" },
+  { q: "「社長は今日来ていません」", lv: "S級" },
+  { q: "「今は新しいことを始める予定はないです」", lv: "S級" },
+  { q: "「予算がないので」", lv: "S級" },
+  { q: "「すでに似たようなサービスを使っています」", lv: "S級" },
+  { q: "「上に相談しないと何も決められません」", lv: "S級" },
+  { q: "「社長が苦手なジャンルの話なので」", lv: "S級" },
+  { q: "「今期はもう方針が決まっているので」", lv: "S級" },
+  { q: "「突然の電話なので少し戸惑っています」", lv: "S級" },
+  { q: "「今は営業の電話を受けないようにしています」", lv: "S級" },
+  { q: "「もう少し後でいいですか？」", lv: "S級" },
+  { q: "「そういったサービスを断っているんです」", lv: "S級" },
+  { q: "「誰宛に電話しているんですか？」", lv: "S級" },
+  { q: "「受付では判断できないのですが」", lv: "S級" },
+  { q: "「一度資料を見せてください、それから考えます」", lv: "S級" },
+  { q: "「とりあえず資料だけ送ってもらえれば」", lv: "S級" },
+  { q: "「後日改めてご連絡いただけますか？」", lv: "S級" },
+  { q: "「これ本当に必要かどうかわからないですね」", lv: "S級" },
+  { q: "「最初の月から結果は出ますか？」", lv: "A級" },
+  { q: "「何社を同時に担当していますか？」", lv: "A級" },
+  { q: "「テスト的に1ヶ月だけお願いできますか？」", lv: "A級" },
+  { q: "「どんな規模の会社に電話できますか？」", lv: "A級" },
+  { q: "「地方の会社にも対応できますか？」", lv: "A級" },
+  { q: "「アポの質はどう測りますか？」", lv: "A級" },
+  { q: "「断られた場合の記録はつけていますか？」", lv: "A級" },
+  { q: "「契約後のサポート体制はどうなっていますか？」", lv: "A級" },
+  { q: "「最低契約期間はどのくらいですか？」", lv: "A級" },
+  { q: "「違約金はありますか？」", lv: "A級" },
+  { q: "「ターゲット企業の選定はどうしますか？」", lv: "A級" },
+  { q: "「週に何件くらい架電できますか？」", lv: "A級" },
+  { q: "「何時間稼働してもらえますか？」", lv: "A級" },
+  { q: "「成功報酬型は選べますか？」", lv: "A級" },
+  { q: "「月額固定料金ですか？」", lv: "A級" },
+  { q: "「アポ1件あたりの単価はいくらですか？」", lv: "A級" },
+  { q: "「他のクライアントと競合することはありますか？」", lv: "A級" },
+  { q: "「同じ業界の競合他社にも架電していますか？」", lv: "A級" },
+  { q: "「独占契約はできますか？」", lv: "A級" },
+  { q: "「キャンセルになったアポはどう対処しますか？」", lv: "A級" },
+  { q: "「架電対象のリストはどう作りますか？」", lv: "A級" },
+  { q: "「どんなトーク内容で電話するか事前に確認できますか？」", lv: "A級" },
+  { q: "「フィードバックを共有する仕組みはありますか？」", lv: "A級" },
+  { q: "「月次レポートは提出してもらえますか？」", lv: "A級" },
+  { q: "「担当者が変わったときは引き継ぎはされますか？」", lv: "A級" },
+  { q: "「御社と契約するリスクは何ですか？」", lv: "A級" },
+  { q: "「途中解約はできますか？」", lv: "A級" },
+  { q: "「お試し期間はありますか？」", lv: "A級" },
+  { q: "「効果が出なかった場合の返金はありますか？」", lv: "A級" },
+  { q: "「まず小さい規模から始めることはできますか？」", lv: "A級" },
+  { q: "「架電先の業種を絞ることはできますか？」", lv: "A級" },
+  { q: "「架電先の地域を絞ることはできますか？」", lv: "A級" },
+  { q: "「架電先の売上規模を指定できますか？」", lv: "A級" },
+  { q: "「最初の打ち合わせはどんな内容になりますか？」", lv: "A級" },
+  { q: "「どのくらいで稼働開始できますか？」", lv: "A級" },
+  { q: "「この業種でのアポ取得率は何%くらいですか？」", lv: "A級" },
+  { q: "「目標のアポ件数を設定できますか？」", lv: "A級" },
+  { q: "「目標未達の場合のペナルティはありますか？」", lv: "A級" },
+  { q: "「オンラインのアポも取れますか？」", lv: "A級" },
+  { q: "「架電時間帯はいつですか？」", lv: "A級" },
+  { q: "「どのくらいの架電数でアポ1件取れますか？」", lv: "A級" },
+  { q: "「他の代行会社と比べて取得率は高いですか？」", lv: "A級" },
+  { q: "「成功事例を具体的に教えてもらえますか？」", lv: "A級" },
+  { q: "「失敗した事例も教えてもらえますか？」", lv: "A級" },
+  { q: "「口コミや紹介はありますか？」", lv: "A級" },
+  { q: "「継続しているクライアントと辞めたクライアントの違いは？」", lv: "A級" },
+  { q: "「過去に解約された理由で多いのは何ですか？」", lv: "A級" },
+  { q: "「急ぎのアポ取りにも対応できますか？」", lv: "A級" },
+  { q: "「週末や祝日も対応してもらえますか？」", lv: "A級" },
+  { q: "「他社で失敗した経験があるのですが、何が違いますか？」", lv: "A級" },
+  { q: "「うちで使っているリストを持ち込めますか？」", lv: "A級" },
+  { q: "「架電先の企業を自分で選定してもいいですか？」", lv: "A級" },
+  { q: "「稼働開始までのステップを教えてください」", lv: "A級" },
+  { q: "「打ち合わせはどのくらいの頻度でありますか？」", lv: "A級" },
+  { q: "「アポが取れたらどんな情報を共有してもらえますか？」", lv: "A級" },
+  { q: "「アポの日時調整まで行ってもらえますか？」", lv: "A級" },
+  { q: "「会社のホームページを見てから電話してもらえますか？」", lv: "A級" },
+  { q: "「業界の用語や知識はどこで仕入れていますか？」", lv: "A級" },
+  { q: "「架電後の記録はどんな形で残しますか？」", lv: "A級" },
+  { q: "「相手の反応や温度感も報告に含まれますか？」", lv: "A級" },
+  { q: "「CRMやSalesforceと連携できますか？」", lv: "B級" },
+  { q: "「架電内容の録音データはもらえますか？」", lv: "B級" },
+  { q: "「アポイントのリマインドはしてもらえますか？」", lv: "B級" },
+  { q: "「ホットリストとコールドリストで管理しますか？」", lv: "B級" },
+  { q: "「業界トレンドに合わせてトークを調整しますか？」", lv: "B級" },
+  { q: "「特定の相手への架電をリストから除外できますか？」", lv: "B級" },
+  { q: "「既存顧客には架電しないようにできますか？」", lv: "B級" },
+  { q: "「競合他社への架電は避けられますか？」", lv: "B級" },
+  { q: "「架電リストの所有権はどちらになりますか？」", lv: "B級" },
+  { q: "「契約終了後にリストは返却されますか？」", lv: "B級" },
+  { q: "「品質管理の仕組みはありますか？」", lv: "B級" },
+  { q: "「SNSを使ったアプローチもできますか？」", lv: "B級" },
+  { q: "「メールアプローチとの組み合わせはできますか？」", lv: "B級" },
+  { q: "「アポ以外の調査業務もお願いできますか？」", lv: "B級" },
+  { q: "「特定の担当者名で架電することはできますか？」", lv: "B級" },
+  { q: "「週次でMTGを設定できますか？」", lv: "B級" },
+  { q: "「架電の方針変更は途中でできますか？」", lv: "B級" },
+  { q: "「一度断られた会社にも再架電しますか？」", lv: "B級" },
+  { q: "「再架電の間隔はどのくらい置きますか？」", lv: "B級" },
+  { q: "「ブラックリストの管理はしていますか？」", lv: "B級" },
+  { q: "「法的なリスクは大丈夫ですか？」", lv: "B級" },
+  { q: "「特定商取引法の対応はできていますか？」", lv: "B級" },
+  { q: "「個人情報保護法への対応は万全ですか？」", lv: "B級" },
+  { q: "「Pマークや情報セキュリティの認証はありますか？」", lv: "B級" },
+  { q: "「データの管理方法を具体的に教えてください」", lv: "B級" },
+  { q: "「他社のリスト情報が漏れることはありませんか？」", lv: "B級" },
+  { q: "「業務委託契約書は用意していますか？」", lv: "B級" },
+  { q: "「NDA（秘密保持契約）は締結できますか？」", lv: "B級" },
+  { q: "「反社チェックはしていますか？」", lv: "B級" },
+  { q: "「社長面談の前に準備資料はもらえますか？」", lv: "B級" },
+  { q: "「アポ後のクロージングもサポートできますか？」", lv: "B級" },
+  { q: "「アポ後の商談に同席してもらえますか？」", lv: "B級" },
+  { q: "「業界別のアポ取得難易度を教えてください」", lv: "B級" },
+  { q: "「M&A特有の断り文句にはどう対応しますか？」", lv: "B級" },
+  { q: "「「すでに相手がいる」と言われたらどうしますか？」", lv: "B級" },
+  { q: "「「興味はあるが時期ではない」という場合はどうしますか？」", lv: "B級" },
+  { q: "「「社長不在」が続く場合はどう対応しますか？」", lv: "B級" },
+  { q: "「受付を突破するために何か工夫していますか？」", lv: "B級" },
+  { q: "「意思決定者にたどり着くまでの工夫は？」", lv: "B級" },
+  { q: "「1社に対して何回まで架電しますか？」", lv: "B級" },
+  { q: "「何回かけても反応がない場合はどうしますか？」", lv: "B級" },
+  { q: "「手紙やDMとの組み合わせはできますか？」", lv: "B級" },
+  { q: "「インサイドセールスとしての活用もできますか？」", lv: "B級" },
+  { q: "「どんな会社がアポ代行に向いていますか？」", lv: "B級" },
+  { q: "「向いていない会社もありますか？正直に教えてください」", lv: "B級" },
+  { q: "「電話のトーンはどんな感じで話しますか？」", lv: "B級" },
+  { q: "「相手が怒ってきたときはどうしますか？」", lv: "B級" },
+  { q: "「クレームがきたときの対処は？」", lv: "B級" },
+  { q: "「架電数の上限はありますか？」", lv: "B級" },
+  { q: "「複数の部署へのアプローチはできますか？」", lv: "B級" },
+  { q: "「競合他社はどこだと思っていますか？」", lv: "B級" },
+  { q: "「競合と比べて弱い点は何ですか？」", lv: "B級" },
+  { q: "「競合と比べて強い点は何ですか？」", lv: "B級" },
+  { q: "「価格競争になったときどうしますか？」", lv: "B級" },
+  { q: "「値引き交渉はできますか？」", lv: "B級" },
+  { q: "「長期契約の割引はありますか？」", lv: "B級" },
+  { q: "「複数サービスの組み合わせ割引はありますか？」", lv: "B級" },
+  { q: "「紹介割引の制度はありますか？」", lv: "B級" },
+  { q: "「キャンペーン価格はありますか？」", lv: "B級" },
+  { q: "「架電以外に何か付加価値を提供できますか？」", lv: "B級" },
+  { q: "「ウェビナーへの集客も対応できますか？」", lv: "B級" },
+  { q: "「展示会でのアポ取りも対応できますか？」", lv: "B級" },
+  { q: "「アウトバウンドとインバウンドどちらが得意ですか？」", lv: "B級" },
+  { q: "「提案資料の作成も依頼できますか？」", lv: "B級" },
+  { q: "「税理士や会計士経由の案件も扱えますか？」", lv: "B級" },
+  { q: "「士業との連携はありますか？」", lv: "B級" },
+  { q: "「紹介営業との組み合わせはどうですか？」", lv: "B級" },
+  { q: "「電話を受ける側の心理をどう理解していますか？」", lv: "B級" },
+  { q: "「断られる理由で最も多いのは何ですか？」", lv: "B級" },
+  { q: "「アポが取れる会社の共通点は何ですか？」", lv: "B級" },
+  { q: "「業界歴は何年ですか？」", lv: "C級" },
+  { q: "「独立する前は何をしていましたか？」", lv: "C級" },
+  { q: "「なぜ今の会社の形にしたのですか？」", lv: "C級" },
+  { q: "「法人ですか？個人事業主ですか？」", lv: "C級" },
+  { q: "「資本金はいくらですか？」", lv: "C級" },
+  { q: "「どこに事務所がありますか？」", lv: "C級" },
+  { q: "「直接会って話せますか？」", lv: "C級" },
+  { q: "「Zoomで打ち合わせできますか？」", lv: "C級" },
+  { q: "「パートナー企業はありますか？」", lv: "C級" },
+  { q: "「突然廃業するリスクはないですか？」", lv: "C級" },
+  { q: "「この1年で成長していますか？」", lv: "C級" },
+  { q: "「今後の事業展開を教えてください」", lv: "C級" },
+  { q: "「クライアントは今何社いますか？」", lv: "C級" },
+  { q: "「最も長く続いているクライアントは何年ですか？」", lv: "C級" },
+  { q: "「なぜそのクライアントは続けているんですか？」", lv: "C級" },
+  { q: "「信頼はどうやって積み上げますか？」", lv: "C級" },
+  { q: "「事業の課題は何だと思っていますか？」", lv: "C級" },
+  { q: "「差別化のために今後何をしますか？」", lv: "C級" },
+  { q: "「テクノロジーやAIをどう活用していますか？」", lv: "C級" },
+  { q: "「将来的に規模を拡大する予定ですか？」", lv: "C級" },
+  { q: "「業界の問題点は何だと感じていますか？」", lv: "C級" },
+  { q: "「M&Aマーケットはこれから伸びると思いますか？」", lv: "C級" },
+  { q: "「中小企業の経営課題で最も多いと思うものは？」", lv: "C級" },
+  { q: "「後継者不足問題をどう見ていますか？」", lv: "C級" },
+  { q: "「アポ代行という仕事に未来はあると思いますか？」", lv: "C級" },
+  { q: "「電話営業は時代遅れだと思いますか？」", lv: "C級" },
+  { q: "「デジタルマーケティングとの違いをどう考えますか？」", lv: "C級" },
+  { q: "「SNS営業とテレアポ、どちらが有効だと思いますか？」", lv: "C級" },
+  { q: "「オンライン商談はテレアポで取れますか？」", lv: "C級" },
+  { q: "「クロスボーダーM&Aのアポも取れますか？」", lv: "C級" },
+  { q: "「上場企業へのアポも可能ですか？」", lv: "C級" },
+  { q: "「公的機関や金融機関へのアプローチは？」", lv: "C級" },
+  { q: "「うちの会社の強みをどう理解していますか？」", lv: "C級" },
+  { q: "「うちの商材の弱点は何だと思いますか？」", lv: "C級" },
+  { q: "「うちの業界の特殊性を理解していますか？」", lv: "C級" },
+  { q: "「アポが取れない会社の共通点は何ですか？」", lv: "C級" },
+  { q: "「架電で最も難しいと感じることは何ですか？」", lv: "C級" },
+  { q: "「架電で最もやりがいを感じる瞬間は？」", lv: "C級" },
+  { q: "「今まで一番印象に残った電話は何ですか？」", lv: "C級" },
+  { q: "「断られた中で一番辛かったことは？」", lv: "C級" },
+  { q: "「架電の仕事を続けるモチベーションは何ですか？」", lv: "C級" },
+  { q: "「1日の仕事の流れを教えてください」", lv: "C級" },
+  { q: "「毎日何時間働いていますか？」", lv: "C級" },
+  { q: "「体力的にきつくないですか？」", lv: "C級" },
+  { q: "「精神的にきつくないですか？」", lv: "C級" },
+  { q: "「自分のメンタルケアはどうしていますか？」", lv: "C級" },
+  { q: "「プライベートとの両立はできていますか？」", lv: "C級" },
+  { q: "「この仕事で一番楽しいことは何ですか？」", lv: "C級" },
+  { q: "「この仕事で一番嫌なことは何ですか？」", lv: "C級" },
+  { q: "「仕事で失敗したとき、どう立ち直りますか？」", lv: "C級" },
+  { q: "「目標を達成したあと何をしたいですか？」", lv: "C級" },
+  { q: "「競合他社の動向はチェックしていますか？」", lv: "C級" },
+  { q: "「業界のニュースはどうやってキャッチしていますか？」", lv: "C級" },
+  { q: "「自分を成長させるために何をしていますか？」", lv: "C級" },
+  { q: "「営業スキルをどうやって磨いていますか？」", lv: "C級" },
+  { q: "「ロールプレイや練習はしていますか？」", lv: "C級" },
+  { q: "「スランプに陥ったことはありますか？そのとき何をしましたか？」", lv: "C級" },
+  { q: "「電話中に詰まったときはどうしますか？」", lv: "C級" },
+  { q: "「相手に共感するとき、どういう言葉を使いますか？」", lv: "C級" },
+  { q: "「沈黙が続いたときはどう対応しますか？」", lv: "C級" },
+  { q: "「相手の言葉のどこに注目して聞いていますか？」", lv: "C級" },
+  { q: "「声のトーンや速さで意識していることは？」", lv: "C級" },
+  { q: "「第一声で何を一番大切にしていますか？」", lv: "C級" },
+  { q: "「最初の10秒で何を伝えようとしていますか？」", lv: "C級" },
+  { q: "「電話を切らせない工夫は何ですか？」", lv: "C級" },
+  { q: "「断りの言葉の裏にある本音をどう読みますか？」", lv: "C級" },
+  { q: "「相手が話したくなる質問の仕方は？」", lv: "C級" },
+  { q: "「架電で最も重要な瞬間はどこだと思いますか？」", lv: "C級" },
+  { q: "「電話でどうやって信頼感を作りますか？」", lv: "C級" },
+  { q: "「一番うまくいった架電はどんな内容でしたか？」", lv: "C級" },
+  { q: "「松前さんが一番大切にしている価値観は何ですか？」", lv: "D級" },
+  { q: "「人生で最も影響を受けた出来事は何ですか？」", lv: "D級" },
+  { q: "「なぜこの仕事を選んだのか、本音で話せますか？」", lv: "D級" },
+  { q: "「今の自分に満足していますか？」", lv: "D級" },
+  { q: "「10年後どんな自分でいたいですか？」", lv: "D級" },
+  { q: "「お金のためにやっていますか？」", lv: "D級" },
+  { q: "「この仕事で社会に何を届けたいですか？」", lv: "D級" },
+  { q: "「自分の仕事に誇りを持てていますか？」", lv: "D級" },
+  { q: "「過去の失敗から何を学びましたか？」", lv: "D級" },
+  { q: "「一番苦しかった時期はいつですか？そこから何を得ましたか？」", lv: "D級" },
+  { q: "「あなたにしかできないことは何だと思いますか？」", lv: "D級" },
+  { q: "「もし全てゼロからやり直せるとしたら何を変えますか？」", lv: "D級" },
+  { q: "「今の仕事で成功する確信はありますか？」", lv: "D級" },
+  { q: "「うまくいかないときはどうやって立て直しますか？」", lv: "D級" },
+  { q: "「孤独を感じることはありますか？」", lv: "D級" },
+  { q: "「誰かに相談できる環境はありますか？」", lv: "D級" },
+  { q: "「家族や周囲の反応はどうですか？」", lv: "D級" },
+  { q: "「成功したらどんな人間になっていたいですか？」", lv: "D級" },
+  { q: "「失敗したときの最悪のシナリオを考えたことがありますか？」", lv: "D級" },
+  { q: "「リスクを取ることを怖いと思いますか？」", lv: "D級" },
+  { q: "「自分の弱点は何だと思いますか？」", lv: "D級" },
+  { q: "「自分の強みを最大化するために何をしていますか？」", lv: "D級" },
+  { q: "「毎日どんなことを学んでいますか？」", lv: "D級" },
+  { q: "「本は読みますか？どんな本が好きですか？」", lv: "D級" },
+  { q: "「尊敬する人物は誰ですか？」", lv: "D級" },
+  { q: "「メンターや師匠はいますか？」", lv: "D級" },
+  { q: "「チームを持つつもりはありますか？どんなチームを作りたいですか？」", lv: "D級" },
+  { q: "「将来的に人を雇うとしたらどんな人を選びますか？」", lv: "D級" },
+  { q: "「リーダーとしての自分のスタイルは何ですか？」", lv: "D級" },
+  { q: "「組織より個人の自由を取りますか？」", lv: "D級" },
+  { q: "「競争は好きですか？」", lv: "D級" },
+  { q: "「誰かに負けたとき、どう感じますか？」", lv: "D級" },
+  { q: "「怒りをエネルギーに変えられますか？」", lv: "D級" },
+  { q: "「結果が出ないときの自分の扱い方を教えてください」", lv: "D級" },
+  { q: "「今、一番の課題は何ですか？」", lv: "D級" },
+  { q: "「自分がどう見られているかを意識しますか？」", lv: "D級" },
+  { q: "「他人の評価は気になりますか？」", lv: "D級" },
+  { q: "「批判を受けたときどうしますか？」", lv: "D級" },
+  { q: "「プレッシャーに強い方ですか？」", lv: "D級" },
+  { q: "「締め切りや期限に追われるとどうなりますか？」", lv: "D級" },
+  { q: "「一人でいるのが得意ですか？人といるのが得意ですか？」", lv: "D級" },
+  { q: "「自分を奮い立たせる言葉はありますか？」", lv: "D級" },
+  { q: "「朝起きたとき最初に考えることは何ですか？」", lv: "D級" },
+  { q: "「寝る前に振り返ることはありますか？」", lv: "D級" },
+  { q: "「感情と論理、どちらを優先しますか？」", lv: "D級" },
+  { q: "「直感を信じますか？それとも分析を信じますか？」", lv: "D級" },
+  { q: "「この電話が勝負だと感じているときはわかりますか？」", lv: "D級" },
+  { q: "「あなたが怒りを感じるのはどんなときですか？」", lv: "D級" },
+  { q: "「今の日本の営業文化についてどう思いますか？」", lv: "D級" },
+  { q: "「営業で一番大切なことは何だと思いますか？」", lv: "D級" },
+  { q: "「聞くことと話すこと、どちらが大事だと思いますか？」", lv: "D級" },
+  { q: "「相手に好かれることと信頼されること、どちらを優先しますか？」", lv: "D級" },
+  { q: "「断られることに慣れましたか？」", lv: "D級" },
+  { q: "「断られることの意味をどう解釈していますか？」", lv: "D級" },
+  { q: "「1000回断られても続けられますか？」", lv: "D級" },
+  { q: "「電話一本で人生を変えられると思いますか？」", lv: "D級" },
+  { q: "「あなたにとっての「成功」の定義は何ですか？」", lv: "D級" },
+  { q: "「1200万円の目標はなぜ1200万円なんですか？」", lv: "D級" },
+  { q: "「お金以外で手に入れたいものは何ですか？」", lv: "D級" },
+  { q: "「この仕事を通じて世の中に何を証明したいですか？」", lv: "D級" },
+  { q: "「なぜ今このタイミングで動いているんですか？」", lv: "D級" },
+  { q: "「もし失敗したとしても後悔しないと言えますか？」", lv: "D級" },
+  { q: "「あなたを一言で表すとどんな人間ですか？」", lv: "D級" },
+  { q: "「この電話で伝えたいことを30秒で話せますか？」", lv: "D級" },
+  { q: "「なぜうちの社長と話したいんですか？本音で」", lv: "D級" },
+  { q: "「あなたとの仕事で社長は何を得られますか？」", lv: "D級" },
+  { q: "「他の誰でもなく、あなたと仕事する意味は何ですか？」", lv: "D級" },
+  { q: "「10年後も同じ情熱でこの仕事をしていますか？」", lv: "D級" },
+  { q: "「最後に一言だけ言えるとしたら何を言いますか？」", lv: "D級" },
+  { q: "「今、この瞬間、なぜこの仕事をしているんですか？」", lv: "D級" }
+];
+
+/* ── DB ── */
+let db = null;
+function initDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('seika-roplay', 1);
+    r.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('recs')) d.createObjectStore('recs', { keyPath: 'id' });
+    };
+    r.onsuccess = e => { db = e.target.result; res(db); };
+    r.onerror = rej;
+  });
+}
+function saveAudio(id, blob) {
+  if (!db) return Promise.resolve();
+  return new Promise((res, rej) => {
+    const tx = db.transaction('recs', 'readwrite');
+    tx.objectStore('recs').put({ id, blob });
+    tx.oncomplete = res; tx.onerror = rej;
+  });
+}
+function loadAudio(id) {
+  if (!db) return Promise.resolve(null);
+  return new Promise((res, rej) => {
+    const tx = db.transaction('recs', 'readonly');
+    const r  = tx.objectStore('recs').get(id);
+    r.onsuccess = e => res(e.target.result?.blob || null);
+    r.onerror = rej;
+  });
+}
+function deleteAudio(id) {
+  if (!db) return Promise.resolve();
+  return new Promise((res, rej) => {
+    const tx = db.transaction('recs', 'readwrite');
+    tx.objectStore('recs').delete(id);
+    tx.oncomplete = res; tx.onerror = rej;
+  });
+}
+
+/* ── 状態 ── */
+let mode = 'qa', curQ = '', curLv = '', curLimit = 30, ftDur = 30;
+let timerInt = null, recorder = null, chunks = [], audioBlob = null, audioUrl = null, recId = null;
+let recognition = null, transcript = '', activeFilter = 'ALL', histTab = 'qa';
+
+/* ── ナビ ── */
+function nav(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+  if (id === 's-home')     refreshHome();
+  if (id === 's-settings') loadSettings();
+}
+function goHome() { stopTimer(); killRec(); killRecog(); nav('s-home'); }
+function showHistory(tab) { histTab = tab; nav('s-history'); renderHist(); }
+
+/* ── ホーム統計 ── */
+function dayKey() { return 'day_' + new Date().toISOString().slice(0,10); }
+function refreshHome() {
+  document.getElementById('h-today').textContent  = +(localStorage.getItem(dayKey()) || 0);
+  document.getElementById('h-total').textContent  = +(localStorage.getItem('total') || 0);
+  document.getElementById('h-streak').textContent = +(localStorage.getItem('streak') || 0);
+  document.getElementById('h-qn').textContent     = QUESTIONS.length;
+}
+function savePractice() {
+  const today = new Date().toISOString().slice(0,10);
+  const k = 'day_' + today;
+  localStorage.setItem(k, (+(localStorage.getItem(k)||0)) + 1);
+  localStorage.setItem('total', (+(localStorage.getItem('total')||0)) + 1);
+  const last = localStorage.getItem('last_day') || '';
+  const yday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+  let streak = +(localStorage.getItem('streak')||0);
+  if (last === yday) streak++;
+  else if (last !== today) streak = 1;
+  localStorage.setItem('streak', streak);
+  localStorage.setItem('last_day', today);
+}
+
+/* ── Q&A ── */
+function filteredQ() {
+  if (activeFilter === 'ALL') return QUESTIONS;
+  return QUESTIONS.filter(q => q.lv === activeFilter + '級');
+}
+function pickQ() {
+  const pool = filteredQ();
+  if (!pool.length) { toast('該当レベルの問題がありません'); return; }
+  const it = pool[Math.floor(Math.random() * pool.length)];
+  curQ = it.q; curLv = it.lv;
+  document.getElementById('q-text').textContent = curQ;
+  const lc = curLv.replace('級','');
+  const lbEl = document.getElementById('q-lv');
+  lbEl.textContent = curLv;
+  lbEl.className = 'badge badge-' + lc.toLowerCase();
+  const rnd = document.getElementById('cfg-rnd')?.checked ?? true;
+  curLimit = (rnd && Math.random() < .5) ? 10 : 30;
+  const tb = document.getElementById('q-tbadge');
+  tb.textContent = curLimit === 10 ? '⚡ 10秒' : '⏱ 30秒';
+}
+function startQA() { mode = 'qa'; pickQ(); nav('s-question'); }
+function nextQA()  { mode = 'qa'; pickQ(); nav('s-question'); }
+
+/* ── フリートーク ── */
+function startFT(sec) { mode = 'ft'; ftDur = sec; curLimit = sec; beginRec(); }
+
+/* ── 録音フロー ── */
+function beginRec() {
+  const isFT = mode === 'ft';
+  document.getElementById('r-title').textContent = isFT ? 'フリートーク' : '録音中';
+  document.getElementById('r-q-mini').textContent = isFT ? '' : (curQ.slice(0,50) + (curQ.length > 50 ? '…' : ''));
+  document.getElementById('r-timer-lbl').textContent = '制限時間：' + (curLimit >= 60 ? '1分' : curLimit + '秒');
+  setCnt(curLimit);
+  document.getElementById('r-rec-row').style.visibility = 'hidden';
+  document.getElementById('r-stop').style.display = 'none';
+  nav('s-record');
+
+  if (!window.MediaRecorder) {
+    toast('録音非対応ブラウザです。Chrome/Safariをお使いください');
+    if (mode === 'ft') nav('s-ft-select'); else nav('s-question');
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+    chunks = []; recId = Date.now().toString();
+    const mimeType = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+    recorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+    recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    recorder.onstop = () => {
+      const blobType = recorder.mimeType || mimeType || 'audio/webm';
+      audioBlob = new Blob(chunks, { type: blobType });
+      audioUrl  = URL.createObjectURL(audioBlob);
+      stream.getTracks().forEach(t => t.stop());
+      saveAudio(recId, audioBlob).then(() => openReview());
+    };
+    startRecog();
+    setTimeout(() => {
+      recorder.start();
+      document.getElementById('r-rec-row').style.visibility = 'visible';
+      document.getElementById('r-stop').style.display = 'block';
+      let left = curLimit;
+      timerInt = setInterval(() => { left--; setCnt(left); if (left <= 0) stopRec(); }, 1000);
+    }, 500);
+  }).catch(err => {
+    const msg = err.name === 'NotAllowedError' ? 'マイクへのアクセスを許可してください'
+              : err.name === 'NotFoundError'   ? 'マイクが見つかりません'
+              : 'マイクの起動に失敗しました（HTTPS接続が必要な場合があります）';
+    toast(msg); goHome();
+  });
+}
+
+function setCnt(n) {
+  const el = document.getElementById('r-cnt');
+  el.textContent = n;
+  const r = n / curLimit;
+  el.className = 'cnt ' + (r > .5 ? 'cnt-ok' : r > .25 ? 'cnt-w' : 'cnt-d');
+  const p = document.getElementById('r-prog');
+  if (p) p.style.width = (n / curLimit * 100) + '%';
+}
+function stopTimer() { clearInterval(timerInt); timerInt = null; }
+function killRec()   { if (recorder && recorder.state === 'recording') recorder.stop(); }
+function killRecog() { if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; } }
+function stopRec()   { stopTimer(); killRec(); killRecog(); }
+function cancelRec() {
+  stopTimer(); killRec(); killRecog();
+  if (mode === 'ft') nav('s-ft-select');
+  else nav('s-question');
+}
+
+/* ── 音声認識 ── */
+function startRecog() {
+  transcript = '';
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { transcript = '（このブラウザは音声認識未対応）'; return; }
+  let final = '';
+  function createRecog() {
+    const r = new SR();
+    r.lang = 'ja-JP'; r.continuous = true; r.interimResults = true;
+    r.onresult = e => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) final += e.results[i][0].transcript;
+        else interim += e.results[i][0].transcript;
+      }
+      transcript = final + interim;
+    };
+    r.onerror = e => {
+      if (e.error === 'not-allowed') { transcript = '（音声認識の許可が必要です）'; return; }
+      if (!transcript) transcript = '（音声認識に失敗しました）';
+    };
+    r.onend = () => {
+      if (recorder && recorder.state === 'recording') {
+        try { recognition = createRecog(); recognition.start(); } catch(e) {}
+      }
+    };
+    return r;
+  }
+  recognition = createRecog();
+  try { recognition.start(); } catch(e) { transcript = '（音声認識の起動に失敗しました）'; }
+}
+
+/* ── 振り返り ── */
+function openReview() {
+  const isFT = mode === 'ft';
+  document.getElementById('rv-q-box').style.display  = isFT ? 'none' : 'block';
+  document.getElementById('rv-ft-box').style.display = isFT ? 'block' : 'none';
+  if (!isFT) {
+    document.getElementById('rv-q').textContent      = curQ;
+    document.getElementById('rv-tbadge').textContent = '⏱ ' + curLimit + '秒制限';
+    const lc = curLv.replace('級','');
+    const rvLv = document.getElementById('rv-lv');
+    rvLv.textContent = curLv;
+    rvLv.className = 'badge badge-' + lc.toLowerCase();
+  } else {
+    document.getElementById('rv-ft-dur').textContent = curLimit >= 60 ? '1分' : curLimit + '秒';
+  }
+  document.getElementById('rv-audio').src = audioUrl;
+  document.getElementById('rv-tr').textContent   = '認識中…';
+  document.getElementById('rv-eval').textContent = '評価生成中…';
+  document.getElementById('rv-next-btn').textContent = isFT ? '⏱ フリートークに戻る' : '▶ 次の問題へ';
+  nav('s-review');
+  savePractice();
+  const histItem = { id: recId, date: new Date().toISOString(), limit: curLimit, tr: '', q: curQ, lv: curLv };
+  if (isFT) saveFTHist(histItem); else saveQAHist(histItem);
+  setTimeout(() => {
+    const t = transcript || '（文字起こしが取得できませんでした）';
+    document.getElementById('rv-tr').textContent = t;
+    updateHistTr(isFT, recId, t);
+    runEval(t, isFT);
+  }, 700);
+}
+function reviewBack() { if (mode === 'ft') nav('s-ft-select'); else nav('s-question'); }
+function reviewNext() { if (mode === 'ft') nav('s-ft-select'); else nextQA(); }
+
+/* ── Claude 評価 ── */
+function runEval(t, isFT) {
+  const el  = document.getElementById('rv-eval');
+  const key = localStorage.getItem('api_key');
+  if (key) {
+    callClaude(key, t, isFT).then(r => el.textContent = r).catch(() => { el.textContent = localEval(t, isFT); });
+  } else {
+    el.textContent = localEval(t, isFT);
+  }
+}
+function localEval(t, isFT) {
+  if (!t || t.startsWith('（')) return '録音を聴いて振り返りましょう。「コピーして詳細評価」でClaudeに詳しいフィードバックを依頼できます。';
+  const len = t.replace(/\s/g,'').length;
+  let score = 60, pts = [];
+  if (len >= 60)      { score += 15; pts.push('✅ 十分な長さで話せています（' + len + '字）'); }
+  else if (len >= 25) { score += 5;  pts.push('💡 もう少し詳しく話すと良いでしょう（' + len + '字）'); }
+  else                {              pts.push('⚠️ 回答が短すぎます（' + len + '字）'); }
+  if (/[0-9０-９]/.test(t))                { score += 8;  pts.push('✅ 数字を活用した具体的な説明ができています'); }
+  if (/ありがとう|よろしく|申し訳/.test(t)) { score += 5;  pts.push('✅ 丁寧な言葉遣いが使えています'); }
+  if (/[？?]/.test(t))                     { score += 7;  pts.push('✅ 質問を活用した対話型トークができています'); }
+  if (/例えば|具体的|たとえば/.test(t))     { score += 5;  pts.push('✅ 具体例を活用しています'); }
+  return 'スコア: ' + Math.min(score,100) + ' / 100\n\n' + pts.join('\n');
+}
+async function callClaude(key, t, isFT) {
+  const context = isFT
+    ? 'フリートーク（' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '）'
+    : '営業質問（' + curLv + '）：' + curQ;
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001', max_tokens: 600,
+      messages: [{ role: 'user', content:
+        '営業トレーナーとして以下のトークを評価してください。\n\n【種類】' + context + '\n【制限時間】' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '\n【回答】' + t + '\n\n①総合スコア（100点満点）\n②良い点（2〜3つ）\n③改善点（2〜3つ）\n④一言アドバイス\nを日本語で簡潔にお願いします。'
+      }]
+    })
+  });
+  const d = await res.json();
+  return d.content?.[0]?.text || '評価を取得できませんでした';
+}
+function copyPrompt() {
+  const t = document.getElementById('rv-tr').textContent;
+  const isFT = mode === 'ft';
+  const ctx = isFT
+    ? 'フリートーク（' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '制限）'
+    : '営業質問（' + curLv + '）：' + curQ;
+  navigator.clipboard.writeText(
+    '営業トレーナーとして以下のトークを評価してください。\n\n【種類】' + ctx + '\n【制限時間】' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '\n\n【回答（文字起こし）】\n' + t + '\n\n① 総合スコア（100点満点）と理由\n② 良い点（2〜3つ）\n③ 改善点（2〜3つ）\n④ 模範回答の例文\n⑤ 次回に向けた一言アドバイス'
+  ).then(() => toast('コピーしました！Claudeに貼り付けてください ✅'));
+}
+
+/* ── 履歴 ── */
+function getQAHist() { return JSON.parse(localStorage.getItem('qa_hist') || '[]'); }
+function getFTHist() { return JSON.parse(localStorage.getItem('ft_hist') || '[]'); }
+function saveQAHist(item) {
+  const h = getQAHist(); h.unshift(item);
+  if (h.length > 200) h.length = 200;
+  localStorage.setItem('qa_hist', JSON.stringify(h));
+}
+function saveFTHist(item) {
+  const h = getFTHist(); h.unshift(item);
+  if (h.length > 200) h.length = 200;
+  localStorage.setItem('ft_hist', JSON.stringify(h));
+}
+function updateHistTr(isFT, id, tr) {
+  const key  = isFT ? 'ft_hist' : 'qa_hist';
+  const list = JSON.parse(localStorage.getItem(key) || '[]');
+  const idx  = list.findIndex(x => x.id === id);
+  if (idx >= 0) { list[idx].tr = tr; localStorage.setItem(key, JSON.stringify(list)); }
+}
+function switchHistTab(tab) {
+  histTab = tab;
+  document.getElementById('tab-qa').className = 'tab-btn' + (tab === 'qa' ? ' active' : '');
+  document.getElementById('tab-ft').className = 'tab-btn' + (tab === 'ft' ? ' active' : '');
+  document.getElementById('hist-qa-body').style.display = tab === 'qa' ? 'block' : 'none';
+  document.getElementById('hist-ft-body').style.display = tab === 'ft' ? 'block' : 'none';
+}
+function renderHist() { switchHistTab(histTab); renderQAHist(); renderFTHist(); }
+function renderQAHist() {
+  const body = document.getElementById('hist-qa-body');
+  const hist = getQAHist();
+  if (!hist.length) { body.innerHTML = '<div class="empty">Q&A練習の記録がありません</div>'; return; }
+  body.innerHTML = buildHistHTML(hist, false);
+}
+function renderFTHist() {
+  const body = document.getElementById('hist-ft-body');
+  const hist = getFTHist();
+  if (!hist.length) { body.innerHTML = '<div class="empty">フリートークの記録がありません</div>'; return; }
+  body.innerHTML = buildHistHTML(hist, true);
+}
+function buildHistHTML(hist, isFT) {
+  const grouped = {};
+  hist.forEach(item => {
+    const lbl = new Date(item.date).toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
+    (grouped[lbl] = grouped[lbl] || []).push(item);
+  });
+  return Object.entries(grouped).map(([date, items]) =>
+    '<div class="date-hdr">' + date + '（' + items.length + '回）</div>' +
+    items.map(it => {
+      const t   = new Date(it.date).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
+      const lim = it.limit >= 60 ? '1分' : it.limit + '秒';
+      const lc  = (it.lv||'').replace('級','').toLowerCase();
+      const lvBadge = lc ? '<span class="badge badge-' + lc + '" style="font-size:10px">' + it.lv + '</span> ' : '';
+      const qHtml = !isFT
+        ? '<div class="hist-q">' + (it.q||'') + '</div>'
+        : '<div class="hist-q" style="color:#aaa">フリートーク（' + lim + '）</div>';
+      return '<div class="hist-item">' +
+        '<div class="hist-meta">' + lvBadge + '<span class="badge badge-time">⏱ ' + lim + '</span><span style="font-size:11px;color:#aaa">　' + t + '</span></div>' +
+        qHtml +
+        (it.tr ? '<div class="hist-tr">' + it.tr.slice(0,80) + (it.tr.length>80?'…':'') + '</div>' : '') +
+        '<audio data-rec-id="' + it.id + '" controls style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' +
+        '<button class="audio-btn" onclick="toggleAudio(this)" data-id="' + it.id + '">🔊 録音を聴く</button>' +
+        '</div>';
+    }).join('')
+  ).join('');
+}
+function toggleAudio(btn) {
+  const id    = btn.dataset.id;
+  const audio = btn.previousElementSibling;
+  if (audio.style.display === 'none' || !audio.style.display) {
+    if (!audio.src || audio.src === window.location.href) {
+      loadAudio(id).then(blob => {
+        if (blob) {
+          audio.src = URL.createObjectURL(blob);
+          audio.style.display = 'block';
+          btn.textContent = '🔇 閉じる';
+          audio.play();
+        } else { toast('録音データが見つかりません'); }
+      });
+    } else {
+      audio.style.display = 'block';
+      btn.textContent = '🔇 閉じる';
+      audio.play();
+    }
+  } else {
+    audio.pause();
+    audio.style.display = 'none';
+    btn.textContent = '🔊 録音を聴く';
+  }
+}
+function clearCurrentHistory() {
+  if (!confirm((histTab === 'qa' ? 'Q&A' : 'フリートーク') + 'の履歴をすべて削除しますか？')) return;
+  if (histTab === 'qa') { getQAHist().forEach(it => deleteAudio(it.id)); localStorage.removeItem('qa_hist'); }
+  else                  { getFTHist().forEach(it => deleteAudio(it.id)); localStorage.removeItem('ft_hist'); }
+  renderHist();
+  toast('履歴を削除しました');
+}
+
+/* ── 設定 ── */
+function loadSettings() {
+  const k = localStorage.getItem('api_key');
+  if (k) document.getElementById('cfg-key').value = k;
+  const r = localStorage.getItem('rnd_timer');
+  if (r !== null) document.getElementById('cfg-rnd').checked = r === '1';
+  const f = localStorage.getItem('lv_filter') || 'ALL';
+  setFilter(f, true);
+}
+function saveKey() {
+  const v = document.getElementById('cfg-key').value.trim();
+  if (v) { localStorage.setItem('api_key', v); toast('APIキーを保存しました ✅'); }
+}
+document.getElementById('cfg-rnd')?.addEventListener('change', e => {
+  localStorage.setItem('rnd_timer', e.target.checked ? '1' : '0');
+});
+function setFilter(lv, silent) {
+  activeFilter = lv;
+  localStorage.setItem('lv_filter', lv);
+  document.querySelectorAll('.lv-fb').forEach(btn => {
+    btn.className = 'lv-fb' + (btn.id === 'lf-' + lv ? ' sel-' + lv : '');
+  });
+  if (!silent) toast('フィルター: ' + (lv === 'ALL' ? '全レベル' : lv + '級'));
+}
+
+/* ── Toast ── */
+let toastT;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+/* ── 起動 ── */
+initDB().then(() => console.log('DB ready')).catch(() => console.warn('IndexedDB unavailable'));
+refreshHome();
+</script>
+</body>
+</html>
