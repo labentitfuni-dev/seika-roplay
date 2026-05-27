@@ -129,6 +129,21 @@
     .rv-tr-meta{font-size:11px;color:#aaa;text-align:right;margin-top:4px}
     audio{width:100%;margin-top:0;border-radius:8px}
 
+    /* ─ 年間進捗 ─ */
+    .year-prog{background:#f5f5f5;border-radius:12px;padding:14px 16px;margin-bottom:16px}
+    .year-prog-title{font-size:11px;color:#888;font-weight:700;letter-spacing:.5px;margin-bottom:10px}
+    .year-prog-nums{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+    .year-count{font-size:28px;font-weight:900;color:#111}
+    .year-goal-lbl{font-size:12px;color:#aaa}
+    .prog-bar{height:8px;background:#ddd;border-radius:100px;overflow:hidden}
+    .prog-fill{height:100%;border-radius:100px;background:#111;transition:width .5s}
+    .prog-pct{font-size:11px;color:#888;text-align:right;margin-top:5px}
+    .goal-btn{
+      padding:6px 13px;border-radius:100px;border:1.5px solid #ddd;
+      background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:#333;
+    }
+    .goal-btn:active{background:#f0f0f0}
+
     /* ─ 評価カード ─ */
     .ev-score-wrap{text-align:center;padding:12px 0 8px}
     .ev-score{font-size:52px;font-weight:900;line-height:1}
@@ -217,9 +232,9 @@
   <div class="body">
     <div class="stat-bar">
       <div class="stat-cell"><div class="stat-n" id="h-today">0</div><div class="stat-l">今日</div></div>
+      <div class="stat-cell"><div class="stat-n" id="h-month">0</div><div class="stat-l">今月</div></div>
       <div class="stat-cell"><div class="stat-n" id="h-total">0</div><div class="stat-l">累計</div></div>
       <div class="stat-cell"><div class="stat-n" id="h-streak">0</div><div class="stat-l">連続🔥</div></div>
-      <div class="stat-cell"><div class="stat-n" id="h-qn">400</div><div class="stat-l">問題数</div></div>
     </div>
 
     <button class="main-btn main-btn-qa" onclick="startQA()">
@@ -358,6 +373,7 @@
     <button class="hdr-act" style="color:#dc2626" onclick="clearCurrentHistory()">削除</button>
   </div>
   <div class="body">
+    <div id="year-prog-wrap"></div>
     <div class="tab-bar">
       <button class="tab-btn active" id="tab-qa" onclick="switchHistTab('qa')">🎤 Q&amp;A</button>
       <button class="tab-btn" id="tab-ft" onclick="switchHistTab('ft')">⏱ フリートーク</button>
@@ -401,8 +417,22 @@
       </div>
     </div>
     <div class="set-section">
+      <div class="set-label">年間目標（回）</div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+        <input type="number" class="inp" id="cfg-year-goal" placeholder="例：365" style="width:110px;padding:10px 12px">
+        <button class="btn btn-black" style="width:auto;padding:10px 20px;font-size:13px;border-radius:10px" onclick="saveYearGoal()">保存</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="goal-btn" onclick="setYearGoalQuick(365)">365回</button>
+        <button class="goal-btn" onclick="setYearGoalQuick(500)">500回</button>
+        <button class="goal-btn" onclick="setYearGoalQuick(1000)">1000回</button>
+        <button class="goal-btn" onclick="setYearGoalQuick(2000)">2000回</button>
+      </div>
+      <p class="set-note" style="margin-top:8px">設定すると記録画面に年間進捗バーが表示されます。</p>
+    </div>
+    <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v4.0<br>400問（S〜D級）・録音はブラウザに保存されます</p>
+      <p class="set-note">SEIKA ロープレツール v4.1<br>400問（S〜D級）・録音はブラウザに保存されます</p>
     </div>
   </div>
 </div>
@@ -870,11 +900,30 @@ function showHistory(tab) { histTab = tab; nav('s-history'); renderHist(); }
 
 /* ── ホーム統計 ── */
 function dayKey() { return 'day_' + new Date().toISOString().slice(0,10); }
+function getMonthCount() {
+  const prefix = 'day_' + new Date().toISOString().slice(0,7); // "day_2026-05"
+  let c = 0;
+  for (let d = 1; d <= 31; d++) {
+    c += +(localStorage.getItem(prefix + '-' + String(d).padStart(2,'0')) || 0);
+  }
+  return c;
+}
+function getYearCount() {
+  const y = new Date().getFullYear();
+  let c = 0;
+  for (let m = 1; m <= 12; m++) {
+    const prefix = 'day_' + y + '-' + String(m).padStart(2,'0');
+    for (let d = 1; d <= 31; d++) {
+      c += +(localStorage.getItem(prefix + '-' + String(d).padStart(2,'0')) || 0);
+    }
+  }
+  return c;
+}
 function refreshHome() {
   document.getElementById('h-today').textContent  = +(localStorage.getItem(dayKey()) || 0);
+  document.getElementById('h-month').textContent  = getMonthCount();
   document.getElementById('h-total').textContent  = +(localStorage.getItem('total') || 0);
   document.getElementById('h-streak').textContent = +(localStorage.getItem('streak') || 0);
-  document.getElementById('h-qn').textContent     = QUESTIONS.length;
 }
 function savePractice() {
   const today = new Date().toISOString().slice(0,10);
@@ -1246,7 +1295,37 @@ function switchHistTab(tab) {
   document.getElementById('hist-qa-body').style.display = tab === 'qa' ? 'block' : 'none';
   document.getElementById('hist-ft-body').style.display = tab === 'ft' ? 'block' : 'none';
 }
-function renderHist() { switchHistTab(histTab); renderQAHist(); renderFTHist(); }
+function renderHist() {
+  const wrap = document.getElementById('year-prog-wrap');
+  const goal = +(localStorage.getItem('year_goal') || 0);
+  const yearCount = getYearCount();
+  const year = new Date().getFullYear();
+  const monthCount = getMonthCount();
+  const todayCount = +(localStorage.getItem(dayKey()) || 0);
+  if (goal > 0) {
+    const pct = Math.min(Math.round(yearCount / goal * 100), 100);
+    const fillW = Math.min(pct, 100);
+    wrap.innerHTML =
+      '<div class="year-prog">' +
+        '<div class="year-prog-title">' + year + '年の進捗</div>' +
+        '<div class="year-prog-nums">' +
+          '<span><span class="year-count">' + yearCount + '</span><span style="font-size:13px;color:#666;font-weight:400"> 回</span></span>' +
+          '<span class="year-goal-lbl">目標 ' + goal + ' 回</span>' +
+        '</div>' +
+        '<div class="prog-bar"><div class="prog-fill" style="width:' + fillW + '%"></div></div>' +
+        '<div class="prog-pct">' + pct + '% 達成　|　今月 ' + monthCount + '回　|　今日 ' + todayCount + '回</div>' +
+      '</div>';
+  } else {
+    wrap.innerHTML =
+      '<div class="year-prog" style="text-align:center">' +
+        '<div class="year-prog-title">' + year + '年の練習</div>' +
+        '<div style="font-size:30px;font-weight:900;color:#111;margin:4px 0">' + yearCount + '<span style="font-size:14px;color:#888;font-weight:400"> 回</span></div>' +
+        '<div style="font-size:12px;color:#aaa;margin-top:4px">今月 ' + monthCount + '回　|　今日 ' + todayCount + '回</div>' +
+        '<div style="font-size:11px;color:#bbb;margin-top:6px">設定から年間目標を設定できます</div>' +
+      '</div>';
+  }
+  switchHistTab(histTab); renderQAHist(); renderFTHist();
+}
 function renderQAHist() {
   const body = document.getElementById('hist-qa-body');
   const hist = getQAHist();
@@ -1325,10 +1404,22 @@ function loadSettings() {
   if (r !== null) document.getElementById('cfg-rnd').checked = r === '1';
   const f = localStorage.getItem('lv_filter') || 'ALL';
   setFilter(f, true);
+  const g = localStorage.getItem('year_goal');
+  if (g) document.getElementById('cfg-year-goal').value = g;
 }
 function saveKey() {
   const v = document.getElementById('cfg-key').value.trim();
   if (v) { localStorage.setItem('api_key', v); toast('APIキーを保存しました ✅'); }
+}
+function saveYearGoal() {
+  const v = +(document.getElementById('cfg-year-goal').value);
+  if (v > 0) { localStorage.setItem('year_goal', v); toast('年間目標を ' + v + ' 回に設定しました 🎯'); }
+  else { localStorage.removeItem('year_goal'); toast('年間目標をリセットしました'); }
+}
+function setYearGoalQuick(n) {
+  document.getElementById('cfg-year-goal').value = n;
+  localStorage.setItem('year_goal', n);
+  toast('年間目標を ' + n + ' 回に設定しました 🎯');
 }
 document.getElementById('cfg-rnd')?.addEventListener('change', e => {
   localStorage.setItem('rnd_timer', e.target.checked ? '1' : '0');
