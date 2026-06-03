@@ -893,6 +893,7 @@ let mode = 'qa', curQ = '', curLv = '', curLimit = 30, ftDur = 30;
 let timerInt = null, recorder = null, chunks = [], audioBlob = null, audioUrl = null, recId = null;
 let recognition = null, transcript = '', activeFilter = 'ALL', histTab = 'qa';
 let pendingHistItem = null, pendingIsFT = false, finalTranscript = '';
+let recStarting = false; // Fix5: 二重起動防止フラグ
 
 /* ── ナビ ── */
 function nav(id) {
@@ -974,6 +975,9 @@ function startFT(sec) { mode = 'ft'; ftDur = sec; curLimit = sec; beginRec(); }
 
 /* ── 録音フロー ── */
 function beginRec() {
+  if (recStarting) return; // Fix5: 二重起動防止
+  recStarting = true;
+
   const isFT = mode === 'ft';
   document.getElementById('r-title').textContent = isFT ? 'フリートーク' : '録音中';
   document.getElementById('r-q-mini').textContent = isFT ? '' : (curQ.slice(0,50) + (curQ.length > 50 ? '…' : ''));
@@ -984,6 +988,7 @@ function beginRec() {
   nav('s-record');
 
   if (!window.MediaRecorder) {
+    recStarting = false;
     toast('録音非対応ブラウザです。Chrome/Safariをお使いください');
     if (mode === 'ft') nav('s-ft-select'); else nav('s-question');
     return;
@@ -992,6 +997,7 @@ function beginRec() {
   navigator.mediaDevices.getUserMedia({
     audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 }
   }).then(stream => {
+    recStarting = false; // Fix5: 取得完了でフラグ解除
     chunks = []; recId = Date.now().toString();
     // Android Chrome は webm;codecs=opus が最も安定。iOS は mp4
     const mimeType = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg']
@@ -1002,6 +1008,7 @@ function beginRec() {
       if (recCancelled) { recCancelled = false; stream.getTracks().forEach(t => t.stop()); return; }
       const blobType = recorder.mimeType || mimeType || 'audio/webm;codecs=opus';
       audioBlob = new Blob(chunks, { type: blobType });
+      if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; } // Fix4: 旧URLを解放
       audioUrl  = URL.createObjectURL(audioBlob);
       stream.getTracks().forEach(t => t.stop());
       openReview();
@@ -1011,10 +1018,17 @@ function beginRec() {
       recorder.start(1000); // 1秒ごとにchunks収集（バックグラウンド対策）
       document.getElementById('r-rec-row').style.visibility = 'visible';
       document.getElementById('r-stop').style.display = 'block';
-      let left = curLimit;
-      timerInt = setInterval(() => { left--; setCnt(left); if (left <= 0) stopRec(); }, 1000);
+      // Fix13: Date.now()ベースのタイマー精度向上（200ms間隔）
+      const startTime = Date.now();
+      timerInt = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const left = Math.max(curLimit - elapsed, 0);
+        setCnt(left);
+        if (left <= 0) stopRec();
+      }, 200);
     }, 500);
   }).catch(err => {
+    recStarting = false; // Fix5: エラー時もフラグ解除
     const msg = err.name === 'NotAllowedError' ? 'マイクへのアクセスを許可してください'
               : err.name === 'NotFoundError'   ? 'マイクが見つかりません'
               : 'マイクの起動に失敗しました（HTTPS接続が必要な場合があります）';
@@ -1025,10 +1039,10 @@ function beginRec() {
 function setCnt(n) {
   const el = document.getElementById('r-cnt');
   el.textContent = n;
-  const r = n / curLimit;
+  const r = curLimit > 0 ? n / curLimit : 0; // Fix8: ゼロ除算ガード
   el.className = 'cnt ' + (r > .5 ? 'cnt-ok' : r > .25 ? 'cnt-w' : 'cnt-d');
   const p = document.getElementById('r-prog');
-  if (p) p.style.width = (n / curLimit * 100) + '%';
+  if (p) p.style.width = (r * 100) + '%';
 }
 let recCancelled = false;
 let recogShouldRun = false;
@@ -1041,6 +1055,7 @@ function killRecog() {
 function stopRec()   { stopTimer(); killRec(); killRecog(); }
 function cancelRec() {
   recCancelled = true;
+  pendingHistItem = null; // Fix7: 保留中の保存をキャンセル
   stopTimer(); killRec(); killRecog();
   if (mode === 'ft') nav('s-ft-select');
   else nav('s-question');
@@ -1128,17 +1143,27 @@ function openReview() {
     runEval(finalTranscript, isFT);
   }, 1200); // Android Chromeは音声認識の最終結果が遅いため1200msに延長
 }
-function saveAndNext() {
-  // 保存ボタンを押したときだけ記録
-  if (pendingHistItem) {
-    pendingHistItem.tr = finalTranscript || '';
-    if (pendingIsFT) saveFTHist(pendingHistItem); else saveQAHist(pendingHistItem);
-    savePractice();
-    saveAudio(pendingHistItem.id, audioBlob);
-    pendingHistItem = null;
-    toast('記録を保存しました ✅');
+// Fix6: ボタン二重タップ防止 + async/await + try/catch
+async function saveAndNext() {
+  const saveBtn   = document.getElementById('rv-save-btn');
+  const noSaveBtn = document.getElementById('rv-nosave-btn');
+  if (saveBtn) saveBtn.disabled = true;
+  if (noSaveBtn) noSaveBtn.disabled = true;
+  try {
+    if (pendingHistItem) {
+      pendingHistItem.tr = finalTranscript || '';
+      if (pendingIsFT) saveFTHist(pendingHistItem); else saveQAHist(pendingHistItem);
+      savePractice();
+      await saveAudio(pendingHistItem.id, audioBlob);
+      pendingHistItem = null;
+      toast('記録を保存しました ✅');
+    }
+    if (pendingIsFT) nav('s-ft-select'); else nextQA();
+  } catch(e) {
+    toast('保存に失敗しました');
+    if (saveBtn) saveBtn.disabled = false;
+    if (noSaveBtn) noSaveBtn.disabled = false;
   }
-  if (pendingIsFT) nav('s-ft-select'); else nextQA();
 }
 function discardAndNext() {
   // 保存しない場合は録音データも破棄
@@ -1159,7 +1184,14 @@ function runEval(t, isFT) {
   if (key) {
     callClaude(key, t, isFT)
       .then(r  => { el.innerHTML = renderEval(r); })
-      .catch(() => { el.innerHTML = renderEval(localEval(t, isFT)); });
+      .catch(err => { // Fix3: エラー種別に応じたトースト
+        const msg = err.message === 'rate_limit' ? 'レート制限中です。しばらく待ってから再試行してください'
+          : err.message === 'auth_error' ? 'APIキーが無効です。設定を確認してください'
+          : err.name === 'AbortError' ? 'APIタイムアウト。ローカル評価に切り替えます'
+          : 'Claude API呼び出し失敗。ローカル評価に切り替えます';
+        toast(msg);
+        el.innerHTML = renderEval(localEval(t, isFT));
+      });
   } else {
     el.innerHTML = renderEval(localEval(t, isFT));
   }
@@ -1245,19 +1277,34 @@ ADVICE:
 - 質問・対話の技術
 - 言葉の明確さと簡潔さ`;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001', max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  });
+  // Fix2: AbortController 15秒タイムアウト
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  let res;
+  try {
+    res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001', max_tokens: 800,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+  // Fix2: HTTPステータスコードチェック
+  if (!res.ok) {
+    if (res.status === 429) throw new Error('rate_limit');
+    if (res.status === 401 || res.status === 403) throw new Error('auth_error');
+    throw new Error('api_error_' + res.status);
+  }
   const d = await res.json();
   return d.content?.[0]?.text || '評価を取得できませんでした';
 }
@@ -1316,33 +1363,59 @@ function copyPrompt() {
   const ctx = isFT
     ? 'フリートーク（' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '制限）'
     : '営業質問（' + curLv + '）：' + curQ;
-  navigator.clipboard.writeText(
-    'M&A営業のプロトレーナーとして以下のロールプレイを評価してください。\n\n【種類】' + ctx + '\n【制限時間】' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '\n\n【回答（文字起こし）】\n' + t + '\n\n① 総合スコア（100点満点）と理由\n② 良かった点（2〜3つ、具体的に）\n③ 改善点（2〜3つ、どう直すか具体的に）\n④ 次回へのアドバイス（一言）\n\n評価観点：論理構造（結論→理由→具体例）・数字の活用・顧客への共感・質問の技術・言葉の明確さ'
-  ).then(() => toast('コピーしました！Claudeに貼り付けてください ✅'))
-   .catch(() => {
-     // Android Chrome / 非HTTPSのフォールバック
-     const ta = document.createElement('textarea');
-     ta.value = ''; // 値は上で生成済みなのでここは別パスで再生成が必要
-     ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;width:1px;height:1px';
-     document.body.appendChild(ta); ta.focus(); ta.select();
-     try { document.execCommand('copy'); toast('コピーしました！Claudeに貼り付けてください ✅'); }
-     catch(e2) { toast('コピーできませんでした。手動でコピーしてください'); }
-     document.body.removeChild(ta);
-   });
+  const promptText = 'M&A営業のプロトレーナーとして以下のロールプレイを評価してください。\n\n【種類】' + ctx + '\n【制限時間】' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '\n\n【回答（文字起こし）】\n' + t + '\n\n① 総合スコア（100点満点）と理由\n② 良かった点（2〜3つ、具体的に）\n③ 改善点（2〜3つ、どう直すか具体的に）\n④ 次回へのアドバイス（一言）\n\n評価観点：論理構造（結論→理由→具体例）・数字の活用・顧客への共感・質問の技術・言葉の明確さ';
+  const fallbackCopy = () => {
+    const ta = document.createElement('textarea');
+    ta.value = promptText; // 変数を使い回す（Samsung Internet対応）
+    ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;width:1px;height:1px';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try { document.execCommand('copy'); toast('コピーしました！Claudeに貼り付けてください ✅'); }
+    catch(e2) { toast('コピーできませんでした。手動でコピーしてください'); }
+    document.body.removeChild(ta);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(promptText)
+      .then(() => toast('コピーしました！Claudeに貼り付けてください ✅'))
+      .catch(fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
 }
 
 /* ── 履歴 ── */
-function getQAHist() { return JSON.parse(localStorage.getItem('qa_hist') || '[]'); }
-function getFTHist() { return JSON.parse(localStorage.getItem('ft_hist') || '[]'); }
+// Fix9: JSON.parse エラー時にlocalStorageをリセット
+function getQAHist() {
+  try { return JSON.parse(localStorage.getItem('qa_hist') || '[]'); }
+  catch(e) { localStorage.removeItem('qa_hist'); return []; }
+}
+function getFTHist() {
+  try { return JSON.parse(localStorage.getItem('ft_hist') || '[]'); }
+  catch(e) { localStorage.removeItem('ft_hist'); return []; }
+}
+// Fix10: QuotaExceededError 時は50件に削ってリトライ
 function saveQAHist(item) {
   const h = getQAHist(); h.unshift(item);
   if (h.length > 200) h.length = 200;
-  localStorage.setItem('qa_hist', JSON.stringify(h));
+  try {
+    localStorage.setItem('qa_hist', JSON.stringify(h));
+  } catch(e) {
+    if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+      h.length = Math.min(h.length, 50);
+      try { localStorage.setItem('qa_hist', JSON.stringify(h)); } catch(e2) {}
+    }
+  }
 }
 function saveFTHist(item) {
   const h = getFTHist(); h.unshift(item);
   if (h.length > 200) h.length = 200;
-  localStorage.setItem('ft_hist', JSON.stringify(h));
+  try {
+    localStorage.setItem('ft_hist', JSON.stringify(h));
+  } catch(e) {
+    if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+      h.length = Math.min(h.length, 50);
+      try { localStorage.setItem('ft_hist', JSON.stringify(h)); } catch(e2) {}
+    }
+  }
 }
 function updateHistTr(isFT, id, tr) {
   const key  = isFT ? 'ft_hist' : 'qa_hist';
@@ -1413,23 +1486,35 @@ function buildHistHTML(hist, isFT) {
       const lim = it.limit >= 60 ? '1分' : it.limit + '秒';
       const lc  = (it.lv||'').replace('級','').toLowerCase();
       const lvBadge = lc ? '<span class="badge badge-' + lc + '" style="font-size:10px">' + it.lv + '</span> ' : '';
+      // Fix14: XSSを防ぐためit.qとit.trにescHtmlを適用
       const qHtml = !isFT
-        ? '<div class="hist-q">' + (it.q||'') + '</div>'
+        ? '<div class="hist-q">' + escHtml(it.q||'') + '</div>'
         : '<div class="hist-q" style="color:#aaa">フリートーク（' + lim + '）</div>';
+      const trText = it.tr ? it.tr.slice(0,80) + (it.tr.length>80?'…':'') : '';
       return '<div class="hist-item">' +
         '<div class="hist-meta">' + lvBadge + '<span class="badge badge-time">⏱ ' + lim + '</span><span style="font-size:11px;color:#aaa">　' + t + '</span></div>' +
         qHtml +
-        (it.tr ? '<div class="hist-tr">' + it.tr.slice(0,80) + (it.tr.length>80?'…':'') + '</div>' : '') +
+        (it.tr ? '<div class="hist-tr">' + escHtml(trText) + '</div>' : '') +
         '<audio data-rec-id="' + it.id + '" controls style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' +
         '<button class="audio-btn" onclick="toggleAudio(this)" data-id="' + it.id + '">🔊 録音を聴く</button>' +
         '</div>';
     }).join('')
   ).join('');
 }
+// Fix12: 他の再生中の音声を停止してから新しいものを再生
 function toggleAudio(btn) {
   const id    = btn.dataset.id;
   const audio = btn.previousElementSibling;
   if (audio.style.display === 'none' || !audio.style.display) {
+    // 他の再生中の音声をすべて停止
+    document.querySelectorAll('#hist-qa-body audio, #hist-ft-body audio').forEach(a => {
+      if (a !== audio && !a.paused) {
+        a.pause();
+        a.style.display = 'none';
+        const b = a.nextElementSibling;
+        if (b) b.textContent = '🔊 録音を聴く';
+      }
+    });
     if (!audio.src || audio.src === window.location.href) {
       loadAudio(id).then(blob => {
         if (blob) {
@@ -1455,10 +1540,13 @@ function toggleAudio(btn) {
     btn.textContent = '🔊 録音を聴く';
   }
 }
-function clearCurrentHistory() {
+// Fix11: async + Promise.allSettled でIndexedDB削除を確実に待機
+async function clearCurrentHistory() {
   if (!confirm((histTab === 'qa' ? 'Q&A' : 'フリートーク') + 'の履歴をすべて削除しますか？')) return;
-  if (histTab === 'qa') { getQAHist().forEach(it => deleteAudio(it.id)); localStorage.removeItem('qa_hist'); }
-  else                  { getFTHist().forEach(it => deleteAudio(it.id)); localStorage.removeItem('ft_hist'); }
+  const hist = histTab === 'qa' ? getQAHist() : getFTHist();
+  await Promise.allSettled(hist.map(it => deleteAudio(it.id)));
+  if (histTab === 'qa') localStorage.removeItem('qa_hist');
+  else                  localStorage.removeItem('ft_hist');
   renderHist();
   toast('履歴を削除しました');
 }
@@ -1510,6 +1598,21 @@ function toast(msg) {
 }
 
 /* ── 起動 ── */
+// Fix15: 起動時にフィルターとタイマー設定をlocalStorageから復元
+(function initAtBoot() {
+  const f = localStorage.getItem('lv_filter') || 'ALL';
+  activeFilter = f;
+  // フィルターボタンのUI更新（設定画面が開かれていなくてもpickQ()に反映される）
+  document.querySelectorAll('.lv-fb').forEach(btn => {
+    btn.className = 'lv-fb' + (btn.id === 'lf-' + f ? ' sel-' + f : '');
+  });
+  // ランダムタイマーの復元
+  const r = localStorage.getItem('rnd_timer');
+  if (r !== null) {
+    const rndEl = document.getElementById('cfg-rnd');
+    if (rndEl) rndEl.checked = r === '1';
+  }
+})();
 initDB().then(() => console.log('DB ready')).catch(() => console.warn('IndexedDB unavailable'));
 refreshHome();
 </script>
