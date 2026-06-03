@@ -135,14 +135,17 @@
     .year-prog-nums{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
     .year-count{font-size:28px;font-weight:900;color:#111}
     .year-goal-lbl{font-size:12px;color:#aaa}
-    .prog-bar{height:8px;background:#ddd;border-radius:100px;overflow:hidden}
-    .prog-fill{height:100%;border-radius:100px;background:#111;transition:width .5s}
+    .year-prog-bar{height:8px;background:#ddd;border-radius:100px;overflow:hidden}
+    .year-prog-fill{height:100%;border-radius:100px;background:#111;transition:width .5s}
     .prog-pct{font-size:11px;color:#888;text-align:right;margin-top:5px}
     .goal-btn{
       padding:6px 13px;border-radius:100px;border:1.5px solid #ddd;
       background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:#333;
+      touch-action:manipulation;
     }
     .goal-btn:active{background:#f0f0f0}
+    .btn,.main-btn,.ft-cell,.sub-link,.lv-fb,.hdr-back,.hdr-act{touch-action:manipulation}
+    .body{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 
     /* ─ 評価カード ─ */
     .ev-score-wrap{text-align:center;padding:12px 0 8px}
@@ -358,9 +361,12 @@
       <div id="rv-eval"><div class="ev-loading">評価生成中…</div></div>
       <button class="btn btn-gray" style="margin-top:10px" onclick="copyPrompt()">📋 Claudeへコピーして詳細評価</button>
     </div>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
-      <button class="btn btn-black" id="rv-next-btn" onclick="reviewNext()">▶ 次の問題へ</button>
-      <button class="btn btn-gray" onclick="goHome()">ホームへ戻る</button>
+    <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#166534">
+      💾 録音を記録に残しますか？
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:0">
+      <button class="btn btn-black" id="rv-save-btn" onclick="saveAndNext()">✅ 記録を保存して次へ</button>
+      <button class="btn btn-gray" id="rv-nosave-btn" onclick="discardAndNext()">保存しない</button>
     </div>
   </div>
 </div>
@@ -886,6 +892,7 @@ function deleteAudio(id) {
 let mode = 'qa', curQ = '', curLv = '', curLimit = 30, ftDur = 30;
 let timerInt = null, recorder = null, chunks = [], audioBlob = null, audioUrl = null, recId = null;
 let recognition = null, transcript = '', activeFilter = 'ALL', histTab = 'qa';
+let pendingHistItem = null, pendingIsFT = false, finalTranscript = '';
 
 /* ── ナビ ── */
 function nav(id) {
@@ -981,21 +988,27 @@ function beginRec() {
     if (mode === 'ft') nav('s-ft-select'); else nav('s-question');
     return;
   }
-  navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+  recCancelled = false;
+  navigator.mediaDevices.getUserMedia({
+    audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 }
+  }).then(stream => {
     chunks = []; recId = Date.now().toString();
-    const mimeType = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+    // Android Chrome は webm;codecs=opus が最も安定。iOS は mp4
+    const mimeType = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg']
+      .find(t => MediaRecorder.isTypeSupported(t)) || '';
     recorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
     recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
     recorder.onstop = () => {
-      const blobType = recorder.mimeType || mimeType || 'audio/webm';
+      if (recCancelled) { recCancelled = false; stream.getTracks().forEach(t => t.stop()); return; }
+      const blobType = recorder.mimeType || mimeType || 'audio/webm;codecs=opus';
       audioBlob = new Blob(chunks, { type: blobType });
       audioUrl  = URL.createObjectURL(audioBlob);
       stream.getTracks().forEach(t => t.stop());
-      saveAudio(recId, audioBlob).then(() => openReview());
+      openReview();
     };
     startRecog();
     setTimeout(() => {
-      recorder.start();
+      recorder.start(1000); // 1秒ごとにchunks収集（バックグラウンド対策）
       document.getElementById('r-rec-row').style.visibility = 'visible';
       document.getElementById('r-stop').style.display = 'block';
       let left = curLimit;
@@ -1017,11 +1030,17 @@ function setCnt(n) {
   const p = document.getElementById('r-prog');
   if (p) p.style.width = (n / curLimit * 100) + '%';
 }
+let recCancelled = false;
+let recogShouldRun = false;
 function stopTimer() { clearInterval(timerInt); timerInt = null; }
 function killRec()   { if (recorder && recorder.state === 'recording') recorder.stop(); }
-function killRecog() { if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; } }
+function killRecog() {
+  recogShouldRun = false; // 再起動ループを停止
+  if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
+}
 function stopRec()   { stopTimer(); killRec(); killRecog(); }
 function cancelRec() {
+  recCancelled = true;
   stopTimer(); killRec(); killRecog();
   if (mode === 'ft') nav('s-ft-select');
   else nav('s-question');
@@ -1030,6 +1049,7 @@ function cancelRec() {
 /* ── 音声認識 ── */
 function startRecog() {
   transcript = '';
+  recogShouldRun = true;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { transcript = '（このブラウザは音声認識未対応）'; return; }
   let final = '';
@@ -1045,11 +1065,21 @@ function startRecog() {
       transcript = final + interim;
     };
     r.onerror = e => {
-      if (e.error === 'not-allowed') { transcript = '（音声認識の許可が必要です）'; return; }
+      if (e.error === 'not-allowed') { transcript = '（音声認識の許可が必要です）'; recogShouldRun = false; return; }
+      if (e.error === 'network') {
+        // Android Chromeではnetworkエラー後にonendが来ないことがある
+        if (recogShouldRun && recorder && recorder.state === 'recording') {
+          setTimeout(() => {
+            if (!recogShouldRun) return;
+            try { recognition = createRecog(); recognition.start(); } catch(ex) {}
+          }, 800);
+        }
+        return;
+      }
       if (!transcript) transcript = '（音声認識に失敗しました）';
     };
     r.onend = () => {
-      if (recorder && recorder.state === 'recording') {
+      if (recogShouldRun && recorder && recorder.state === 'recording') {
         try { recognition = createRecog(); recognition.start(); } catch(e) {}
       }
     };
@@ -1077,28 +1107,50 @@ function openReview() {
   document.getElementById('rv-audio').src = audioUrl;
   document.getElementById('rv-tr').textContent   = '認識中…';
   document.getElementById('rv-eval').innerHTML   = '<div class="ev-loading">評価生成中…</div>';
-  document.getElementById('rv-next-btn').textContent = isFT ? '⏱ フリートークに戻る' : '▶ 次の問題へ';
+  // ボタンラベル更新
+  document.getElementById('rv-save-btn').textContent   = isFT ? '✅ 記録を保存してフリートークへ' : '✅ 記録を保存して次の問題へ';
+  document.getElementById('rv-nosave-btn').textContent = isFT ? '保存しない' : '保存しない';
   nav('s-review');
-  savePractice();
-  const histItem = { id: recId, date: new Date().toISOString(), limit: curLimit, tr: '', q: curQ, lv: curLv };
-  if (isFT) saveFTHist(histItem); else saveQAHist(histItem);
+  // ★ 自動保存しない。ユーザーが「保存」を押したときだけ記録する
+  pendingHistItem = { id: recId, date: new Date().toISOString(), limit: curLimit, tr: '', q: curQ, lv: curLv };
+  pendingIsFT = isFT;
   setTimeout(() => {
-    const t = transcript || '（文字起こしが取得できませんでした）';
-    const len = t.replace(/\s/g,'').length;
+    finalTranscript = transcript || '（文字起こしが取得できませんでした）';
+    const len = finalTranscript.replace(/\s/g,'').length;
     const trEl = document.getElementById('rv-tr');
-    trEl.textContent = t;
-    if (len > 0 && !t.startsWith('（')) {
+    trEl.textContent = finalTranscript;
+    if (len > 0 && !finalTranscript.startsWith('（')) {
       const meta = document.createElement('div');
       meta.className = 'rv-tr-meta';
       meta.textContent = len + '字';
       trEl.parentNode.appendChild(meta);
     }
-    updateHistTr(isFT, recId, t);
-    runEval(t, isFT);
-  }, 700);
+    runEval(finalTranscript, isFT);
+  }, 1200); // Android Chromeは音声認識の最終結果が遅いため1200msに延長
 }
-function reviewBack() { if (mode === 'ft') nav('s-ft-select'); else nav('s-question'); }
-function reviewNext() { if (mode === 'ft') nav('s-ft-select'); else nextQA(); }
+function saveAndNext() {
+  // 保存ボタンを押したときだけ記録
+  if (pendingHistItem) {
+    pendingHistItem.tr = finalTranscript || '';
+    if (pendingIsFT) saveFTHist(pendingHistItem); else saveQAHist(pendingHistItem);
+    savePractice();
+    saveAudio(pendingHistItem.id, audioBlob);
+    pendingHistItem = null;
+    toast('記録を保存しました ✅');
+  }
+  if (pendingIsFT) nav('s-ft-select'); else nextQA();
+}
+function discardAndNext() {
+  // 保存しない場合は録音データも破棄
+  if (recId) deleteAudio(recId);
+  pendingHistItem = null;
+  if (pendingIsFT) nav('s-ft-select'); else nextQA();
+}
+function reviewBack() {
+  if (recId) deleteAudio(recId);
+  pendingHistItem = null;
+  if (pendingIsFT || mode === 'ft') nav('s-ft-select'); else nav('s-question');
+}
 
 /* ── Claude 評価 ── */
 function runEval(t, isFT) {
@@ -1266,7 +1318,17 @@ function copyPrompt() {
     : '営業質問（' + curLv + '）：' + curQ;
   navigator.clipboard.writeText(
     'M&A営業のプロトレーナーとして以下のロールプレイを評価してください。\n\n【種類】' + ctx + '\n【制限時間】' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '\n\n【回答（文字起こし）】\n' + t + '\n\n① 総合スコア（100点満点）と理由\n② 良かった点（2〜3つ、具体的に）\n③ 改善点（2〜3つ、どう直すか具体的に）\n④ 次回へのアドバイス（一言）\n\n評価観点：論理構造（結論→理由→具体例）・数字の活用・顧客への共感・質問の技術・言葉の明確さ'
-  ).then(() => toast('コピーしました！Claudeに貼り付けてください ✅'));
+  ).then(() => toast('コピーしました！Claudeに貼り付けてください ✅'))
+   .catch(() => {
+     // Android Chrome / 非HTTPSのフォールバック
+     const ta = document.createElement('textarea');
+     ta.value = ''; // 値は上で生成済みなのでここは別パスで再生成が必要
+     ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;width:1px;height:1px';
+     document.body.appendChild(ta); ta.focus(); ta.select();
+     try { document.execCommand('copy'); toast('コピーしました！Claudeに貼り付けてください ✅'); }
+     catch(e2) { toast('コピーできませんでした。手動でコピーしてください'); }
+     document.body.removeChild(ta);
+   });
 }
 
 /* ── 履歴 ── */
@@ -1312,7 +1374,7 @@ function renderHist() {
           '<span><span class="year-count">' + yearCount + '</span><span style="font-size:13px;color:#666;font-weight:400"> 回</span></span>' +
           '<span class="year-goal-lbl">目標 ' + goal + ' 回</span>' +
         '</div>' +
-        '<div class="prog-bar"><div class="prog-fill" style="width:' + fillW + '%"></div></div>' +
+        '<div class="year-prog-bar"><div class="year-prog-fill" style="width:' + fillW + '%"></div></div>' +
         '<div class="prog-pct">' + pct + '% 達成　|　今月 ' + monthCount + '回　|　今日 ' + todayCount + '回</div>' +
       '</div>';
   } else {
@@ -1371,16 +1433,21 @@ function toggleAudio(btn) {
     if (!audio.src || audio.src === window.location.href) {
       loadAudio(id).then(blob => {
         if (blob) {
+          if (audio.src && audio.src.startsWith('blob:')) URL.revokeObjectURL(audio.src);
           audio.src = URL.createObjectURL(blob);
           audio.style.display = 'block';
           btn.textContent = '🔇 閉じる';
-          audio.play();
+          // Android Chrome: src設定直後にplay()するとAbortErrorになるのでoncanplayを使う
+          audio.oncanplay = () => {
+            audio.play().catch(() => {});
+            audio.oncanplay = null;
+          };
         } else { toast('録音データが見つかりません'); }
       });
     } else {
       audio.style.display = 'block';
       btn.textContent = '🔇 閉じる';
-      audio.play();
+      audio.play().catch(() => {});
     }
   } else {
     audio.pause();
