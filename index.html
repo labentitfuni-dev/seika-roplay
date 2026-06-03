@@ -936,26 +936,33 @@ function getYearCount() {
   }
   return c;
 }
+// R80/R88: safeInt guard prevents NaN cascade from corrupted localStorage values
+function safeInt(v) { const n = +v; return isNaN(n) ? 0 : n; }
 function refreshHome() {
-  document.getElementById('h-today').textContent  = +(localStorage.getItem(dayKey()) || 0);
+  document.getElementById('h-today').textContent  = safeInt(localStorage.getItem(dayKey()));
   document.getElementById('h-month').textContent  = getMonthCount();
-  document.getElementById('h-total').textContent  = +(localStorage.getItem('total') || 0);
-  document.getElementById('h-streak').textContent = +(localStorage.getItem('streak') || 0);
+  document.getElementById('h-total').textContent  = safeInt(localStorage.getItem('total'));
+  document.getElementById('h-streak').textContent = safeInt(localStorage.getItem('streak'));
 }
 function savePractice() {
   const today = localDateStr(); // R5: use local date
   const k = 'day_' + today;
-  localStorage.setItem(k, (+(localStorage.getItem(k)||0)) + 1);
-  localStorage.setItem('total', (+(localStorage.getItem('total')||0)) + 1);
-  const last = localStorage.getItem('last_day') || '';
-  // R27: Use local date arithmetic instead of Date.now()-86400000 (DST-safe)
-  const yd = new Date(); yd.setDate(yd.getDate()-1);
-  const yday = localDateStr(yd);
-  let streak = +(localStorage.getItem('streak')||0);
-  if (last === yday) streak++;
-  else if (last !== today) streak = 1;
-  localStorage.setItem('streak', streak);
-  localStorage.setItem('last_day', today);
+  // R106: wrap in try/catch to handle QuotaExceededError gracefully
+  try {
+    localStorage.setItem(k, (safeInt(localStorage.getItem(k))) + 1); // R80: safeInt
+    localStorage.setItem('total', (safeInt(localStorage.getItem('total'))) + 1);
+    const last = localStorage.getItem('last_day') || '';
+    // R27: Use local date arithmetic instead of Date.now()-86400000 (DST-safe)
+    const yd = new Date(); yd.setDate(yd.getDate()-1);
+    const yday = localDateStr(yd);
+    let streak = safeInt(localStorage.getItem('streak')); // R88: safeInt
+    if (last === yday) streak++;
+    else if (last !== today) streak = 1;
+    localStorage.setItem('streak', streak);
+    localStorage.setItem('last_day', today);
+  } catch(e) {
+    console.warn('savePractice: localStorage quota exceeded', e);
+  }
 }
 
 /* ── Q&A ── */
@@ -1021,6 +1028,8 @@ function beginRec() {
       if (recCancelled) { recCancelled = false; stream.getTracks().forEach(t => t.stop()); return; }
       const blobType = recorder.mimeType || mimeType || 'audio/webm;codecs=opus';
       audioBlob = new Blob(chunks, { type: blobType });
+      // R82: warn if blob is empty (ondataavailable never fired)
+      if (audioBlob.size === 0) console.warn('R82: empty audio blob — ondataavailable may not have fired');
       if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; } // Fix4: 旧URLを解放
       audioUrl  = URL.createObjectURL(audioBlob);
       stream.getTracks().forEach(t => t.stop());
@@ -1183,6 +1192,9 @@ async function saveAndNext() {
       savePractice();
       await saveAudio(pendingHistItem.id, audioBlob);
       pendingHistItem = null;
+      // R109: revoke audioUrl after successful save (blob safely stored in IndexedDB)
+      if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
+      audioBlob = null;
       toast('記録を保存しました ✅');
     }
     if (pendingIsFT) nav('s-ft-select'); else nextQA();
@@ -1197,17 +1209,19 @@ async function saveAndNext() {
   }
 }
 function discardAndNext() {
-  // R2: revoke blob URL; R36: notify user of deletion
-  if (recId) deleteAudio(recId);
+  // R2: revoke blob URL; R36: notify user; R74: .catch() on deleteAudio
+  if (recId) deleteAudio(recId).catch(() => {});
   if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
   audioBlob = null;
   pendingHistItem = null;
+  // R98/R110: show discard toast AFTER navigation to avoid being overwritten by empty-pool toast
+  const isFT = pendingIsFT;
+  if (isFT) nav('s-ft-select'); else nextQA();
   toast('録音を破棄しました');
-  if (pendingIsFT) nav('s-ft-select'); else nextQA();
 }
 function reviewBack() {
-  // R2: revoke blob URL to prevent memory leak
-  if (recId) deleteAudio(recId);
+  // R2: revoke blob URL; R74: .catch() on deleteAudio
+  if (recId) deleteAudio(recId).catch(() => {});
   if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
   audioBlob = null;
   pendingHistItem = null;
@@ -1350,6 +1364,8 @@ ADVICE:
 }
 
 function renderEval(text) {
+  // R77: normalize CRLF line endings from Claude API
+  text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const scoreM = text.match(/SCORE:\s*(\d+|-)/);
   const goodM  = text.match(/GOOD:\n([\s\S]*?)(?=IMPROVE:|ADVICE:|$)/);
   const impM   = text.match(/IMPROVE:\n([\s\S]*?)(?=ADVICE:|$)/);
@@ -1588,20 +1604,25 @@ function toggleAudio(btn) {
     btn.textContent = '🔊 録音を聴く';
   }
 }
-// Fix11 + R9: revoke loaded blob URLs before clearing DOM + IndexedDB
+// Fix11 + R9 + R102: revoke blob URLs, clear DB, catch errors
 async function clearCurrentHistory() {
   if (!confirm((histTab === 'qa' ? 'Q&A' : 'フリートーク') + 'の履歴をすべて削除しますか？')) return;
-  // R9: revoke all blob URLs currently loaded into visible audio elements
-  const bodyEl = histTab === 'qa' ? document.getElementById('hist-qa-body') : document.getElementById('hist-ft-body');
-  bodyEl.querySelectorAll('audio').forEach(a => {
-    if (a.src && a.src.startsWith('blob:')) { URL.revokeObjectURL(a.src); a.src = ''; }
-  });
-  const hist = histTab === 'qa' ? getQAHist() : getFTHist();
-  await Promise.allSettled(hist.map(it => deleteAudio(it.id)));
-  if (histTab === 'qa') localStorage.removeItem('qa_hist');
-  else                  localStorage.removeItem('ft_hist');
-  renderHist();
-  toast('履歴を削除しました');
+  try {
+    // R9: revoke all blob URLs currently loaded into visible audio elements
+    const bodyEl = histTab === 'qa' ? document.getElementById('hist-qa-body') : document.getElementById('hist-ft-body');
+    bodyEl.querySelectorAll('audio').forEach(a => {
+      if (a.src && a.src.startsWith('blob:')) { URL.revokeObjectURL(a.src); a.src = ''; }
+    });
+    const hist = histTab === 'qa' ? getQAHist() : getFTHist();
+    await Promise.allSettled(hist.map(it => deleteAudio(it.id)));
+    if (histTab === 'qa') localStorage.removeItem('qa_hist');
+    else                  localStorage.removeItem('ft_hist');
+    renderHist();
+    toast('履歴を削除しました');
+  } catch(e) {
+    toast('削除に失敗しました');
+    console.error('clearCurrentHistory error:', e);
+  }
 }
 
 /* ── 設定 ── */
