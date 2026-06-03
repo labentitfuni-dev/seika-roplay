@@ -306,7 +306,7 @@
         <div class="ft-cell-n">30</div><div class="ft-cell-u">秒</div>
       </div>
       <div class="ft-cell" onclick="startFT(60)">
-        <div class="ft-cell-n">1</div><div class="ft-cell-u">分</div>
+        <div class="ft-cell-n">60</div><div class="ft-cell-u">秒</div><!-- R151: consistent with other cells (5秒/10秒/30秒) -->
       </div>
     </div>
   </div>
@@ -335,7 +335,7 @@
 <!-- ══ REVIEW ══ -->
 <div id="s-review" class="screen">
   <div class="hdr">
-    <button class="hdr-back" onclick="reviewBack()" aria-label="録音画面へ戻る">←</button>
+    <button class="hdr-back" onclick="reviewBack()" aria-label="前の画面へ戻る">←</button><!-- R217: was "録音画面へ戻る" but backs to question/FT-select, not record -->
     <span class="hdr-title">振り返り</span>
     <div style="width:60px"></div>
   </div>
@@ -403,7 +403,10 @@
     <div class="set-section">
       <div class="set-label">Claude APIキー（任意）</div>
       <input type="password" class="inp" id="cfg-key" placeholder="sk-ant-...">
-      <button class="btn btn-black" style="width:auto;padding:10px 24px;font-size:13px;border-radius:10px" onclick="saveKey()">保存</button>
+      <div style="display:flex;gap:8px;margin-bottom:10px"><!-- R166: add clear button so saved API key can be removed -->
+        <button class="btn btn-black" style="width:auto;padding:10px 24px;font-size:13px;border-radius:10px" onclick="saveKey()">保存</button>
+        <button class="btn btn-gray" style="width:auto;padding:10px 16px;font-size:13px;border-radius:10px" onclick="clearKey()">削除</button>
+      </div>
       <p class="set-note">設定すると録音後にClaudeが自動評価します。未設定でも「コピーして詳細評価」が使えます。</p>
     </div>
     <div class="set-section">
@@ -428,7 +431,7 @@
     <div class="set-section">
       <div class="set-label">年間目標（回）</div>
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
-        <input type="number" class="inp" id="cfg-year-goal" placeholder="例：365" style="width:110px;padding:10px 12px">
+        <input type="number" class="inp" id="cfg-year-goal" placeholder="例：365" min="1" step="1" style="width:110px;padding:10px 12px"><!-- R233: min/step prevent decimal/negative input -->
         <button class="btn btn-black" style="width:auto;padding:10px 20px;font-size:13px;border-radius:10px" onclick="saveYearGoal()">保存</button>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -863,6 +866,8 @@ function initDB() {
     };
     r.onsuccess = e => { db = e.target.result; res(db); };
     r.onerror = rej;
+    // R254: handle onblocked (another tab holds old DB version open) — resolve null so app continues
+    r.onblocked = () => { console.warn('IndexedDB open blocked by another tab; audio storage disabled until page refresh'); res(null); };
   });
 }
 function saveAudio(id, blob) {
@@ -892,7 +897,7 @@ function deleteAudio(id) {
 }
 
 /* ── 状態 ── */
-let mode = 'qa', curQ = '', curLv = '', curLimit = 30, ftDur = 30;
+let mode = 'qa', curQ = '', curLv = '', curLimit = 30; // R215: removed ftDur — was set in startFT() but never read anywhere
 let timerInt = null, recorder = null, chunks = [], audioBlob = null, audioUrl = null, recId = null;
 let recognition = null, transcript = '', activeFilter = 'ALL', histTab = 'qa';
 let pendingHistItem = null, pendingIsFT = false, finalTranscript = '';
@@ -900,9 +905,10 @@ let recStarting = false; // Fix5: 二重起動防止フラグ
 
 /* ── ナビ ── */
 function nav(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  // R122: activate target FIRST, then deactivate others — eliminates single-frame all-screens-hidden flash
   const el = document.getElementById(id);
   if (el) el.classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => { if (s !== el) s.classList.remove('active'); });
   if (id === 's-home')     refreshHome();
   if (id === 's-settings') loadSettings();
 }
@@ -918,12 +924,13 @@ function localDateStr(d) {
 }
 function dayKey() { return 'day_' + localDateStr(); }
 // R34: Optimized — use localStorage.key() iteration instead of 372 getItem calls
+// R205: use safeInt to guard against NaN propagation from corrupted day_ values
 function getMonthCount() {
   const prefix = 'day_' + new Date().getFullYear() + '-' + String(new Date().getMonth()+1).padStart(2,'0') + '-';
   let c = 0;
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
-    if (k && k.startsWith(prefix)) c += +(localStorage.getItem(k) || 0);
+    if (k && k.startsWith(prefix)) c += safeInt(localStorage.getItem(k));
   }
   return c;
 }
@@ -932,7 +939,7 @@ function getYearCount() {
   let c = 0;
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
-    if (k && k.startsWith(prefix)) c += +(localStorage.getItem(k) || 0);
+    if (k && k.startsWith(prefix)) c += safeInt(localStorage.getItem(k));
   }
   return c;
 }
@@ -991,7 +998,7 @@ function startQA() { mode = 'qa'; if (pickQ()) nav('s-question'); }
 function nextQA()  { mode = 'qa'; if (pickQ()) nav('s-question'); }
 
 /* ── フリートーク ── */
-function startFT(sec) { mode = 'ft'; ftDur = sec; curLimit = sec; beginRec(); }
+function startFT(sec) { mode = 'ft'; curLimit = sec; beginRec(); } // R215: removed dead ftDur assignment
 
 /* ── 録音フロー ── */
 function beginRec() {
@@ -1001,7 +1008,7 @@ function beginRec() {
   const isFT = mode === 'ft';
   document.getElementById('r-title').textContent = isFT ? 'フリートーク' : '録音中';
   document.getElementById('r-q-mini').textContent = isFT ? '' : (curQ.slice(0,50) + (curQ.length > 50 ? '…' : ''));
-  document.getElementById('r-timer-lbl').textContent = '制限時間：' + (curLimit >= 60 ? '1分' : curLimit + '秒');
+  document.getElementById('r-timer-lbl').textContent = '制限時間：' + (curLimit >= 60 ? '60秒' : curLimit + '秒'); // R214: match FT select cell label (60秒 not 1分)
   setCnt(curLimit);
   document.getElementById('r-rec-row').style.visibility = 'hidden';
   document.getElementById('r-stop').style.display = 'none';
@@ -1010,6 +1017,13 @@ function beginRec() {
   if (!window.MediaRecorder) {
     recStarting = false;
     toast('録音非対応ブラウザです。Chrome/Safariをお使いください');
+    if (mode === 'ft') nav('s-ft-select'); else nav('s-question');
+    return;
+  }
+  // R248: navigator.mediaDevices is undefined on non-HTTPS pages — check before use to avoid uncaught TypeError
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    recStarting = false;
+    toast('マイクへのアクセスにはHTTPS接続が必要です');
     if (mode === 'ft') nav('s-ft-select'); else nav('s-question');
     return;
   }
@@ -1130,6 +1144,7 @@ function startRecog() {
 
 /* ── 振り返り ── */
 function openReview() {
+  finalTranscript = ''; // R207: reset so fast save (<1200ms) doesn't pick up previous session's transcript
   const isFT = mode === 'ft';
   document.getElementById('rv-q-box').style.display  = isFT ? 'none' : 'block';
   document.getElementById('rv-ft-box').style.display = isFT ? 'block' : 'none';
@@ -1141,7 +1156,7 @@ function openReview() {
     rvLv.textContent = curLv;
     rvLv.className = 'badge badge-' + lc.toLowerCase();
   } else {
-    document.getElementById('rv-ft-dur').textContent = curLimit >= 60 ? '1分' : curLimit + '秒';
+    document.getElementById('rv-ft-dur').textContent = curLimit >= 60 ? '60秒' : curLimit + '秒'; // R214: consistent with FT select cell
   }
   // R16: revoke old blob URL on rv-audio before setting new one
   const rvAudio = document.getElementById('rv-audio');
@@ -1197,7 +1212,14 @@ async function saveAndNext() {
       audioBlob = null;
       toast('記録を保存しました ✅');
     }
-    if (pendingIsFT) nav('s-ft-select'); else nextQA();
+    // R183/R188: pre-check QA pool before nextQA() — empty pool leaves review screen in broken state
+    if (pendingIsFT) {
+      nav('s-ft-select');
+    } else {
+      const pool = filteredQ();
+      if (!pool.length) { nav('s-home'); toast('該当レベルの問題がありません'); }
+      else nextQA();
+    }
   } catch(e) {
     // R40: specific message when IndexedDB unavailable
     const msg = e.message === 'db_unavailable'
@@ -1214,10 +1236,22 @@ function discardAndNext() {
   if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
   audioBlob = null;
   pendingHistItem = null;
-  // R98/R110: show discard toast AFTER navigation to avoid being overwritten by empty-pool toast
   const isFT = pendingIsFT;
-  if (isFT) nav('s-ft-select'); else nextQA();
-  toast('録音を破棄しました');
+  if (isFT) {
+    nav('s-ft-select');
+    toast('録音を破棄しました');
+  } else {
+    // R183/R188: pre-check pool BEFORE calling nextQA() — if pool is empty nextQA() won't navigate,
+    // leaving the review screen in a broken cleared state (audioUrl/audioBlob/pendingHistItem all null).
+    const pool = filteredQ();
+    if (!pool.length) {
+      nav('s-home');
+      toast('該当レベルの問題がありません');
+    } else {
+      nextQA();
+      toast('録音を破棄しました');
+    }
+  }
 }
 function reviewBack() {
   // R2: revoke blob URL; R74: .catch() on deleteAudio
@@ -1444,35 +1478,51 @@ function copyPrompt() {
 
 /* ── 履歴 ── */
 // Fix9: JSON.parse エラー時にlocalStorageをリセット
+// R278/R279: validate parsed value is an Array (valid JSON object {} would crash h.unshift)
 function getQAHist() {
-  try { return JSON.parse(localStorage.getItem('qa_hist') || '[]'); }
-  catch(e) { localStorage.removeItem('qa_hist'); return []; }
+  try {
+    const v = JSON.parse(localStorage.getItem('qa_hist') || '[]');
+    if (!Array.isArray(v)) { localStorage.removeItem('qa_hist'); return []; }
+    return v;
+  } catch(e) { localStorage.removeItem('qa_hist'); return []; }
 }
 function getFTHist() {
-  try { return JSON.parse(localStorage.getItem('ft_hist') || '[]'); }
-  catch(e) { localStorage.removeItem('ft_hist'); return []; }
+  try {
+    const v = JSON.parse(localStorage.getItem('ft_hist') || '[]');
+    if (!Array.isArray(v)) { localStorage.removeItem('ft_hist'); return []; }
+    return v;
+  } catch(e) { localStorage.removeItem('ft_hist'); return []; }
 }
 // Fix10: QuotaExceededError 時は50件に削ってリトライ
+// R244: delete orphaned IndexedDB audio blobs for history items dropped due to 200-item overflow
 function saveQAHist(item) {
   const h = getQAHist(); h.unshift(item);
-  if (h.length > 200) h.length = 200;
+  if (h.length > 200) {
+    const dropped = h.splice(200); // remove overflow items
+    dropped.forEach(it => deleteAudio(it.id).catch(() => {})); // R244: clean up orphaned blobs
+  }
   try {
     localStorage.setItem('qa_hist', JSON.stringify(h));
   } catch(e) {
     if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-      h.length = Math.min(h.length, 50);
+      const extra = h.splice(50); // drop more aggressively
+      extra.forEach(it => deleteAudio(it.id).catch(() => {})); // R244
       try { localStorage.setItem('qa_hist', JSON.stringify(h)); } catch(e2) {}
     }
   }
 }
 function saveFTHist(item) {
   const h = getFTHist(); h.unshift(item);
-  if (h.length > 200) h.length = 200;
+  if (h.length > 200) {
+    const dropped = h.splice(200); // remove overflow items
+    dropped.forEach(it => deleteAudio(it.id).catch(() => {})); // R244: clean up orphaned blobs
+  }
   try {
     localStorage.setItem('ft_hist', JSON.stringify(h));
   } catch(e) {
     if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-      h.length = Math.min(h.length, 50);
+      const extra = h.splice(50); // drop more aggressively
+      extra.forEach(it => deleteAudio(it.id).catch(() => {})); // R244
       try { localStorage.setItem('ft_hist', JSON.stringify(h)); } catch(e2) {}
     }
   }
@@ -1643,6 +1693,12 @@ function saveKey() {
   if (!v.startsWith('sk-ant-')) { toast('形式が正しくありません（sk-ant-で始まるキーを入力してください）'); return; }
   localStorage.setItem('api_key', v); toast('APIキーを保存しました ✅');
 }
+// R166: allow user to remove saved API key from the UI
+function clearKey() {
+  localStorage.removeItem('api_key');
+  document.getElementById('cfg-key').value = '';
+  toast('APIキーを削除しました');
+}
 function saveYearGoal() {
   const v = +(document.getElementById('cfg-year-goal').value);
   if (v > 0) { localStorage.setItem('year_goal', v); toast('年間目標を ' + v + ' 回に設定しました 🎯'); }
@@ -1652,6 +1708,8 @@ function setYearGoalQuick(n) {
   document.getElementById('cfg-year-goal').value = n;
   localStorage.setItem('year_goal', n);
   toast('年間目標を ' + n + ' 回に設定しました 🎯');
+  // R147: refresh history progress bar if history screen is currently visible
+  if (document.getElementById('s-history').classList.contains('active')) renderHist();
 }
 document.getElementById('cfg-rnd')?.addEventListener('change', e => {
   localStorage.setItem('rnd_timer', e.target.checked ? '1' : '0');
