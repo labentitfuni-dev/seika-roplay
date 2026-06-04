@@ -163,6 +163,10 @@
     .ft-cell:focus-visible,.btn:focus-visible,.main-btn:focus-visible,.sub-link:focus-visible,.tab-btn:focus-visible,.audio-btn:focus-visible,.lv-fb:focus-visible,.goal-btn:focus-visible,.hdr-back:focus-visible,.hdr-act:focus-visible{
       outline:2px solid #2563eb;outline-offset:2px;
     }
+    /* R428: respect prefers-reduced-motion — suppress blink/transitions (録音ドットは点灯維持で機能保持) */
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+    }
     .body{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 
     /* ─ 評価カード ─ */
