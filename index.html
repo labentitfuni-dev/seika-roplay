@@ -255,7 +255,7 @@
       <span class="main-btn-icon">⏱</span>
       <span class="main-btn-text">
         <span class="main-btn-title">フリートーク</span>
-        <span class="main-btn-sub">5秒・10秒・30秒・1分</span>
+        <span class="main-btn-sub">5秒・10秒・30秒・60秒</span><!-- R301: match FT select cell units (60秒 not 1分) -->
       </span>
     </button>
 
@@ -1003,6 +1003,16 @@ function startFT(sec) { mode = 'ft'; curLimit = sec; beginRec(); } // R215: remo
 /* ── 録音フロー ── */
 function beginRec() {
   if (recStarting) return; // Fix5: 二重起動防止
+  // R323: check capabilities BEFORE navigating to record screen — avoids a record-screen flash on unsupported browsers
+  if (!window.MediaRecorder) {
+    toast('録音非対応ブラウザです。Chrome/Safariをお使いください');
+    return;
+  }
+  // R248: navigator.mediaDevices is undefined on non-HTTPS pages — check before use to avoid uncaught TypeError
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    toast('マイクへのアクセスにはHTTPS接続が必要です');
+    return;
+  }
   recStarting = true;
 
   const isFT = mode === 'ft';
@@ -1013,20 +1023,6 @@ function beginRec() {
   document.getElementById('r-rec-row').style.visibility = 'hidden';
   document.getElementById('r-stop').style.display = 'none';
   nav('s-record');
-
-  if (!window.MediaRecorder) {
-    recStarting = false;
-    toast('録音非対応ブラウザです。Chrome/Safariをお使いください');
-    if (mode === 'ft') nav('s-ft-select'); else nav('s-question');
-    return;
-  }
-  // R248: navigator.mediaDevices is undefined on non-HTTPS pages — check before use to avoid uncaught TypeError
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    recStarting = false;
-    toast('マイクへのアクセスにはHTTPS接続が必要です');
-    if (mode === 'ft') nav('s-ft-select'); else nav('s-question');
-    return;
-  }
   recCancelled = false;
   navigator.mediaDevices.getUserMedia({
     audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 }
@@ -1336,9 +1332,9 @@ function localEval(t, isFT) {
 
 async function callClaude(key, t, isFT) {
   const context = isFT
-    ? 'フリートーク（' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '）'
+    ? 'フリートーク（' + curLimit + '秒）' // R301/R302: standardize on 秒 (was 1分) for app-wide consistency
     : '営業質問（' + curLv + '）：' + curQ;
-  const timeStr = curLimit >= 60 ? '1分' : curLimit + '秒';
+  const timeStr = curLimit + '秒';
   const prompt = `あなたはM&A営業のプロトレーナーです。以下のロールプレイを厳しく・具体的に評価してください。
 
 【種類】${context}
@@ -1451,12 +1447,14 @@ let copyingPrompt = false; // R57: debounce flag
 function copyPrompt() {
   if (copyingPrompt) return;
   copyingPrompt = true;
-  const t = document.getElementById('rv-tr').textContent;
+  // R309: prefer finalTranscript/live transcript over rv-tr text so we never copy the "認識中…" placeholder
+  let t = finalTranscript || transcript || document.getElementById('rv-tr').textContent || '';
+  if (t === '認識中…') t = '';
   const isFT = mode === 'ft';
   const ctx = isFT
-    ? 'フリートーク（' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '制限）'
+    ? 'フリートーク（' + curLimit + '秒制限）' // R301/R302: standardize on 秒 (was 1分)
     : '営業質問（' + curLv + '）：' + curQ;
-  const promptText = 'M&A営業のプロトレーナーとして以下のロールプレイを評価してください。\n\n【種類】' + ctx + '\n【制限時間】' + (curLimit >= 60 ? '1分' : curLimit + '秒') + '\n\n【回答（文字起こし）】\n' + t + '\n\n① 総合スコア（100点満点）と理由\n② 良かった点（2〜3つ、具体的に）\n③ 改善点（2〜3つ、どう直すか具体的に）\n④ 次回へのアドバイス（一言）\n\n評価観点：論理構造（結論→理由→具体例）・数字の活用・顧客への共感・質問の技術・言葉の明確さ';
+  const promptText = 'M&A営業のプロトレーナーとして以下のロールプレイを評価してください。\n\n【種類】' + ctx + '\n【制限時間】' + curLimit + '秒\n\n【回答（文字起こし）】\n' + t + '\n\n① 総合スコア（100点満点）と理由\n② 良かった点（2〜3つ、具体的に）\n③ 改善点（2〜3つ、どう直すか具体的に）\n④ 次回へのアドバイス（一言）\n\n評価観点：論理構造（結論→理由→具体例）・数字の活用・顧客への共感・質問の技術・言葉の明確さ';
   const fallbackCopy = () => {
     const ta = document.createElement('textarea');
     ta.value = promptText; // 変数を使い回す（Samsung Internet対応）
@@ -1527,15 +1525,7 @@ function saveFTHist(item) {
     }
   }
 }
-// R6: added try-catch (updateHistTr has same JSON.parse risk as getQAHist/getFTHist)
-function updateHistTr(isFT, id, tr) {
-  const key = isFT ? 'ft_hist' : 'qa_hist';
-  try {
-    const list = JSON.parse(localStorage.getItem(key) || '[]');
-    const idx  = list.findIndex(x => x.id === id);
-    if (idx >= 0) { list[idx].tr = tr; localStorage.setItem(key, JSON.stringify(list)); }
-  } catch(e) {}
-}
+// R313: removed unused updateHistTr() — transcript is persisted via pendingHistItem.tr in saveAndNext()
 function switchHistTab(tab) {
   histTab = tab;
   document.getElementById('tab-qa').className = 'tab-btn' + (tab === 'qa' ? ' active' : '');
@@ -1545,11 +1535,11 @@ function switchHistTab(tab) {
 }
 function renderHist() {
   const wrap = document.getElementById('year-prog-wrap');
-  const goal = +(localStorage.getItem('year_goal') || 0);
+  const goal = safeInt(localStorage.getItem('year_goal')); // R303: safeInt guards NaN
   const yearCount = getYearCount();
   const year = new Date().getFullYear();
   const monthCount = getMonthCount();
-  const todayCount = +(localStorage.getItem(dayKey()) || 0);
+  const todayCount = safeInt(localStorage.getItem(dayKey())); // R303: was +() — NaN would render "NaN回"
   if (goal > 0) {
     const pct = Math.min(Math.round(yearCount / goal * 100), 100);
     const fillW = Math.min(pct, 100);
@@ -1596,7 +1586,7 @@ function buildHistHTML(hist, isFT) {
     '<div class="date-hdr">' + escHtml(date) + '（' + items.length + '回）</div>' + // R18
     items.map(it => {
       const t   = new Date(it.date).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
-      const lim = it.limit >= 60 ? '1分' : it.limit + '秒';
+      const lim = safeInt(it.limit) + '秒'; // R301: standardize on 秒 (was 1分 for 60s) — consistent with rest of app; R303-style guard
       const lc  = (it.lv||'').replace('級','').toLowerCase();
       const lvBadge = lc ? '<span class="badge badge-' + lc + '" style="font-size:10px">' + escHtml(it.lv) + '</span> ' : ''; // R8: XSS
       // Fix14: XSSを防ぐためit.qとit.trにescHtmlを適用
