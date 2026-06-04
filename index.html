@@ -3,6 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0"><!-- R25: allow pinch-zoom for accessibility -->
+  <!-- R425: mobile/PWA integration — standalone home-screen app feel, status bar theming -->
+  <meta name="description" content="M&A営業ロールプレイ練習ツール。即興Q&Aとフリートークで営業トークを録音し、論理構造を評価します。">
+  <meta name="theme-color" content="#111111">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="SEIKAロープレ">
+  <meta name="format-detection" content="telephone=no">
+  <!-- R426: installable PWA — manifest + icon (served alongside index.html on GitHub Pages) -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
   <title>SEIKA ロープレツール</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
