@@ -146,6 +146,10 @@
     }
     .goal-btn:active{background:#f0f0f0}
     .btn,.main-btn,.ft-cell,.sub-link,.lv-fb,.hdr-back,.hdr-act{touch-action:manipulation}
+    /* R412: visible keyboard-focus indicator (a11y; focus-visible avoids showing it on mouse click) */
+    .ft-cell:focus-visible,.btn:focus-visible,.main-btn:focus-visible,.sub-link:focus-visible,.tab-btn:focus-visible,.audio-btn:focus-visible,.lv-fb:focus-visible,.goal-btn:focus-visible,.hdr-back:focus-visible,.hdr-act:focus-visible{
+      outline:2px solid #2563eb;outline-offset:2px;
+    }
     .body{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 
     /* ─ 評価カード ─ */
@@ -295,17 +299,17 @@
   </div>
   <div class="body">
     <p style="font-size:14px;color:#888;margin-bottom:16px">タイマーを選んでください</p>
-    <div class="ft-grid">
-      <div class="ft-cell" onclick="startFT(5)">
+    <div class="ft-grid"><!-- R411: role/tabindex/onkeydown make these keyboard-accessible (WCAG 2.1.1) -->
+      <div class="ft-cell" role="button" tabindex="0" aria-label="5秒のフリートークを開始" onclick="startFT(5)" onkeydown="ftKey(event,5)">
         <div class="ft-cell-n">5</div><div class="ft-cell-u">秒</div>
       </div>
-      <div class="ft-cell" onclick="startFT(10)">
+      <div class="ft-cell" role="button" tabindex="0" aria-label="10秒のフリートークを開始" onclick="startFT(10)" onkeydown="ftKey(event,10)">
         <div class="ft-cell-n">10</div><div class="ft-cell-u">秒</div>
       </div>
-      <div class="ft-cell" onclick="startFT(30)">
+      <div class="ft-cell" role="button" tabindex="0" aria-label="30秒のフリートークを開始" onclick="startFT(30)" onkeydown="ftKey(event,30)">
         <div class="ft-cell-n">30</div><div class="ft-cell-u">秒</div>
       </div>
-      <div class="ft-cell" onclick="startFT(60)">
+      <div class="ft-cell" role="button" tabindex="0" aria-label="60秒のフリートークを開始" onclick="startFT(60)" onkeydown="ftKey(event,60)">
         <div class="ft-cell-n">60</div><div class="ft-cell-u">秒</div><!-- R151: consistent with other cells (5秒/10秒/30秒) -->
       </div>
     </div>
@@ -1002,6 +1006,10 @@ function nextQA()  { mode = 'qa'; if (pickQ()) nav('s-question'); }
 
 /* ── フリートーク ── */
 function startFT(sec) { mode = 'ft'; curLimit = sec; beginRec(); } // R215: removed dead ftDur assignment
+// R411: keyboard activation (Enter/Space) for role=button ft-cells (WCAG 2.1.1)
+function ftKey(e, sec) {
+  if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); startFT(sec); }
+}
 
 /* ── 録音フロー ── */
 function beginRec() {
