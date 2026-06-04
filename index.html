@@ -1419,7 +1419,9 @@ function renderEval(text) {
     return '<div class="rv-box" style="white-space:pre-wrap">' + escHtml(text) + '</div>';
   }
 
-  const scoreNum = parseInt(scoreM[1]);
+  let scoreNum = parseInt(scoreM[1]);
+  // R401: clamp out-of-range scores (malformed Claude output like "SCORE: 200" was displayed verbatim)
+  if (!isNaN(scoreNum)) scoreNum = Math.max(0, Math.min(100, scoreNum));
   const scoreColor = scoreNum >= 80 ? '#16a34a' : scoreNum >= 60 ? '#ca8a04' : '#dc2626';
 
   const toItems = block => (block || '').trim().split('\n')
@@ -1708,8 +1710,9 @@ function clearKey() {
   toast('APIキーを削除しました');
 }
 function saveYearGoal() {
-  const v = +(document.getElementById('cfg-year-goal').value);
-  if (v > 0) { localStorage.setItem('year_goal', v); toast('年間目標を ' + v + ' 回に設定しました 🎯'); }
+  // R402: floor to integer so decimals like 365.7 don't render as "目標 365.7 回"
+  const v = Math.floor(+(document.getElementById('cfg-year-goal').value));
+  if (v > 0) { localStorage.setItem('year_goal', v); document.getElementById('cfg-year-goal').value = v; toast('年間目標を ' + v + ' 回に設定しました 🎯'); }
   else { localStorage.removeItem('year_goal'); toast('年間目標をリセットしました'); }
 }
 function setYearGoalQuick(n) {
