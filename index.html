@@ -34,7 +34,7 @@
     .stat-cell{flex:1;text-align:center;padding:12px 6px;border-right:1px solid #eee}
     .stat-cell:last-child{border-right:none}
     .stat-n{font-size:22px;font-weight:800;color:#333;line-height:1}
-    .stat-l{font-size:10px;color:#888;margin-top:2px}
+    .stat-l{font-size:10px;color:#595959;margin-top:2px}/* R413: AA contrast on #f5f5f5 */
 
     /* ─ メインボタン ─ */
     .main-btn{
@@ -67,10 +67,11 @@
       display:inline-block;padding:3px 10px;border-radius:100px;
       font-size:11px;font-weight:700;
     }
-    .badge-s{background:#fee2e2;color:#dc2626}
-    .badge-a{background:#ffedd5;color:#ea580c}
-    .badge-b{background:#fef9c3;color:#ca8a04}
-    .badge-c{background:#dcfce7;color:#16a34a}
+    /* R413: darkened badge text to meet WCAG AA 4.5:1 for small bold text (bg unchanged) */
+    .badge-s{background:#fee2e2;color:#b91c1c}
+    .badge-a{background:#ffedd5;color:#c2410c}
+    .badge-b{background:#fef9c3;color:#a16207}
+    .badge-c{background:#dcfce7;color:#15803d}
     .badge-d{background:#ede9fe;color:#7c3aed}
     .badge-time{background:#f1f5f9;color:#475569}
     .q-text{
@@ -406,7 +407,7 @@
   <div class="body">
     <div class="set-section">
       <div class="set-label">Claude APIキー（任意）</div>
-      <input type="password" class="inp" id="cfg-key" placeholder="sk-ant-...">
+      <input type="password" class="inp" id="cfg-key" placeholder="sk-ant-..." aria-label="Claude APIキー"><!-- R416 -->
       <div style="display:flex;gap:8px;margin-bottom:10px"><!-- R166: add clear button so saved API key can be removed -->
         <button class="btn btn-black" style="width:auto;padding:10px 24px;font-size:13px;border-radius:10px" onclick="saveKey()">保存</button>
         <button class="btn btn-gray" style="width:auto;padding:10px 16px;font-size:13px;border-radius:10px" onclick="clearKey()">削除</button>
@@ -435,7 +436,7 @@
     <div class="set-section">
       <div class="set-label">年間目標（回）</div>
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
-        <input type="number" class="inp" id="cfg-year-goal" placeholder="例：365" min="1" step="1" style="width:110px;padding:10px 12px"><!-- R233: min/step prevent decimal/negative input -->
+        <input type="number" class="inp" id="cfg-year-goal" placeholder="例：365" min="1" step="1" aria-label="年間目標回数" style="width:110px;padding:10px 12px"><!-- R233: min/step; R416: aria-label -->
         <button class="btn btn-black" style="width:auto;padding:10px 20px;font-size:13px;border-radius:10px" onclick="saveYearGoal()">保存</button>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -453,7 +454,7 @@
   </div>
 </div>
 
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite" aria-atomic="true"></div><!-- R415: announce toasts to screen readers -->
 
 <script>
 const QUESTIONS = [
