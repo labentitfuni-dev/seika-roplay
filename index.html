@@ -1816,6 +1816,13 @@ window.addEventListener('beforeunload', e => {
       if (rndEl) rndEl.checked = r === '1';
     }
   } catch(e) { console.warn('initAtBoot: localStorage unavailable', e); }
+  // R427: mark each screen title as a level-1 heading so screen-reader users can jump by heading
+  try {
+    document.querySelectorAll('.hdr-title').forEach(el => {
+      el.setAttribute('role', 'heading');
+      el.setAttribute('aria-level', '1');
+    });
+  } catch(e) {}
 })();
 initDB().then(() => console.log('DB ready')).catch(() => console.warn('IndexedDB unavailable'));
 try { refreshHome(); } catch(e) { console.warn('refreshHome: localStorage unavailable', e); } // E3
