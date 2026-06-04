@@ -946,10 +946,13 @@ function getYearCount() {
 // R80/R88: safeInt guard prevents NaN cascade from corrupted localStorage values
 function safeInt(v) { const n = +v; return isNaN(n) ? 0 : n; }
 function refreshHome() {
-  document.getElementById('h-today').textContent  = safeInt(localStorage.getItem(dayKey()));
-  document.getElementById('h-month').textContent  = getMonthCount();
-  document.getElementById('h-total').textContent  = safeInt(localStorage.getItem('total'));
-  document.getElementById('h-streak').textContent = safeInt(localStorage.getItem('streak'));
+  // E4: internal guard so home navigation never throws even if localStorage is unavailable
+  try {
+    document.getElementById('h-today').textContent  = safeInt(localStorage.getItem(dayKey()));
+    document.getElementById('h-month').textContent  = getMonthCount();
+    document.getElementById('h-total').textContent  = safeInt(localStorage.getItem('total'));
+    document.getElementById('h-streak').textContent = safeInt(localStorage.getItem('streak'));
+  } catch(e) { console.warn('refreshHome: localStorage unavailable', e); }
 }
 function savePractice() {
   const today = localDateStr(); // R5: use local date
@@ -1690,14 +1693,17 @@ async function clearCurrentHistory() {
 
 /* ── 設定 ── */
 function loadSettings() {
-  const k = localStorage.getItem('api_key');
-  if (k) document.getElementById('cfg-key').value = k;
-  const r = localStorage.getItem('rnd_timer');
-  if (r !== null) document.getElementById('cfg-rnd').checked = r === '1';
-  const f = localStorage.getItem('lv_filter') || 'ALL';
-  setFilter(f, true);
-  const g = localStorage.getItem('year_goal');
-  if (g) document.getElementById('cfg-year-goal').value = g;
+  // E4: internal guard so opening settings never throws even if localStorage is unavailable
+  try {
+    const k = localStorage.getItem('api_key');
+    if (k) document.getElementById('cfg-key').value = k;
+    const r = localStorage.getItem('rnd_timer');
+    if (r !== null) document.getElementById('cfg-rnd').checked = r === '1';
+    const f = localStorage.getItem('lv_filter') || 'ALL';
+    setFilter(f, true);
+    const g = localStorage.getItem('year_goal');
+    if (g) document.getElementById('cfg-year-goal').value = g;
+  } catch(e) { console.warn('loadSettings: localStorage unavailable', e); }
 }
 function saveKey() {
   const v = document.getElementById('cfg-key').value.trim();
