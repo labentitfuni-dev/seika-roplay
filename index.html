@@ -1028,39 +1028,50 @@ function beginRec() {
     audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 }
   }).then(stream => {
     recStarting = false; // Fix5: 取得完了でフラグ解除
-    chunks = []; recId = Date.now().toString() + Math.random().toString(36).slice(2,6); // R33: collision-safe ID
-    // Android Chrome は webm;codecs=opus が最も安定。iOS は mp4
-    const mimeType = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg']
-      .find(t => MediaRecorder.isTypeSupported(t)) || '';
-    recorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
-    recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-    recorder.onstop = () => {
-      if (recCancelled) { recCancelled = false; stream.getTracks().forEach(t => t.stop()); return; }
-      const blobType = recorder.mimeType || mimeType || 'audio/webm;codecs=opus';
-      audioBlob = new Blob(chunks, { type: blobType });
-      // R82: warn if blob is empty (ondataavailable never fired)
-      if (audioBlob.size === 0) console.warn('R82: empty audio blob — ondataavailable may not have fired');
-      if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; } // Fix4: 旧URLを解放
-      audioUrl  = URL.createObjectURL(audioBlob);
+    // R372: if cancel/goHome fired while getUserMedia was pending, release the mic immediately
+    if (recCancelled) { stream.getTracks().forEach(t => t.stop()); return; }
+    // R372: wrap recorder setup so a MediaRecorder constructor failure still releases the mic stream
+    try {
+      chunks = []; recId = Date.now().toString() + Math.random().toString(36).slice(2,6); // R33: collision-safe ID
+      // Android Chrome は webm;codecs=opus が最も安定。iOS は mp4
+      const mimeType = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg']
+        .find(t => MediaRecorder.isTypeSupported(t)) || '';
+      recorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        if (recCancelled) { recCancelled = false; stream.getTracks().forEach(t => t.stop()); return; }
+        const blobType = recorder.mimeType || mimeType || 'audio/webm;codecs=opus';
+        audioBlob = new Blob(chunks, { type: blobType });
+        // R82: warn if blob is empty (ondataavailable never fired)
+        if (audioBlob.size === 0) console.warn('R82: empty audio blob — ondataavailable may not have fired');
+        if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; } // Fix4: 旧URLを解放
+        audioUrl  = URL.createObjectURL(audioBlob);
+        stream.getTracks().forEach(t => t.stop());
+        openReview();
+      };
+      startRecog();
+      setTimeout(() => {
+        // R1/R39: cancelRec or goHome may have fired during the 500ms wait
+        if (recCancelled) { stream.getTracks().forEach(t => t.stop()); return; }
+        recorder.start(1000); // 1秒ごとにchunks収集（バックグラウンド対策）
+        document.getElementById('r-rec-row').style.visibility = 'visible';
+        document.getElementById('r-stop').style.display = 'block';
+        // Fix13: Date.now()ベースのタイマー精度向上（200ms間隔）
+        const startTime = Date.now();
+        timerInt = setInterval(() => {
+          const elapsed = Math.floor((Date.now() - startTime) / 1000);
+          const left = Math.max(curLimit - elapsed, 0);
+          setCnt(left);
+          if (left <= 0) stopRec();
+        }, 200);
+      }, 500);
+    } catch(setupErr) {
+      // R372: MediaRecorder构造失敗时にマイクを解放（点きっぱなし防止）
       stream.getTracks().forEach(t => t.stop());
-      openReview();
-    };
-    startRecog();
-    setTimeout(() => {
-      // R1/R39: cancelRec or goHome may have fired during the 500ms wait
-      if (recCancelled) { stream.getTracks().forEach(t => t.stop()); return; }
-      recorder.start(1000); // 1秒ごとにchunks収集（バックグラウンド対策）
-      document.getElementById('r-rec-row').style.visibility = 'visible';
-      document.getElementById('r-stop').style.display = 'block';
-      // Fix13: Date.now()ベースのタイマー精度向上（200ms間隔）
-      const startTime = Date.now();
-      timerInt = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - startTime) / 1000);
-        const left = Math.max(curLimit - elapsed, 0);
-        setCnt(left);
-        if (left <= 0) stopRec();
-      }, 200);
-    }, 500);
+      killRecog();
+      toast('録音の初期化に失敗しました');
+      if (mode === 'ft') nav('s-ft-select'); else nav('s-question');
+    }
   }).catch(err => {
     recStarting = false; // Fix5: エラー時もフラグ解除
     const msg = err.name === 'NotAllowedError' ? 'マイクへのアクセスを許可してください'
@@ -1196,34 +1207,37 @@ async function saveAndNext() {
   const noSaveBtn = document.getElementById('rv-nosave-btn');
   if (saveBtn) saveBtn.disabled = true;
   if (noSaveBtn) noSaveBtn.disabled = true;
-  try {
-    if (pendingHistItem) {
-      pendingHistItem.tr = finalTranscript || '';
-      if (pendingIsFT) saveFTHist(pendingHistItem); else saveQAHist(pendingHistItem);
-      savePractice();
-      await saveAudio(pendingHistItem.id, audioBlob);
-      pendingHistItem = null;
-      // R109: revoke audioUrl after successful save (blob safely stored in IndexedDB)
-      if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
-      audioBlob = null;
+  // R354: capture & null pendingHistItem up-front. Previously stats (history + savePractice) ran
+  // BEFORE `await saveAudio`; if the audio save threw, pendingHistItem stayed set and the re-enabled
+  // buttons allowed a retry that DUPLICATED the history entry and DOUBLE-counted the practice.
+  const item = pendingHistItem;
+  const isFT = pendingIsFT;
+  if (item) {
+    item.tr = finalTranscript || '';
+    if (isFT) saveFTHist(item); else saveQAHist(item);
+    savePractice();
+    pendingHistItem = null; // committed — no retry can duplicate these stats
+    try {
+      await saveAudio(item.id, audioBlob);
       toast('記録を保存しました ✅');
+    } catch(e) {
+      // Stats are already persisted; only the audio blob failed. Inform but proceed forward.
+      const msg = e.message === 'db_unavailable'
+        ? '統計は記録しました（このブラウザは録音保存に非対応）'
+        : '統計は記録しました（録音の保存に失敗）';
+      toast(msg);
     }
-    // R183/R188: pre-check QA pool before nextQA() — empty pool leaves review screen in broken state
-    if (pendingIsFT) {
-      nav('s-ft-select');
-    } else {
-      const pool = filteredQ();
-      if (!pool.length) { nav('s-home'); toast('該当レベルの問題がありません'); }
-      else nextQA();
-    }
-  } catch(e) {
-    // R40: specific message when IndexedDB unavailable
-    const msg = e.message === 'db_unavailable'
-      ? 'このブラウザでは録音の保存に対応していません（統計は記録されます）'
-      : '保存に失敗しました';
-    toast(msg);
-    if (saveBtn) saveBtn.disabled = false;
-    if (noSaveBtn) noSaveBtn.disabled = false;
+    // R109: revoke audioUrl after save attempt (blob either stored or lost — URL no longer needed)
+    if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
+    audioBlob = null;
+  }
+  // R183/R188: pre-check QA pool before nextQA() — empty pool leaves review screen in broken state
+  if (isFT) {
+    nav('s-ft-select');
+  } else {
+    const pool = filteredQ();
+    if (!pool.length) { nav('s-home'); toast('該当レベルの問題がありません'); }
+    else nextQA();
   }
 }
 function discardAndNext() {
@@ -1562,6 +1576,10 @@ function renderHist() {
         '<div style="font-size:11px;color:#bbb;margin-top:6px">設定から年間目標を設定できます</div>' +
       '</div>';
   }
+  // R397: revoke any loaded audio blob URLs before innerHTML rebuild destroys the elements (prevents leaks)
+  document.querySelectorAll('#hist-qa-body audio, #hist-ft-body audio').forEach(a => {
+    if (a.src && a.src.startsWith('blob:')) { URL.revokeObjectURL(a.src); a.src = ''; }
+  });
   switchHistTab(histTab); renderQAHist(); renderFTHist();
 }
 function renderQAHist() {
