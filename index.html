@@ -1599,13 +1599,16 @@ function renderFTHist() {
 function buildHistHTML(hist, isFT) {
   const grouped = {};
   hist.forEach(item => {
-    const lbl = new Date(item.date).toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
+    // R403/R269: gracefully handle corrupted dates instead of rendering "Invalid Date"
+    const d = new Date(item.date);
+    const lbl = isNaN(d.getTime()) ? '日付不明' : d.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
     (grouped[lbl] = grouped[lbl] || []).push(item);
   });
   return Object.entries(grouped).map(([date, items]) =>
     '<div class="date-hdr">' + escHtml(date) + '（' + items.length + '回）</div>' + // R18
     items.map(it => {
-      const t   = new Date(it.date).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
+      const dd  = new Date(it.date);
+      const t   = isNaN(dd.getTime()) ? '--:--' : dd.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}); // R403
       const lim = safeInt(it.limit) + '秒'; // R301: standardize on 秒 (was 1分 for 60s) — consistent with rest of app; R303-style guard
       const lc  = (it.lv||'').replace('級','').toLowerCase();
       const lvBadge = lc ? '<span class="badge badge-' + lc + '" style="font-size:10px">' + escHtml(it.lv) + '</span> ' : ''; // R8: XSS
