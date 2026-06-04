@@ -99,7 +99,7 @@
       overflow-y:auto; /* R51: small screens don't clip content */
     }
     .cnt{font-size:96px;font-weight:900;line-height:1;letter-spacing:-3px;transition:color .3s}
-    .cnt-ok{color:#16a34a}.cnt-w{color:#ca8a04}.cnt-d{color:#dc2626}
+    .cnt-ok{color:#15803d}.cnt-w{color:#b45309}.cnt-d{color:#dc2626}/* R418: AA contrast on white */
     .prog-wrap{width:100%;height:3px;background:#eee;border-radius:99px;overflow:hidden;margin:16px 0}
     .prog-bar{height:100%;background:#111;border-radius:99px;transition:width .1s linear}
     .rec-label{
@@ -162,9 +162,9 @@
     .ev-item{padding:2px 0;color:#333;padding-left:12px;text-indent:-12px}
     .ev-item::before{content:'・'}
     .ev-good{background:#f0fdf4;border:1px solid #bbf7d0}
-    .ev-good .ev-card-title{color:#16a34a}
+    .ev-good .ev-card-title{color:#15803d}/* R417: AA 4.5:1 on #f0fdf4 */
     .ev-imp{background:#fffbeb;border:1px solid #fde68a}
-    .ev-imp .ev-card-title{color:#d97706}
+    .ev-imp .ev-card-title{color:#b45309}/* R417: AA 4.5:1 on #fffbeb */
     .ev-advice{background:#faf5ff;border:1px solid #e9d5ff}
     .ev-advice .ev-card-title{color:#7c3aed}
     .ev-loading{color:#aaa;font-size:14px;padding:8px 2px}
@@ -1434,7 +1434,8 @@ function renderEval(text) {
   let scoreNum = parseInt(scoreM[1]);
   // R401: clamp out-of-range scores (malformed Claude output like "SCORE: 200" was displayed verbatim)
   if (!isNaN(scoreNum)) scoreNum = Math.max(0, Math.min(100, scoreNum));
-  const scoreColor = scoreNum >= 80 ? '#16a34a' : scoreNum >= 60 ? '#ca8a04' : '#dc2626';
+  // R418: AA-compliant score colors on white (#ca8a04 amber failed 3:1 at 2.94)
+  const scoreColor = scoreNum >= 80 ? '#15803d' : scoreNum >= 60 ? '#b45309' : '#dc2626';
 
   const toItems = block => (block || '').trim().split('\n')
     .map(l => l.replace(/^・\s*/,'').trim()).filter(Boolean);
