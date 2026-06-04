@@ -1746,24 +1746,49 @@ function toast(msg) {
   toastT = setTimeout(() => el.classList.remove('show'), 3200);
 }
 
+/* ── 強化: グローバル安全装置 ── */
+// E1: 予期せぬ例外・未処理Promise拒否を捕捉（サイレント失敗を防ぎユーザーに通知）
+let lastGlobalErr = 0;
+function reportGlobalError(label, detail) {
+  console.error(label, detail);
+  const now = Date.now();
+  if (now - lastGlobalErr > 4000) { // デバウンス：連続エラーでトーストを溢れさせない
+    lastGlobalErr = now;
+    try { toast('予期しないエラーが発生しました。問題が続く場合は再読み込みしてください'); } catch(e) {}
+  }
+}
+window.addEventListener('error', e => {
+  // リソース読込エラー（img/audio/script要素）はスクリプト例外ではないため除外
+  if (e.target && e.target !== window && e.target.tagName) return;
+  reportGlobalError('Uncaught error:', e.error || e.message);
+});
+window.addEventListener('unhandledrejection', e => reportGlobalError('Unhandled rejection:', e.reason));
+// E2: 録音中の離脱を警告（誤操作によるデータ損失防止）
+window.addEventListener('beforeunload', e => {
+  if (recorder && recorder.state === 'recording') { e.preventDefault(); e.returnValue = ''; }
+});
+
 /* ── 起動 ── */
 // Fix15: 起動時にフィルターとタイマー設定をlocalStorageから復元
+// E3: localStorage が利用不可（プライベートモード/無効化）でも起動が失敗しないよう防御
 (function initAtBoot() {
-  const f = localStorage.getItem('lv_filter') || 'ALL';
-  activeFilter = f;
-  // フィルターボタンのUI更新（設定画面が開かれていなくてもpickQ()に反映される）
-  document.querySelectorAll('.lv-fb').forEach(btn => {
-    btn.className = 'lv-fb' + (btn.id === 'lf-' + f ? ' sel-' + f : '');
-  });
-  // ランダムタイマーの復元
-  const r = localStorage.getItem('rnd_timer');
-  if (r !== null) {
-    const rndEl = document.getElementById('cfg-rnd');
-    if (rndEl) rndEl.checked = r === '1';
-  }
+  try {
+    const f = localStorage.getItem('lv_filter') || 'ALL';
+    activeFilter = f;
+    // フィルターボタンのUI更新（設定画面が開かれていなくてもpickQ()に反映される）
+    document.querySelectorAll('.lv-fb').forEach(btn => {
+      btn.className = 'lv-fb' + (btn.id === 'lf-' + f ? ' sel-' + f : '');
+    });
+    // ランダムタイマーの復元
+    const r = localStorage.getItem('rnd_timer');
+    if (r !== null) {
+      const rndEl = document.getElementById('cfg-rnd');
+      if (rndEl) rndEl.checked = r === '1';
+    }
+  } catch(e) { console.warn('initAtBoot: localStorage unavailable', e); }
 })();
 initDB().then(() => console.log('DB ready')).catch(() => console.warn('IndexedDB unavailable'));
-refreshHome();
+try { refreshHome(); } catch(e) { console.warn('refreshHome: localStorage unavailable', e); } // E3
 </script>
 </body>
 </html>
