@@ -1595,14 +1595,14 @@ function getQAHist() {
   try {
     const v = JSON.parse(localStorage.getItem('qa_hist') || '[]');
     if (!Array.isArray(v)) { localStorage.removeItem('qa_hist'); return []; }
-    return v;
+    return v.filter(it => it && typeof it === 'object'); // R479: drop nulls/primitives — prevents TypeError in buildHistHTML
   } catch(e) { localStorage.removeItem('qa_hist'); return []; }
 }
 function getFTHist() {
   try {
     const v = JSON.parse(localStorage.getItem('ft_hist') || '[]');
     if (!Array.isArray(v)) { localStorage.removeItem('ft_hist'); return []; }
-    return v;
+    return v.filter(it => it && typeof it === 'object'); // R479: same guard
   } catch(e) { localStorage.removeItem('ft_hist'); return []; }
 }
 // Fix10: QuotaExceededError 時は50件に削ってリトライ
