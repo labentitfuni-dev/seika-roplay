@@ -1182,6 +1182,7 @@ function killRecog() {
 function stopRec()   { stopTimer(); killRec(); killRecog(); }
 function cancelRec() {
   recCancelled = true;
+  recId = null; // R491: nullify recId so a delayed stale onstop that fires after beginRec resets recCancelled (capturedRecId guard relies on recId being updated by getUserMedia.then, which may not have run yet) is still blocked by recId !== capturedRecId
   pendingHistItem = null; // Fix7: 保留中の保存をキャンセル
   stopTimer(); killRec(); killRecog();
   if (mode === 'ft') nav('s-ft-select');
