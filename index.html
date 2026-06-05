@@ -414,12 +414,12 @@
   </div>
   <div class="body">
     <div id="year-prog-wrap"></div>
-    <div class="tab-bar">
-      <button class="tab-btn active" id="tab-qa" onclick="switchHistTab('qa')">🎤 Q&amp;A</button>
-      <button class="tab-btn" id="tab-ft" onclick="switchHistTab('ft')">⏱ フリートーク</button>
+    <div class="tab-bar" role="tablist" aria-label="練習記録タブ"><!-- R445 -->
+      <button class="tab-btn active" id="tab-qa" role="tab" aria-selected="true" aria-controls="hist-qa-body" onclick="switchHistTab('qa')">🎤 Q&amp;A</button>
+      <button class="tab-btn" id="tab-ft" role="tab" aria-selected="false" aria-controls="hist-ft-body" onclick="switchHistTab('ft')">⏱ フリートーク</button>
     </div>
-    <div id="hist-qa-body"></div>
-    <div id="hist-ft-body" style="display:none"></div>
+    <div id="hist-qa-body" role="tabpanel" aria-labelledby="tab-qa"></div>
+    <div id="hist-ft-body" role="tabpanel" aria-labelledby="tab-ft" style="display:none"></div>
   </div>
 </div>
 
@@ -1605,8 +1605,13 @@ function saveFTHist(item) {
 // R313: removed unused updateHistTr() — transcript is persisted via pendingHistItem.tr in saveAndNext()
 function switchHistTab(tab) {
   histTab = tab;
-  document.getElementById('tab-qa').className = 'tab-btn' + (tab === 'qa' ? ' active' : '');
-  document.getElementById('tab-ft').className = 'tab-btn' + (tab === 'ft' ? ' active' : '');
+  const qaBtn = document.getElementById('tab-qa');
+  const ftBtn = document.getElementById('tab-ft');
+  qaBtn.className = 'tab-btn' + (tab === 'qa' ? ' active' : '');
+  ftBtn.className = 'tab-btn' + (tab === 'ft' ? ' active' : '');
+  // R445: WCAG 4.1.2 — aria-selected反映でスクリーンリーダーにタブ状態を通知
+  qaBtn.setAttribute('aria-selected', tab === 'qa' ? 'true' : 'false');
+  ftBtn.setAttribute('aria-selected', tab === 'ft' ? 'true' : 'false');
   document.getElementById('hist-qa-body').style.display = tab === 'qa' ? 'block' : 'none';
   document.getElementById('hist-ft-body').style.display = tab === 'ft' ? 'block' : 'none';
 }
