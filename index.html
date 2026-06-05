@@ -480,7 +480,7 @@
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v4.4<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R493: v4.3→v4.4 reflects R492-R498 rv-audio onerror/localStorage hardening/sr-only -->
+      <p class="set-note">SEIKA ロープレツール v4.5<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R504: v4.4→v4.5 reflects R499-R504 WCAG/aria/double-click fixes -->
     </div>
   </div>
 </div>
@@ -1342,6 +1342,10 @@ async function saveAndNext() {
 }
 function discardAndNext() {
   evalAbortCtrl?.abort(); evalAbortCtrl = null; // R452b: abort eval when navigating away via discard
+  const saveBtn   = document.getElementById('rv-save-btn');
+  const noSaveBtn = document.getElementById('rv-nosave-btn');
+  if (saveBtn) saveBtn.disabled = true;
+  if (noSaveBtn) noSaveBtn.disabled = true; // R504: prevent double-click race — same guard as saveAndNext()
   // R473: stop rv-audio before navigating away (same fix as saveAndNext above)
   const rvAudioD = document.getElementById('rv-audio');
   if (rvAudioD) { rvAudioD.onerror = null; rvAudioD.pause(); rvAudioD.src = ''; } // R492: clear onerror before src=''
