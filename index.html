@@ -1918,15 +1918,9 @@ window.addEventListener('beforeunload', e => {
 (function initAtBoot() {
   try {
     // R438: VALID_FILTERS でフィルタリング — 不正値（ストレージ破損）は 'ALL' に正規化
+    // R474: call setFilter() to avoid duplicating the button-update loop; also auto-corrects corrupted lv_filter
     const stored = localStorage.getItem('lv_filter');
-    const f = VALID_FILTERS.includes(stored) ? stored : 'ALL';
-    activeFilter = f;
-    // フィルターボタンのUI更新（設定画面が開かれていなくてもpickQ()に反映される）
-    document.querySelectorAll('.lv-fb').forEach(btn => {
-      const isActive = btn.id === 'lf-' + f;
-      btn.className = 'lv-fb' + (isActive ? ' sel-' + f : '');
-      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false'); // R447
-    });
+    setFilter(VALID_FILTERS.includes(stored) ? stored : 'ALL', true);
     // ランダムタイマーの復元
     const r = localStorage.getItem('rnd_timer');
     if (r !== null) {
