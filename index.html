@@ -258,7 +258,7 @@
     }
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     /* R467: visually-hidden live-region helper — hidden from sighted users, readable by AT */
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0}/* R498: clip is deprecated CSS 2.1 — modern clip-path:inset(50%) added for forward compatibility */
   </style>
 </head>
 <body>
@@ -480,7 +480,7 @@
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v4.3<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R488: v4.2→v4.3 reflects R485-R488 contrast/UX/a11y improvements -->
+      <p class="set-note">SEIKA ロープレツール v4.4<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R493: v4.3→v4.4 reflects R492-R498 rv-audio onerror/localStorage hardening/sr-only -->
     </div>
   </div>
 </div>
@@ -1254,8 +1254,16 @@ function openReview() {
   }
   // R16: revoke old blob URL on rv-audio before setting new one
   const rvAudio = document.getElementById('rv-audio');
+  rvAudio.onerror = null; // R492: clear any stale error handler before replacing src
   if (rvAudio.src && rvAudio.src.startsWith('blob:')) URL.revokeObjectURL(rvAudio.src);
   rvAudio.src = audioUrl;
+  // R492: codec/decode failure leaves controls silent with no feedback — show toast and don't silently fail
+  rvAudio.onerror = () => {
+    rvAudio.onerror = null;
+    if (document.getElementById('s-review').classList.contains('active')) {
+      toast('録音の再生に失敗しました');
+    }
+  };
   document.getElementById('rv-tr').textContent   = '認識中…';
   // R3: remove old character-count meta div to prevent accumulation
   const oldMeta = document.querySelector('.rv-tr-meta');
@@ -1294,7 +1302,7 @@ async function saveAndNext() {
   evalAbortCtrl?.abort(); evalAbortCtrl = null; // R452b: abort eval when navigating away via save
   // R473: stop rv-audio playback before navigating away (reviewBack already does this; saveAndNext/discardAndNext did not — ghost audio bug)
   const rvAudioS = document.getElementById('rv-audio');
-  if (rvAudioS) { rvAudioS.pause(); rvAudioS.src = ''; }
+  if (rvAudioS) { rvAudioS.onerror = null; rvAudioS.pause(); rvAudioS.src = ''; } // R492: clear onerror before src='' prevents stale handler firing
   const saveBtn   = document.getElementById('rv-save-btn');
   const noSaveBtn = document.getElementById('rv-nosave-btn');
   if (saveBtn) saveBtn.disabled = true;
@@ -1336,7 +1344,7 @@ function discardAndNext() {
   evalAbortCtrl?.abort(); evalAbortCtrl = null; // R452b: abort eval when navigating away via discard
   // R473: stop rv-audio before navigating away (same fix as saveAndNext above)
   const rvAudioD = document.getElementById('rv-audio');
-  if (rvAudioD) { rvAudioD.pause(); rvAudioD.src = ''; }
+  if (rvAudioD) { rvAudioD.onerror = null; rvAudioD.pause(); rvAudioD.src = ''; } // R492: clear onerror before src=''
   // R2: revoke blob URL; R36: notify user; R74: .catch() on deleteAudio
   if (recId) deleteAudio(recId).catch(() => {});
   if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
@@ -1362,7 +1370,7 @@ function discardAndNext() {
 function reviewBack() {
   evalAbortCtrl?.abort(); evalAbortCtrl = null; // R452: abort pending Claude call
   const rvAudio = document.getElementById('rv-audio');
-  if (rvAudio) { rvAudio.pause(); rvAudio.src = ''; } // R452: release audio src before blob revoke
+  if (rvAudio) { rvAudio.onerror = null; rvAudio.pause(); rvAudio.src = ''; } // R452: release audio src before blob revoke; R492: clear onerror
   // R2: revoke blob URL; R74: .catch() on deleteAudio
   if (recId) deleteAudio(recId).catch(() => {});
   if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
@@ -1872,7 +1880,9 @@ function saveKey() {
   if (!v) { toast('APIキーを入力してください'); return; }
   // R43: validate key format
   if (!v.startsWith('sk-ant-')) { toast('形式が正しくありません（sk-ant-で始まるキーを入力してください）'); return; }
-  localStorage.setItem('api_key', v); document.getElementById('cfg-key').value = v; toast('APIキーを保存しました ✅');// R464: show trimmed value in field
+  // R493: wrap setItem so QuotaExceededError shows a helpful message instead of a generic global-error toast
+  try { localStorage.setItem('api_key', v); document.getElementById('cfg-key').value = v; toast('APIキーを保存しました ✅'); } // R464: show trimmed value in field
+  catch(e) { toast('保存に失敗しました（ストレージ容量不足の可能性があります）'); }
 }
 // R166: allow user to remove saved API key from the UI
 function clearKey() {
@@ -1884,24 +1894,27 @@ function saveYearGoal() {
   // R402: floor to integer so decimals like 365.7 don't render as "目標 365.7 回"
   const v = Math.floor(+(document.getElementById('cfg-year-goal').value));
   if (v > 0 && isFinite(v)) { // R453: isFinite guard — Math.floor(Infinity)=Infinity passes v>0 without guard
-    localStorage.setItem('year_goal', v); document.getElementById('cfg-year-goal').value = v; toast('年間目標を ' + v + ' 回に設定しました 🎯');
+    // R493: wrap setItem for QuotaExceededError
+    try { localStorage.setItem('year_goal', v); document.getElementById('cfg-year-goal').value = v; toast('年間目標を ' + v + ' 回に設定しました 🎯'); }
+    catch(e) { toast('保存に失敗しました（ストレージ容量不足の可能性があります）'); }
   } else { localStorage.removeItem('year_goal'); toast('年間目標をリセットしました'); }
 }
 function setYearGoalQuick(n) {
   document.getElementById('cfg-year-goal').value = n;
-  localStorage.setItem('year_goal', n);
-  toast('年間目標を ' + n + ' 回に設定しました 🎯');
+  // R493: wrap setItem for QuotaExceededError
+  try { localStorage.setItem('year_goal', n); toast('年間目標を ' + n + ' 回に設定しました 🎯'); }
+  catch(e) { toast('保存に失敗しました（ストレージ容量不足の可能性があります）'); }
   // R476: removed dead code — s-history and s-settings cannot both be active simultaneously
 }
 document.getElementById('cfg-rnd')?.addEventListener('change', e => {
-  localStorage.setItem('rnd_timer', e.target.checked ? '1' : '0');
+  try { localStorage.setItem('rnd_timer', e.target.checked ? '1' : '0'); } catch(ex) {} // R493: non-critical preference
 });
 const VALID_FILTERS = ['ALL','S','A','B','C','D'];
 function setFilter(lv, silent) {
   // R438: 破損/不正値を 'ALL' にフォールバック（safeInt・Array.isArray と同方針）
   if (!VALID_FILTERS.includes(lv)) lv = 'ALL';
   activeFilter = lv;
-  localStorage.setItem('lv_filter', lv);
+  try { localStorage.setItem('lv_filter', lv); } catch(e) {} // R493: non-critical — in-memory activeFilter is authoritative
   document.querySelectorAll('.lv-fb').forEach(btn => {
     const isActive = btn.id === 'lf-' + lv;
     btn.className = 'lv-fb' + (isActive ? ' sel-' + lv : '');
