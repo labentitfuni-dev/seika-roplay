@@ -444,7 +444,7 @@
       <div class="set-label">Q&amp;A タイマー設定</div>
       <div class="tog-row">
         <span class="tog-label">ランダム（10秒 / 30秒）</span>
-        <label class="tog-wrap"><input type="checkbox" id="cfg-rnd" checked><span class="tog-track"></span></label>
+        <label class="tog-wrap"><input type="checkbox" id="cfg-rnd" checked aria-label="ランダムタイマー（10秒 / 30秒）"><!-- R437: aria-label追加 — tog-labelはlabel要素の外にあるため暗黙ラベルが空になるバグを修正 --><span class="tog-track"></span></label>
       </div>
       <p class="set-note" style="margin-top:8px">OFFにすると常に30秒になります。</p>
     </div>
