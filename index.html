@@ -451,12 +451,12 @@
     <div class="set-section">
       <div class="set-label">Q&amp;A レベルフィルター</div>
       <div class="lv-filters">
-        <button class="lv-fb" id="lf-ALL" onclick="setFilter('ALL')">全レベル</button>
-        <button class="lv-fb" id="lf-S" onclick="setFilter('S')">S級</button>
-        <button class="lv-fb" id="lf-A" onclick="setFilter('A')">A級</button>
-        <button class="lv-fb" id="lf-B" onclick="setFilter('B')">B級</button>
-        <button class="lv-fb" id="lf-C" onclick="setFilter('C')">C級</button>
-        <button class="lv-fb" id="lf-D" onclick="setFilter('D')">D級</button>
+        <button class="lv-fb" id="lf-ALL" aria-pressed="true" onclick="setFilter('ALL')">全レベル</button><!-- R447 -->
+        <button class="lv-fb" id="lf-S" aria-pressed="false" onclick="setFilter('S')">S級</button>
+        <button class="lv-fb" id="lf-A" aria-pressed="false" onclick="setFilter('A')">A級</button>
+        <button class="lv-fb" id="lf-B" aria-pressed="false" onclick="setFilter('B')">B級</button>
+        <button class="lv-fb" id="lf-C" aria-pressed="false" onclick="setFilter('C')">C級</button>
+        <button class="lv-fb" id="lf-D" aria-pressed="false" onclick="setFilter('D')">D級</button>
       </div>
     </div>
     <div class="set-section">
@@ -1813,7 +1813,9 @@ function setFilter(lv, silent) {
   activeFilter = lv;
   localStorage.setItem('lv_filter', lv);
   document.querySelectorAll('.lv-fb').forEach(btn => {
-    btn.className = 'lv-fb' + (btn.id === 'lf-' + lv ? ' sel-' + lv : '');
+    const isActive = btn.id === 'lf-' + lv;
+    btn.className = 'lv-fb' + (isActive ? ' sel-' + lv : '');
+    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false'); // R447: WCAG 4.1.2
   });
   if (!silent) toast('フィルター: ' + (lv === 'ALL' ? '全レベル' : lv + '級'));
 }
@@ -1860,7 +1862,9 @@ window.addEventListener('beforeunload', e => {
     activeFilter = f;
     // フィルターボタンのUI更新（設定画面が開かれていなくてもpickQ()に反映される）
     document.querySelectorAll('.lv-fb').forEach(btn => {
-      btn.className = 'lv-fb' + (btn.id === 'lf-' + f ? ' sel-' + f : '');
+      const isActive = btn.id === 'lf-' + f;
+      btn.className = 'lv-fb' + (isActive ? ' sel-' + f : '');
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false'); // R447
     });
     // ランダムタイマーの復元
     const r = localStorage.getItem('rnd_timer');
