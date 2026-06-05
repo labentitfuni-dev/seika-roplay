@@ -1535,7 +1535,8 @@ function renderEval(text) {
 }
 
 function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // R455: escape all 5 HTML special chars — safe for both text content AND attribute values
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 let copyingPrompt = false; // R57: debounce flag
