@@ -160,7 +160,7 @@
     .goal-btn:active{background:#f0f0f0}
     .btn,.main-btn,.ft-cell,.sub-link,.lv-fb,.hdr-back,.hdr-act{touch-action:manipulation}
     /* R412: visible keyboard-focus indicator (a11y; focus-visible avoids showing it on mouse click) */
-    .ft-cell:focus-visible,.btn:focus-visible,.main-btn:focus-visible,.sub-link:focus-visible,.tab-btn:focus-visible,.audio-btn:focus-visible,.lv-fb:focus-visible,.goal-btn:focus-visible,.hdr-back:focus-visible,.hdr-act:focus-visible{
+    .ft-cell:focus-visible,.btn:focus-visible,.main-btn:focus-visible,.sub-link:focus-visible,.tab-btn:focus-visible,.audio-btn:focus-visible,.lv-fb:focus-visible,.goal-btn:focus-visible,.hdr-back:focus-visible,.hdr-act:focus-visible,.tog-wrap input:focus-visible{/* R451 */
       outline:2px solid #2563eb;outline-offset:2px;
     }
     /* R428: respect prefers-reduced-motion — suppress blink/transitions (録音ドットは点灯維持で機能保持) */
@@ -232,7 +232,7 @@
     .tog-row:last-child{border-bottom:none}
     .tog-label{font-size:14px;color:#111}
     .tog-wrap{position:relative;width:44px;height:24px;flex-shrink:0}
-    .tog-wrap input{display:none}
+    .tog-wrap input{position:absolute;top:0;left:0;width:44px;height:24px;margin:0;opacity:0;cursor:pointer;}/* R451: visually-hidden — keyboard+AT reachable; top/left pins over track */
     .tog-track{position:absolute;inset:0;border-radius:24px;background:#767676;cursor:pointer;transition:background .2s}/* R450: WCAG 1.4.11 — #ddd→#767676: track(4.52:1 vs page) + thumb(4.04:1 vs track) */
     .tog-track::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
     input:checked~.tog-track{background:#111}
@@ -444,7 +444,7 @@
       <div class="set-label">Q&amp;A タイマー設定</div>
       <div class="tog-row">
         <span class="tog-label">ランダム（10秒 / 30秒）</span>
-        <label class="tog-wrap"><input type="checkbox" id="cfg-rnd" checked aria-label="ランダムタイマー（10秒 / 30秒）"><!-- R437: aria-label追加 — tog-labelはlabel要素の外にあるため暗黙ラベルが空になるバグを修正 --><span class="tog-track"></span></label>
+        <label class="tog-wrap"><input type="checkbox" role="switch" id="cfg-rnd" checked aria-label="ランダムタイマー（10秒 / 30秒）"><!-- R437: aria-label追加; R451: role=switch + visually-hidden --><span class="tog-track"></span></label>
       </div>
       <p class="set-note" style="margin-top:8px">OFFにすると常に30秒になります。</p>
     </div>
@@ -1148,6 +1148,7 @@ function setCnt(n) {
 }
 let recCancelled = false;
 let recogShouldRun = false;
+let evalAbortCtrl = null; // R452: abort pending Claude eval on nav-away
 function stopTimer() { clearInterval(timerInt); timerInt = null; }
 function killRec()   { if (recorder && recorder.state === 'recording') recorder.stop(); }
 function killRecog() {
@@ -1324,6 +1325,9 @@ function discardAndNext() {
   }
 }
 function reviewBack() {
+  evalAbortCtrl?.abort(); evalAbortCtrl = null; // R452: abort pending Claude call
+  const rvAudio = document.getElementById('rv-audio');
+  if (rvAudio) { rvAudio.pause(); rvAudio.src = ''; } // R452: release audio src before blob revoke
   // R2: revoke blob URL; R74: .catch() on deleteAudio
   if (recId) deleteAudio(recId).catch(() => {});
   if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
@@ -1334,12 +1338,19 @@ function reviewBack() {
 
 /* ── Claude 評価 ── */
 function runEval(t, isFT) {
+  evalAbortCtrl?.abort(); // R452: abort any previous in-flight call
+  evalAbortCtrl = new AbortController();
+  const navSignal = evalAbortCtrl.signal;
   const el  = document.getElementById('rv-eval');
   const key = localStorage.getItem('api_key');
   if (key) {
-    callClaude(key, t, isFT)
-      .then(r  => { el.innerHTML = renderEval(r); })
+    callClaude(key, t, isFT, navSignal)
+      .then(r  => {
+        if (navSignal.aborted) return; // R452: suppress stale DOM update
+        el.innerHTML = renderEval(r);
+      })
       .catch(err => { // Fix3: エラー種別に応じたトースト
+        if (navSignal.aborted) return; // R452: suppress toast on intentional nav-away
         const msg = err.message === 'rate_limit' ? 'レート制限中です。しばらく待ってから再試行してください'
           : err.message === 'auth_error' ? 'APIキーが無効です。設定を確認してください'
           : err.name === 'AbortError' ? 'APIタイムアウト。ローカル評価に切り替えます'
@@ -1404,7 +1415,7 @@ function localEval(t, isFT) {
     + '\nADVICE:\n' + advice;
 }
 
-async function callClaude(key, t, isFT) {
+async function callClaude(key, t, isFT, navSignal) {// R452: navSignal — abort on navigation
   const context = isFT
     ? 'フリートーク（' + curLimit + '秒）' // R301/R302: standardize on 秒 (was 1分) for app-wide consistency
     : '営業質問（' + curLv + '）：' + curQ;
@@ -1435,9 +1446,11 @@ ADVICE:
 - 質問・対話の技術
 - 言葉の明確さと簡潔さ`;
 
-  // Fix2: AbortController 15秒タイムアウト
+  // Fix2: AbortController 15秒タイムアウト; R452: also forward navSignal
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 15000);
+  const navListener = navSignal ? () => controller.abort() : null;
+  if (navListener) navSignal.addEventListener('abort', navListener);
   let res;
   try {
     res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1456,6 +1469,7 @@ ADVICE:
     });
   } finally {
     clearTimeout(timeoutId);
+    if (navListener) navSignal.removeEventListener('abort', navListener); // R452: cleanup
   }
   // Fix2: HTTPステータスコードチェック
   if (!res.ok) {
