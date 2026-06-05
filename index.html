@@ -1669,7 +1669,9 @@ function buildHistHTML(hist, isFT) {
       const lim = safeInt(it.limit) + '秒'; // R301: standardize on 秒 (was 1分 for 60s) — consistent with rest of app; R303-style guard
       // R434: 破損/旧スキーマで lv/tr が非文字列の場合 .replace/.slice が throw し履歴画面全体が壊れる問題を防止（String 強制）
       const lvStr = (it.lv != null) ? String(it.lv) : '';
-      const lc  = lvStr.replace('級','').toLowerCase();
+      // R440: class属性注入防止 — lv が '" onclick=...' 等を含む場合に quote が class 属性を抜け出して
+      // イベントハンドラを注入できる。[^a-z]除去で英小文字のみに制限。
+      const lc  = lvStr.replace('級','').toLowerCase().replace(/[^a-z]/g,'');
       const lvBadge = lc ? '<span class="badge badge-' + escHtml(lc) + '" style="font-size:10px">' + escHtml(lvStr) + '</span> ' : ''; // R8: XSS
       // Fix14: XSSを防ぐためit.qとit.trにescHtmlを適用
       const qHtml = !isFT
