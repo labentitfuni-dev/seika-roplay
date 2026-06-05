@@ -1683,8 +1683,8 @@ function buildHistHTML(hist, isFT) {
         '<div class="hist-meta">' + lvBadge + '<span class="badge badge-time">⏱ ' + lim + '</span><span style="font-size:11px;color:#aaa">　' + t + '</span></div>' +
         qHtml +
         (trStr ? '<div class="hist-tr">' + escHtml(trText) + '</div>' : '') +
-        '<audio data-rec-id="' + it.id + '" controls style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' +
-        '<button class="audio-btn" onclick="toggleAudio(this)" data-id="' + it.id + '">🔊 録音を聴く</button>' +
+        '<audio controls style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' + // R441: data-rec-id除去(dead code)
+        '<button class="audio-btn" onclick="toggleAudio(this)" data-id="' + String(it.id).replace(/[^a-z0-9]/gi,'') + '">🔊 録音を聴く</button>' + // R441: data-id注入防止
         '</div>';
     }).join('')
   ).join('');
