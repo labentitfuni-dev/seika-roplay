@@ -1115,7 +1115,11 @@ function beginRec() {
       setTimeout(() => {
         // R1/R39: cancelRec or goHome may have fired during the 500ms wait
         if (recCancelled) { stream.getTracks().forEach(t => t.stop()); return; }
-        recorder.start(1000); // 1秒ごとにchunks収集（バックグラウンド対策）
+        // R475: guard recorder.start() — throws InvalidStateError if recorder somehow not 'inactive'
+        try { recorder.start(1000); } catch(startErr) {
+          stream.getTracks().forEach(t => t.stop()); killRecog();
+          toast('録音の開始に失敗しました'); if (mode === 'ft') nav('s-ft-select'); else nav('s-question'); return;
+        } // 1秒ごとにchunks収集（バックグラウンド対策）
         document.getElementById('r-rec-row').style.visibility = 'visible';
         document.getElementById('r-stop').style.display = 'block';
         // R467: WCAG 4.1.3 — announce recording start to screen readers via polite live region
@@ -1861,8 +1865,7 @@ function setYearGoalQuick(n) {
   document.getElementById('cfg-year-goal').value = n;
   localStorage.setItem('year_goal', n);
   toast('年間目標を ' + n + ' 回に設定しました 🎯');
-  // R147: refresh history progress bar if history screen is currently visible
-  if (document.getElementById('s-history').classList.contains('active')) renderHist();
+  // R476: removed dead code — s-history and s-settings cannot both be active simultaneously
 }
 document.getElementById('cfg-rnd')?.addEventListener('change', e => {
   localStorage.setItem('rnd_timer', e.target.checked ? '1' : '0');
