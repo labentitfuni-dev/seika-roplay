@@ -991,7 +991,7 @@ function getYearCount() {
   return c;
 }
 // R80/R88: safeInt guard prevents NaN cascade from corrupted localStorage values
-function safeInt(v) { const n = +v; return isNaN(n) ? 0 : n; }
+function safeInt(v) { const n = +v; return (isNaN(n) || !isFinite(n)) ? 0 : n; } // R444: guard Infinity/-Infinity (isNaN(Infinity)===false)
 // R419: thousands-separated display for readability (e.g. 1234 -> "1,234")
 function fmtN(n) { try { return safeInt(n).toLocaleString('ja-JP'); } catch(e) { return String(safeInt(n)); } }
 function refreshHome() {
