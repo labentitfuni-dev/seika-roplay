@@ -257,6 +257,8 @@
       max-width:calc(100vw - 32px);white-space:normal;text-align:center;pointer-events:none;/* R458: prevent overflow on narrow screens */
     }
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    /* R467: visually-hidden live-region helper — hidden from sighted users, readable by AT */
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   </style>
 </head>
 <body>
@@ -361,6 +363,8 @@
     </div>
     <button type="button" class="btn btn-red" id="r-stop" style="display:none;width:200px;margin:0 auto" onclick="stopRec()">⏹ 停止・保存</button>
     <button type="button" class="btn-sub" onclick="cancelRec()">キャンセル</button>
+    <!-- R467: WCAG 4.1.3 Status Messages — announces recording-start to AT without disrupting layout -->
+    <div id="r-status" role="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
   </div>
 </div>
 
@@ -450,8 +454,8 @@
       <p class="set-note" style="margin-top:8px">OFFにすると常に30秒になります。</p>
     </div>
     <div class="set-section">
-      <div class="set-label">Q&amp;A レベルフィルター</div>
-      <div class="lv-filters">
+      <div class="set-label" id="lv-filter-label">Q&amp;A レベルフィルター</div>
+      <div class="lv-filters" role="group" aria-labelledby="lv-filter-label"><!-- R469: WCAG 1.3.1 — group label helps AT users understand button context -->
         <button type="button" class="lv-fb" id="lf-ALL" aria-pressed="true" onclick="setFilter('ALL')">全レベル</button><!-- R447 -->
         <button type="button" class="lv-fb" id="lf-S" aria-pressed="false" onclick="setFilter('S')">S級</button>
         <button type="button" class="lv-fb" id="lf-A" aria-pressed="false" onclick="setFilter('A')">A級</button>
@@ -1113,6 +1117,8 @@ function beginRec() {
         recorder.start(1000); // 1秒ごとにchunks収集（バックグラウンド対策）
         document.getElementById('r-rec-row').style.visibility = 'visible';
         document.getElementById('r-stop').style.display = 'block';
+        // R467: WCAG 4.1.3 — announce recording start to screen readers via polite live region
+        document.getElementById('r-status').textContent = '録音を開始しました。残り' + curLimit + '秒。';
         // Fix13: Date.now()ベースのタイマー精度向上（200ms間隔）
         const startTime = Date.now();
         clearInterval(timerInt); // R442: 二重タイマー防止（getUserMedia後500ms window中の再入対策）
@@ -1361,14 +1367,14 @@ function runEval(t, isFT) {
           : err.name === 'AbortError' ? 'APIタイムアウト。ローカル評価に切り替えます'
           : 'Claude API呼び出し失敗。ローカル評価に切り替えます';
         toast(msg);
-        el.innerHTML = renderEval(localEval(t, isFT));
+        el.innerHTML = renderEval(localEval(t));// R470
       });
   } else {
-    el.innerHTML = renderEval(localEval(t, isFT));
+    el.innerHTML = renderEval(localEval(t));// R470
   }
 }
 
-function localEval(t, isFT) {
+function localEval(t) {// R470: removed unused isFT parameter — evaluation logic is mode-agnostic
   if (!t || t.startsWith('（')) {
     return 'SCORE: -\nGOOD:\n・録音を聴いて内容を確認しましょう\nIMPROVE:\n・APIキーを設定するとClaudeが詳細評価します\nADVICE:\n「コピーして詳細評価」ボタンでClaudeに貼り付けてください';
   }
@@ -1648,6 +1654,9 @@ function switchHistTab(tab) {
   ftBtn.setAttribute('tabindex', tab === 'ft' ? '0' : '-1');
   document.getElementById('hist-qa-body').style.display = tab === 'qa' ? 'block' : 'none';
   document.getElementById('hist-ft-body').style.display = tab === 'ft' ? 'block' : 'none';
+  // R468: WCAG 4.1.2 — dynamic aria-label on delete button tells AT which tab's history will be cleared
+  const histDelBtn = document.querySelector('#s-history .hdr-act');
+  if (histDelBtn) histDelBtn.setAttribute('aria-label', tab === 'qa' ? 'Q&A履歴を削除' : 'フリートーク履歴を削除');
   // R465: stop any audio playing in the now-hidden panel (prevents ghost playback across tab switch)
   const hiddenPanel = document.getElementById(tab === 'qa' ? 'hist-ft-body' : 'hist-qa-body');
   hiddenPanel.querySelectorAll('audio').forEach(a => {
