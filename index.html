@@ -906,7 +906,10 @@ function saveAudio(id, blob) {
   return new Promise((res, rej) => {
     const tx = db.transaction('recs', 'readwrite');
     tx.objectStore('recs').put({ id, blob });
-    tx.oncomplete = res; tx.onerror = rej;
+    // R433: onabort も配線。ストレージ逼迫等で put が transaction を abort した際、
+    // onerror が来ず Promise が永久に pending → 保存フローが固まる問題を防止。
+    tx.oncomplete = res; tx.onerror = () => rej(tx.error || new Error('tx_error'));
+    tx.onabort = () => rej(tx.error || new Error('tx_abort'));
   });
 }
 function loadAudio(id) {
@@ -916,6 +919,7 @@ function loadAudio(id) {
     const r  = tx.objectStore('recs').get(id);
     r.onsuccess = e => res(e.target.result?.blob || null);
     r.onerror = rej;
+    tx.onabort = () => res(null); // R433: 読み取りabortは「音声なし」として安全にフォールバック
   });
 }
 function deleteAudio(id) {
@@ -923,7 +927,8 @@ function deleteAudio(id) {
   return new Promise((res, rej) => {
     const tx = db.transaction('recs', 'readwrite');
     tx.objectStore('recs').delete(id);
-    tx.oncomplete = res; tx.onerror = rej;
+    tx.oncomplete = res; tx.onerror = () => rej(tx.error || new Error('tx_error'));
+    tx.onabort = () => rej(tx.error || new Error('tx_abort')); // R433: 多くは .catch で握り潰される
   });
 }
 
