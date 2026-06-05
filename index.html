@@ -1794,7 +1794,10 @@ function setYearGoalQuick(n) {
 document.getElementById('cfg-rnd')?.addEventListener('change', e => {
   localStorage.setItem('rnd_timer', e.target.checked ? '1' : '0');
 });
+const VALID_FILTERS = ['ALL','S','A','B','C','D'];
 function setFilter(lv, silent) {
+  // R438: 破損/不正値を 'ALL' にフォールバック（safeInt・Array.isArray と同方針）
+  if (!VALID_FILTERS.includes(lv)) lv = 'ALL';
   activeFilter = lv;
   localStorage.setItem('lv_filter', lv);
   document.querySelectorAll('.lv-fb').forEach(btn => {
@@ -1839,7 +1842,9 @@ window.addEventListener('beforeunload', e => {
 // E3: localStorage が利用不可（プライベートモード/無効化）でも起動が失敗しないよう防御
 (function initAtBoot() {
   try {
-    const f = localStorage.getItem('lv_filter') || 'ALL';
+    // R438: VALID_FILTERS でフィルタリング — 不正値（ストレージ破損）は 'ALL' に正規化
+    const stored = localStorage.getItem('lv_filter');
+    const f = VALID_FILTERS.includes(stored) ? stored : 'ALL';
     activeFilter = f;
     // フィルターボタンのUI更新（設定画面が開かれていなくてもpickQ()に反映される）
     document.querySelectorAll('.lv-fb').forEach(btn => {
