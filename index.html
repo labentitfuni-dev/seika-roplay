@@ -254,7 +254,7 @@
       position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);
       background:#222;color:#fff;padding:10px 20px;border-radius:100px;
       font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .25s,transform .25s;
-      white-space:nowrap;pointer-events:none;
+      max-width:calc(100vw - 32px);white-space:normal;text-align:center;pointer-events:none;/* R458: prevent overflow on narrow screens */
     }
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   </style>
@@ -265,7 +265,7 @@
 <div id="s-home" class="screen active" role="main"><!-- R443: initial main landmark -->
   <div class="hdr">
     <span class="hdr-title">🎯 SEIKA ロープレ</span>
-    <button class="hdr-act" onclick="nav('s-settings')">設定</button>
+    <button type="button" class="hdr-act" onclick="nav('s-settings')">設定</button>
   </div>
   <div class="body">
     <div class="stat-bar">
@@ -275,7 +275,7 @@
       <div class="stat-cell"><div class="stat-n" id="h-streak">0</div><div class="stat-l">連続🔥</div></div>
     </div>
 
-    <button class="main-btn main-btn-qa" onclick="startQA()">
+    <button type="button" class="main-btn main-btn-qa" onclick="startQA()">
       <span class="main-btn-icon">🎤</span>
       <span class="main-btn-text">
         <span class="main-btn-title">即興 Q&amp;A</span>
@@ -283,7 +283,7 @@
       </span>
     </button>
 
-    <button class="main-btn main-btn-ft" onclick="nav('s-ft-select')">
+    <button type="button" class="main-btn main-btn-ft" onclick="nav('s-ft-select')">
       <span class="main-btn-icon">⏱</span>
       <span class="main-btn-text">
         <span class="main-btn-title">フリートーク</span>
@@ -292,8 +292,8 @@
     </button>
 
     <div class="sub-links">
-      <button class="sub-link" onclick="showHistory('qa')">📋 Q&amp;A記録</button>
-      <button class="sub-link" onclick="showHistory('ft')">📋 フリートーク記録</button>
+      <button type="button" class="sub-link" onclick="showHistory('qa')">📋 Q&amp;A記録</button>
+      <button type="button" class="sub-link" onclick="showHistory('ft')">📋 フリートーク記録</button>
     </div>
   </div>
 </div>
@@ -301,9 +301,9 @@
 <!-- ══ QUESTION ══ -->
 <div id="s-question" class="screen">
   <div class="hdr">
-    <button class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
+    <button type="button" class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
     <span class="hdr-title">即興 Q&amp;A</span>
-    <button class="hdr-act" onclick="pickQ()">別の問題</button>
+    <button type="button" class="hdr-act" onclick="pickQ()">別の問題</button>
   </div>
   <div class="q-wrap">
     <div class="q-meta">
@@ -312,8 +312,8 @@
     </div>
     <div class="q-text" id="q-text" aria-live="polite" aria-atomic="true">---</div><!-- R439: SR向けliveリージョン — 「別の問題」で質問が変わったとき読み上げられる -->
     <div class="q-actions">
-      <button class="btn btn-black" onclick="beginRec()">🎤 録音開始</button>
-      <button class="btn btn-gray" onclick="pickQ()">⏭ 別の問題</button>
+      <button type="button" class="btn btn-black" onclick="beginRec()">🎤 録音開始</button>
+      <button type="button" class="btn btn-gray" onclick="pickQ()">⏭ 別の問題</button>
     </div>
   </div>
 </div>
@@ -321,7 +321,7 @@
 <!-- ══ FREE TALK SELECT ══ -->
 <div id="s-ft-select" class="screen">
   <div class="hdr">
-    <button class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
+    <button type="button" class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
     <span class="hdr-title">フリートーク</span>
     <div style="width:60px"></div>
   </div>
@@ -359,15 +359,15 @@
     <div class="rec-label" id="r-rec-row" style="visibility:hidden">
       <div class="rec-dot"></div><span>録音中</span>
     </div>
-    <button class="btn btn-red" id="r-stop" style="display:none;width:200px;margin:0 auto" onclick="stopRec()">⏹ 停止・保存</button>
-    <button class="btn-sub" onclick="cancelRec()">キャンセル</button>
+    <button type="button" class="btn btn-red" id="r-stop" style="display:none;width:200px;margin:0 auto" onclick="stopRec()">⏹ 停止・保存</button>
+    <button type="button" class="btn-sub" onclick="cancelRec()">キャンセル</button>
   </div>
 </div>
 
 <!-- ══ REVIEW ══ -->
 <div id="s-review" class="screen">
   <div class="hdr">
-    <button class="hdr-back" onclick="reviewBack()" aria-label="前の画面へ戻る">←</button><!-- R217: was "録音画面へ戻る" but backs to question/FT-select, not record -->
+    <button type="button" class="hdr-back" onclick="reviewBack()" aria-label="前の画面へ戻る">←</button><!-- R217: was "録音画面へ戻る" but backs to question/FT-select, not record -->
     <span class="hdr-title">振り返り</span>
     <div style="width:60px"></div>
   </div>
@@ -394,14 +394,14 @@
     <div class="rv-section">
       <div class="rv-label">🤖 Claude 評価</div>
       <div id="rv-eval" aria-live="polite" aria-atomic="true"><div class="ev-loading">評価生成中…</div></div><!-- R446: 評価完了時にSRへ通知 -->
-      <button class="btn btn-gray" style="margin-top:10px" onclick="copyPrompt()">📋 Claudeへコピーして詳細評価</button>
+      <button type="button" class="btn btn-gray" style="margin-top:10px" onclick="copyPrompt()">📋 Claudeへコピーして詳細評価</button>
     </div>
     <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#166534">
       💾 録音を記録に残しますか？
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:0">
-      <button class="btn btn-black" id="rv-save-btn" onclick="saveAndNext()">✅ 記録を保存して次へ</button>
-      <button class="btn btn-gray" id="rv-nosave-btn" onclick="discardAndNext()">保存しない</button>
+      <button type="button" class="btn btn-black" id="rv-save-btn" onclick="saveAndNext()">✅ 記録を保存して次へ</button>
+      <button type="button" class="btn btn-gray" id="rv-nosave-btn" onclick="discardAndNext()">保存しない</button>
     </div>
   </div>
 </div>
@@ -409,15 +409,15 @@
 <!-- ══ HISTORY ══ -->
 <div id="s-history" class="screen">
   <div class="hdr">
-    <button class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
+    <button type="button" class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
     <span class="hdr-title">練習記録</span>
-    <button class="hdr-act" style="color:#dc2626" onclick="clearCurrentHistory()">削除</button>
+    <button type="button" class="hdr-act" style="color:#dc2626" onclick="clearCurrentHistory()">削除</button>
   </div>
   <div class="body">
     <div id="year-prog-wrap"></div>
     <div class="tab-bar" role="tablist" aria-label="練習記録タブ"><!-- R445 -->
-      <button class="tab-btn active" id="tab-qa" role="tab" aria-selected="true" aria-controls="hist-qa-body" onclick="switchHistTab('qa')">🎤 Q&amp;A</button>
-      <button class="tab-btn" id="tab-ft" role="tab" aria-selected="false" aria-controls="hist-ft-body" onclick="switchHistTab('ft')">⏱ フリートーク</button>
+      <button type="button" class="tab-btn active" id="tab-qa" role="tab" aria-selected="true" aria-controls="hist-qa-body" onclick="switchHistTab('qa')">🎤 Q&amp;A</button>
+      <button type="button" class="tab-btn" id="tab-ft" role="tab" aria-selected="false" aria-controls="hist-ft-body" onclick="switchHistTab('ft')">⏱ フリートーク</button>
     </div>
     <div id="hist-qa-body" role="tabpanel" aria-labelledby="tab-qa"></div>
     <div id="hist-ft-body" role="tabpanel" aria-labelledby="tab-ft" style="display:none"></div>
@@ -427,7 +427,7 @@
 <!-- ══ SETTINGS ══ -->
 <div id="s-settings" class="screen">
   <div class="hdr">
-    <button class="hdr-back" onclick="nav('s-home')" aria-label="ホームへ戻る">←</button>
+    <button type="button" class="hdr-back" onclick="nav('s-home')" aria-label="ホームへ戻る">←</button>
     <span class="hdr-title">設定</span>
     <div style="width:60px"></div>
   </div>
@@ -436,8 +436,8 @@
       <div class="set-label">Claude APIキー（任意）</div>
       <input type="password" class="inp" id="cfg-key" placeholder="sk-ant-..." aria-label="Claude APIキー"><!-- R416 -->
       <div style="display:flex;gap:8px;margin-bottom:10px"><!-- R166: add clear button so saved API key can be removed -->
-        <button class="btn btn-black" style="width:auto;padding:10px 24px;font-size:13px;border-radius:10px" onclick="saveKey()">保存</button>
-        <button class="btn btn-gray" style="width:auto;padding:10px 16px;font-size:13px;border-radius:10px" onclick="clearKey()">削除</button>
+        <button type="button" class="btn btn-black" style="width:auto;padding:10px 24px;font-size:13px;border-radius:10px" onclick="saveKey()">保存</button>
+        <button type="button" class="btn btn-gray" style="width:auto;padding:10px 16px;font-size:13px;border-radius:10px" onclick="clearKey()">削除</button>
       </div>
       <p class="set-note">設定すると録音後にClaudeが自動評価します。未設定でも「コピーして詳細評価」が使えます。</p>
     </div>
@@ -452,25 +452,25 @@
     <div class="set-section">
       <div class="set-label">Q&amp;A レベルフィルター</div>
       <div class="lv-filters">
-        <button class="lv-fb" id="lf-ALL" aria-pressed="true" onclick="setFilter('ALL')">全レベル</button><!-- R447 -->
-        <button class="lv-fb" id="lf-S" aria-pressed="false" onclick="setFilter('S')">S級</button>
-        <button class="lv-fb" id="lf-A" aria-pressed="false" onclick="setFilter('A')">A級</button>
-        <button class="lv-fb" id="lf-B" aria-pressed="false" onclick="setFilter('B')">B級</button>
-        <button class="lv-fb" id="lf-C" aria-pressed="false" onclick="setFilter('C')">C級</button>
-        <button class="lv-fb" id="lf-D" aria-pressed="false" onclick="setFilter('D')">D級</button>
+        <button type="button" class="lv-fb" id="lf-ALL" aria-pressed="true" onclick="setFilter('ALL')">全レベル</button><!-- R447 -->
+        <button type="button" class="lv-fb" id="lf-S" aria-pressed="false" onclick="setFilter('S')">S級</button>
+        <button type="button" class="lv-fb" id="lf-A" aria-pressed="false" onclick="setFilter('A')">A級</button>
+        <button type="button" class="lv-fb" id="lf-B" aria-pressed="false" onclick="setFilter('B')">B級</button>
+        <button type="button" class="lv-fb" id="lf-C" aria-pressed="false" onclick="setFilter('C')">C級</button>
+        <button type="button" class="lv-fb" id="lf-D" aria-pressed="false" onclick="setFilter('D')">D級</button>
       </div>
     </div>
     <div class="set-section">
       <div class="set-label">年間目標（回）</div>
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
         <input type="number" class="inp" id="cfg-year-goal" placeholder="例：365" min="1" step="1" aria-label="年間目標回数" style="width:110px;padding:10px 12px"><!-- R233: min/step; R416: aria-label -->
-        <button class="btn btn-black" style="width:auto;padding:10px 20px;font-size:13px;border-radius:10px" onclick="saveYearGoal()">保存</button>
+        <button type="button" class="btn btn-black" style="width:auto;padding:10px 20px;font-size:13px;border-radius:10px" onclick="saveYearGoal()">保存</button>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="goal-btn" onclick="setYearGoalQuick(365)">365回</button>
-        <button class="goal-btn" onclick="setYearGoalQuick(500)">500回</button>
-        <button class="goal-btn" onclick="setYearGoalQuick(1000)">1000回</button>
-        <button class="goal-btn" onclick="setYearGoalQuick(2000)">2000回</button>
+        <button type="button" class="goal-btn" onclick="setYearGoalQuick(365)">365回</button>
+        <button type="button" class="goal-btn" onclick="setYearGoalQuick(500)">500回</button>
+        <button type="button" class="goal-btn" onclick="setYearGoalQuick(1000)">1000回</button>
+        <button type="button" class="goal-btn" onclick="setYearGoalQuick(2000)">2000回</button>
       </div>
       <p class="set-note" style="margin-top:8px">設定すると記録画面に年間進捗バーが表示されます。</p>
     </div>
@@ -1100,7 +1100,7 @@ function beginRec() {
         const blobType = recorder.mimeType || mimeType || 'audio/webm;codecs=opus';
         audioBlob = new Blob(chunks, { type: blobType });
         // R82: warn if blob is empty (ondataavailable never fired)
-        if (audioBlob.size === 0) console.warn('R82: empty audio blob — ondataavailable may not have fired');
+        if (audioBlob.size === 0) { console.warn('R82: empty audio blob — ondataavailable may not have fired'); toast('録音データが空です。もう一度お試しください'); }// R457: UX alert user on empty recording
         if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; } // Fix4: 旧URLを解放
         audioUrl  = URL.createObjectURL(audioBlob);
         stream.getTracks().forEach(t => t.stop());
@@ -1712,7 +1712,7 @@ function buildHistHTML(hist, isFT) {
         qHtml +
         (trStr ? '<div class="hist-tr">' + escHtml(trText) + '</div>' : '') +
         '<audio controls style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' + // R441: data-rec-id除去(dead code)
-        '<button class="audio-btn" onclick="toggleAudio(this)" data-id="' + String(it.id).replace(/[^a-z0-9]/gi,'') + '">🔊 録音を聴く</button>' + // R441: data-id注入防止
+        '<button type="button" class="audio-btn" onclick="toggleAudio(this)" data-id="' + String(it.id).replace(/[^a-z0-9]/gi,'') + '">🔊 録音を聴く</button>' + // R441: data-id注入防止
         '</div>';
     }).join('')
   ).join('');
