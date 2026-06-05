@@ -201,7 +201,7 @@
     .tab-btn{
       flex:1;padding:8px;border:none;border-radius:8px;
       font-size:13px;font-weight:700;cursor:pointer;
-      background:transparent;color:#767676;transition:all .15s;/* R449 */
+      background:transparent;color:#595959;transition:all .15s;/* R503: #767676(4.17:1) → #595959(6.43:1) on .tab-bar #f5f5f5 — WCAG 1.4.3 AA 4.5:1 */
       touch-action:manipulation; /* R12 */
     }
     .tab-btn.active{background:#fff;color:#111;box-shadow:0 1px 3px rgba(0,0,0,.1)}
@@ -440,8 +440,8 @@
       <div class="set-label">Claude APIキー（任意）</div>
       <input type="password" class="inp" id="cfg-key" placeholder="sk-ant-..." aria-label="Claude APIキー" autocomplete="off"><!-- R416 -->
       <div style="display:flex;gap:8px;margin-bottom:10px"><!-- R166: add clear button so saved API key can be removed -->
-        <button type="button" class="btn btn-black" style="width:auto;padding:10px 24px;font-size:13px;border-radius:10px" onclick="saveKey()">保存</button>
-        <button type="button" class="btn btn-gray" style="width:auto;padding:10px 16px;font-size:13px;border-radius:10px" onclick="clearKey()">削除</button>
+        <button type="button" class="btn btn-black" style="width:auto;padding:10px 24px;font-size:13px;border-radius:10px" onclick="saveKey()" aria-label="APIキーを保存">保存</button><!-- R501: WCAG 2.4.6 — disambiguates from year-goal 保存 button -->
+        <button type="button" class="btn btn-gray" style="width:auto;padding:10px 16px;font-size:13px;border-radius:10px" onclick="clearKey()" aria-label="APIキーを削除">削除</button><!-- R501 -->
       </div>
       <p class="set-note">設定すると録音後にClaudeが自動評価します。未設定でも「コピーして詳細評価」が使えます。</p>
     </div>
@@ -468,7 +468,7 @@
       <div class="set-label">年間目標（回）</div>
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
         <input type="number" class="inp" id="cfg-year-goal" placeholder="例：365" min="1" step="1" aria-label="年間目標回数" autocomplete="off" style="width:110px;padding:10px 12px"><!-- R233: min/step; R416: aria-label -->
-        <button type="button" class="btn btn-black" style="width:auto;padding:10px 20px;font-size:13px;border-radius:10px" onclick="saveYearGoal()">保存</button>
+        <button type="button" class="btn btn-black" style="width:auto;padding:10px 20px;font-size:13px;border-radius:10px" onclick="saveYearGoal()" aria-label="年間目標を保存">保存</button><!-- R501: WCAG 2.4.6 -->
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button type="button" class="goal-btn" onclick="setYearGoalQuick(365)">365回</button>
@@ -1820,8 +1820,11 @@ function toggleAudio(btn) {
           };
           // R481: codec/decode failure leaves oncanplay unfired → button stuck on "閉じる" with silent audio.
           // onerror auto-resets to the "聴く" state so the user isn't confused.
+          // R502: also revoke+clear src so next click re-runs loadAudio() instead of the else-play branch
+          //        (else branch shows audio element but plays nothing when audio is in error state)
           audio.onerror = () => {
             audio.onerror = null; audio.oncanplay = null;
+            if (audio.src && audio.src.startsWith('blob:')) { URL.revokeObjectURL(audio.src); audio.src = ''; }
             audio.style.display = 'none'; btn.textContent = '🔊 録音を聴く';
             toast('音声の再生に失敗しました');
           };
