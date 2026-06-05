@@ -942,6 +942,12 @@ function nav(id) {
   document.querySelectorAll('.screen').forEach(s => { if (s !== el) s.classList.remove('active'); });
   if (id === 's-home')     refreshHome();
   if (id === 's-settings') loadSettings();
+  // R432: SPA的な画面切替で focus が <body> に落ちないよう、新画面の見出しへ移動（WCAG 2.4.3 フォーカス順序）。
+  // preventScroll でレイアウトジャンプを防止。失敗しても致命的でないため try/catch で握りつぶす。
+  if (el) {
+    const h = el.querySelector('.hdr-title');
+    if (h) { try { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } catch(e){} }
+  }
 }
 // R4/R17/R60: set recCancelled so in-flight getUserMedia/recorder.onstop won't call openReview
 function goHome() { recCancelled = true; recStarting = false; stopTimer(); killRec(); killRecog(); nav('s-home'); }
