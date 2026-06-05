@@ -415,9 +415,9 @@
   </div>
   <div class="body">
     <div id="year-prog-wrap"></div>
-    <div class="tab-bar" role="tablist" aria-label="練習記録タブ"><!-- R445 -->
-      <button type="button" class="tab-btn active" id="tab-qa" role="tab" aria-selected="true" aria-controls="hist-qa-body" onclick="switchHistTab('qa')">🎤 Q&amp;A</button>
-      <button type="button" class="tab-btn" id="tab-ft" role="tab" aria-selected="false" aria-controls="hist-ft-body" onclick="switchHistTab('ft')">⏱ フリートーク</button>
+    <div class="tab-bar" role="tablist" aria-label="練習記録タブ" onkeydown="histTabKey(event)"><!-- R445; R460: arrow-key nav per ARIA APG -->
+      <button type="button" class="tab-btn active" id="tab-qa" role="tab" aria-selected="true" aria-controls="hist-qa-body" tabindex="0" onclick="switchHistTab('qa')">🎤 Q&amp;A</button>
+      <button type="button" class="tab-btn" id="tab-ft" role="tab" aria-selected="false" aria-controls="hist-ft-body" tabindex="-1" onclick="switchHistTab('ft')">⏱ フリートーク</button>
     </div>
     <div id="hist-qa-body" role="tabpanel" aria-labelledby="tab-qa"></div>
     <div id="hist-ft-body" role="tabpanel" aria-labelledby="tab-ft" style="display:none"></div>
@@ -1622,6 +1622,17 @@ function saveFTHist(item) {
   }
 }
 // R313: removed unused updateHistTr() — transcript is persisted via pendingHistItem.tr in saveAndNext()
+// R460: ARIA APG tablist keyboard navigation — arrow keys cycle tabs; Home/End go to first/last
+function histTabKey(e) {
+  const tabs = ['qa', 'ft'];
+  const curIdx = tabs.indexOf(histTab);
+  let nextIdx = -1;
+  if      (e.key === 'ArrowRight' || e.key === 'ArrowDown')  { e.preventDefault(); nextIdx = (curIdx + 1) % tabs.length; }
+  else if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')    { e.preventDefault(); nextIdx = (curIdx - 1 + tabs.length) % tabs.length; }
+  else if (e.key === 'Home')                                  { e.preventDefault(); nextIdx = 0; }
+  else if (e.key === 'End')                                   { e.preventDefault(); nextIdx = tabs.length - 1; }
+  if (nextIdx >= 0) { switchHistTab(tabs[nextIdx]); document.getElementById('tab-' + tabs[nextIdx]).focus(); }
+}
 function switchHistTab(tab) {
   histTab = tab;
   const qaBtn = document.getElementById('tab-qa');
@@ -1631,6 +1642,9 @@ function switchHistTab(tab) {
   // R445: WCAG 4.1.2 — aria-selected反映でスクリーンリーダーにタブ状態を通知
   qaBtn.setAttribute('aria-selected', tab === 'qa' ? 'true' : 'false');
   ftBtn.setAttribute('aria-selected', tab === 'ft' ? 'true' : 'false');
+  // R460: roving tabindex — only active tab in tab-order; inactive reachable via arrow keys only
+  qaBtn.setAttribute('tabindex', tab === 'qa' ? '0' : '-1');
+  ftBtn.setAttribute('tabindex', tab === 'ft' ? '0' : '-1');
   document.getElementById('hist-qa-body').style.display = tab === 'qa' ? 'block' : 'none';
   document.getElementById('hist-ft-body').style.display = tab === 'ft' ? 'block' : 'none';
 }
@@ -1711,7 +1725,8 @@ function buildHistHTML(hist, isFT) {
         '<div class="hist-meta">' + lvBadge + '<span class="badge badge-time">⏱ ' + lim + '</span><span style="font-size:11px;color:#767676">　' + t + '</span></div>' + // R449
         qHtml +
         (trStr ? '<div class="hist-tr">' + escHtml(trText) + '</div>' : '') +
-        '<audio controls style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' + // R441: data-rec-id除去(dead code)
+        '<audio controls aria-label="録音再生 ' + escHtml(t) + ' (' + lim + ')"' + // R459: AT context — which recording this is
+        + ' style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' + // R441: data-rec-id除去(dead code)
         '<button type="button" class="audio-btn" onclick="toggleAudio(this)" data-id="' + String(it.id).replace(/[^a-z0-9]/gi,'') + '">🔊 録音を聴く</button>' + // R441: data-id注入防止
         '</div>';
     }).join('')
