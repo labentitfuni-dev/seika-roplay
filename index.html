@@ -167,6 +167,16 @@
     @media (prefers-reduced-motion: reduce){
       *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
     }
+    /* R429: forced-colors (Windows High Contrast) — keep controls identifiable & state visible.
+       背景色だけで意味を伝えていた要素がHCMで色を失う問題を補正（ボタン境界・進捗バー・録音ドット・選択タブ・トグル状態） */
+    @media (forced-colors: active){
+      .btn,.main-btn,.ft-cell,.goal-btn,.lv-fb,.audio-btn,.tab-btn{border:1px solid;}
+      .prog-bar,.year-prog-fill{background:Highlight;}
+      .rec-dot{background:Highlight;forced-color-adjust:none;}
+      .tab-btn.active{outline:2px solid Highlight;outline-offset:-2px;}
+      input:checked~.tog-track{background:Highlight;}
+      .tog-track::after{background:Canvas;}
+    }
     .body{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 
     /* ─ 評価カード ─ */
