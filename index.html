@@ -388,11 +388,11 @@
     </div>
     <div class="rv-section">
       <div class="rv-label">📝 文字起こし</div>
-      <div class="rv-box" id="rv-tr">認識中…</div>
+      <div class="rv-box" id="rv-tr" aria-live="polite" aria-atomic="true">認識中…</div><!-- R446: SR向け — 1200ms後に文字起こしが入るとき読み上げ -->
     </div>
     <div class="rv-section">
       <div class="rv-label">🤖 Claude 評価</div>
-      <div id="rv-eval"><div class="ev-loading">評価生成中…</div></div>
+      <div id="rv-eval" aria-live="polite" aria-atomic="true"><div class="ev-loading">評価生成中…</div></div><!-- R446: 評価完了時にSRへ通知 -->
       <button class="btn btn-gray" style="margin-top:10px" onclick="copyPrompt()">📋 Claudeへコピーして詳細評価</button>
     </div>
     <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#166534">
