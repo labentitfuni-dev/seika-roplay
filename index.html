@@ -1116,7 +1116,9 @@ function beginRec() {
         // R82: warn if blob is empty (ondataavailable never fired)
         if (audioBlob.size === 0) { console.warn('R82: empty audio blob — ondataavailable may not have fired'); toast('録音データが空です。もう一度お試しください'); }// R457: UX alert user on empty recording
         if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; } // Fix4: 旧URLを解放
-        audioUrl  = URL.createObjectURL(audioBlob);
+        // R484: createObjectURL can fail under memory pressure — guard so the mic is still released
+        try { audioUrl = URL.createObjectURL(audioBlob); }
+        catch(urlErr) { stream.getTracks().forEach(t => t.stop()); toast('録音の処理に失敗しました。もう一度お試しください'); if (mode === 'ft') nav('s-ft-select'); else nav('s-question'); return; }
         stream.getTracks().forEach(t => t.stop());
         openReview();
       };
