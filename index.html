@@ -415,7 +415,7 @@
   <div class="hdr">
     <button type="button" class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
     <span class="hdr-title">練習記録</span>
-    <button type="button" class="hdr-act" style="color:#dc2626" onclick="clearCurrentHistory()">削除</button>
+    <button type="button" class="hdr-act" style="color:#dc2626" onclick="clearCurrentHistory()" aria-label="Q&amp;A履歴を削除">削除</button><!-- R487: default aria-label matches initial histTab='qa'; switchHistTab() updates it dynamically -->
   </div>
   <div class="body">
     <div id="year-prog-wrap"></div>
