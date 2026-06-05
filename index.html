@@ -957,7 +957,9 @@ function dayKey() { return 'day_' + localDateStr(); }
 // R34: Optimized — use localStorage.key() iteration instead of 372 getItem calls
 // R205: use safeInt to guard against NaN propagation from corrupted day_ values
 function getMonthCount() {
-  const prefix = 'day_' + new Date().getFullYear() + '-' + String(new Date().getMonth()+1).padStart(2,'0') + '-';
+  // R430: snapshot Date once — two new Date() calls could straddle a month/year rollover at midnight
+  const now = new Date();
+  const prefix = 'day_' + now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-';
   let c = 0;
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
