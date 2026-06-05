@@ -1086,8 +1086,15 @@ function beginRec() {
   document.getElementById('r-status').textContent = ''; // R471: clear live region so next set always triggers aria-live
   nav('s-record');
   recCancelled = false;
+  // R482: try full audio constraints first; fall back to {audio:true} on OverconstrainedError
+  // (some Bluetooth headsets / virtual mic drivers reject the full constraint set)
   navigator.mediaDevices.getUserMedia({
     audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 }
+  }).catch(err => {
+    if (err.name === 'OverconstrainedError' || err.name === 'ConstraintNotSatisfiedError') {
+      return navigator.mediaDevices.getUserMedia({ audio: true }); // R482: minimal-constraints retry
+    }
+    throw err; // re-throw NotAllowedError, NotFoundError, etc. to .catch() below
   }).then(stream => {
     recStarting = false; // Fix5: 取得完了でフラグ解除
     // R372: if cancel/goHome fired while getUserMedia was pending, release the mic immediately
