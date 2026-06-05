@@ -1764,8 +1764,7 @@ function buildHistHTML(hist, isFT) {
         '<div class="hist-meta">' + lvBadge + '<span class="badge badge-time">⏱ ' + lim + '</span><span style="font-size:11px;color:#767676">　' + escHtml(t) + '</span></div>' + // R449; R472: escHtml(t) for consistency (locale time strings are safe in practice but policy is to escape all dynamic text)
         qHtml +
         (trStr ? '<div class="hist-tr">' + escHtml(trText) + '</div>' : '') +
-        '<audio controls aria-label="録音再生 ' + escHtml(t) + ' (' + lim + ')"' + // R459: AT context — which recording this is
-        + ' style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' + // R441: data-rec-id除去(dead code)
+        '<audio controls aria-label="録音再生 ' + escHtml(t) + ' (' + lim + ')" style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' + // R459: AT context; R483: was split across two lines with a stray leading '+' that produced '...)"NaN style=...' via double-+ unary coercion
         '<button type="button" class="audio-btn" onclick="toggleAudio(this)" data-id="' + String(it.id).replace(/[^a-z0-9]/gi,'') + '">🔊 録音を聴く</button>' + // R441: data-id注入防止
         '</div>';
     }).join('')
