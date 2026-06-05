@@ -145,13 +145,13 @@
 
     /* ─ 年間進捗 ─ */
     .year-prog{background:#f5f5f5;border-radius:12px;padding:14px 16px;margin-bottom:16px}
-    .year-prog-title{font-size:11px;color:#767676;font-weight:700;letter-spacing:.5px;margin-bottom:10px}/* R449 */
+    .year-prog-title{font-size:11px;color:#595959;font-weight:700;letter-spacing:.5px;margin-bottom:10px}/* R499: #767676(4.17:1) → #595959(6.43:1) on #f5f5f5 — WCAG 1.4.3 AA 4.5:1 */
     .year-prog-nums{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
     .year-count{font-size:28px;font-weight:900;color:#111}
-    .year-goal-lbl{font-size:12px;color:#767676}/* R449 */
-    .year-prog-bar{height:8px;background:#ddd;border-radius:100px;overflow:hidden}
+    .year-goal-lbl{font-size:12px;color:#595959}/* R499: #767676(4.17:1) → #595959(6.43:1) on #f5f5f5 — WCAG 1.4.3 AA */
+    .year-prog-bar{height:8px;background:#888;border-radius:100px;overflow:hidden}/* R500: #ddd(1.25:1) → #888(3.25:1) on #f5f5f5 — WCAG 1.4.11 non-text ≥3:1; fill(#111) vs track(#888)=5.33:1 ✓ */
     .year-prog-fill{height:100%;border-radius:100px;background:#111;transition:width .5s}
-    .prog-pct{font-size:11px;color:#767676;text-align:right;margin-top:5px}/* R449 */
+    .prog-pct{font-size:11px;color:#595959;text-align:right;margin-top:5px}/* R499: #767676 → #595959 on #f5f5f5 — WCAG 1.4.3 AA */
     .goal-btn{
       padding:6px 13px;border-radius:100px;border:1.5px solid #767676;/* R450: WCAG 1.4.11 */
       background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:#333;
@@ -1726,9 +1726,9 @@ function renderHist() {
     wrap.innerHTML =
       '<div class="year-prog" style="text-align:center">' +
         '<div class="year-prog-title">' + year + '年の練習</div>' +
-        '<div style="font-size:30px;font-weight:900;color:#111;margin:4px 0">' + fmtN(yearCount) + '<span style="font-size:14px;color:#767676;font-weight:400"> 回</span></div>' + // R449
-        '<div style="font-size:12px;color:#767676;margin-top:4px">今月 ' + fmtN(monthCount) + '回　|　今日 ' + fmtN(todayCount) + '回</div>' + // R449
-        '<div style="font-size:11px;color:#767676;margin-top:6px">設定から年間目標を設定できます</div>' + // R449
+        '<div style="font-size:30px;font-weight:900;color:#111;margin:4px 0">' + fmtN(yearCount) + '<span style="font-size:14px;color:#595959;font-weight:400"> 回</span></div>' + // R499: #767676→#595959 on #f5f5f5 — WCAG 1.4.3 AA
+        '<div style="font-size:12px;color:#595959;margin-top:4px">今月 ' + fmtN(monthCount) + '回　|　今日 ' + fmtN(todayCount) + '回</div>' + // R499: #767676→#595959
+        '<div style="font-size:11px;color:#595959;margin-top:6px">設定から年間目標を設定できます</div>' + // R499: #767676→#595959
       '</div>';
   }
   // R397: revoke any loaded audio blob URLs before innerHTML rebuild destroys the elements (prevents leaks)
