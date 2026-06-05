@@ -1274,6 +1274,9 @@ function openReview() {
 // Fix6: ボタン二重タップ防止 + async/await + try/catch
 async function saveAndNext() {
   evalAbortCtrl?.abort(); evalAbortCtrl = null; // R452b: abort eval when navigating away via save
+  // R473: stop rv-audio playback before navigating away (reviewBack already does this; saveAndNext/discardAndNext did not — ghost audio bug)
+  const rvAudioS = document.getElementById('rv-audio');
+  if (rvAudioS) { rvAudioS.pause(); rvAudioS.src = ''; }
   const saveBtn   = document.getElementById('rv-save-btn');
   const noSaveBtn = document.getElementById('rv-nosave-btn');
   if (saveBtn) saveBtn.disabled = true;
@@ -1313,6 +1316,9 @@ async function saveAndNext() {
 }
 function discardAndNext() {
   evalAbortCtrl?.abort(); evalAbortCtrl = null; // R452b: abort eval when navigating away via discard
+  // R473: stop rv-audio before navigating away (same fix as saveAndNext above)
+  const rvAudioD = document.getElementById('rv-audio');
+  if (rvAudioD) { rvAudioD.pause(); rvAudioD.src = ''; }
   // R2: revoke blob URL; R36: notify user; R74: .catch() on deleteAudio
   if (recId) deleteAudio(recId).catch(() => {});
   if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
