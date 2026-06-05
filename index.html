@@ -1347,7 +1347,8 @@ function runEval(t, isFT) {
   const navSignal = evalAbortCtrl.signal;
   const el  = document.getElementById('rv-eval');
   const key = localStorage.getItem('api_key');
-  if (key) {
+  // R462: skip Claude API for error/empty transcripts — （…）prefix = SR failure; saves API tokens
+  if (key && t && !t.startsWith('（')) {
     callClaude(key, t, isFT, navSignal)
       .then(r  => {
         if (navSignal.aborted) return; // R452: suppress stale DOM update
