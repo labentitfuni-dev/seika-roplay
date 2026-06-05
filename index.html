@@ -170,7 +170,8 @@
     /* R429: forced-colors (Windows High Contrast) — keep controls identifiable & state visible.
        背景色だけで意味を伝えていた要素がHCMで色を失う問題を補正（ボタン境界・進捗バー・録音ドット・選択タブ・トグル状態） */
     @media (forced-colors: active){
-      .btn,.main-btn,.ft-cell,.goal-btn,.lv-fb,.audio-btn,.tab-btn{border:1px solid;}
+      .btn,.main-btn,.ft-cell,.goal-btn,.lv-fb,.audio-btn,.tab-btn,.hdr-back,.hdr-act,.sub-link{border:1px solid;}/* R454: +nav buttons */
+      .tog-track{border:1px solid;}/* R454: unchecked toggle boundary */
       .prog-bar,.year-prog-fill{background:Highlight;}
       .rec-dot{background:Highlight;forced-color-adjust:none;}
       .tab-btn.active{outline:2px solid Highlight;outline-offset:-2px;}
@@ -1649,7 +1650,7 @@ function renderHist() {
           '<span><span class="year-count">' + fmtN(yearCount) + '</span><span style="font-size:13px;color:#666;font-weight:400"> 回</span></span>' +
           '<span class="year-goal-lbl">目標 ' + fmtN(goal) + ' 回</span>' +
         '</div>' +
-        '<div class="year-prog-bar"><div class="year-prog-fill" style="width:' + fillW + '%"></div></div>' +
+        '<div class="year-prog-bar"><div class="year-prog-fill" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + fillW + '" aria-label="年間達成率" style="width:' + fillW + '%"></div></div>' + // R454: WCAG 4.1.2 progressbar
         '<div class="prog-pct">' + pct + '% 達成　|　今月 ' + fmtN(monthCount) + '回　|　今日 ' + fmtN(todayCount) + '回</div>' +
       '</div>';
   } else {
