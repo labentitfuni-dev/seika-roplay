@@ -963,7 +963,8 @@ function nav(id) {
   if (h) { try { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } catch(e){} }
 }
 // R4/R17/R60: set recCancelled so in-flight getUserMedia/recorder.onstop won't call openReview
-function goHome() { recCancelled = true; recStarting = false; stopTimer(); killRec(); killRecog(); nav('s-home'); }
+// R491: recId=null mirrors cancelRec() — closes stale-onstop race window on fast nav-home+re-record
+function goHome() { recCancelled = true; recStarting = false; recId = null; stopTimer(); killRec(); killRecog(); nav('s-home'); }
 function showHistory(tab) { histTab = tab; nav('s-history'); renderHist(); }
 
 /* ── ホーム統計 ── */
