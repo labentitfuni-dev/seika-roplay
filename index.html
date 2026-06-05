@@ -1778,13 +1778,15 @@ function toggleAudio(btn) {
   const audio = btn.previousElementSibling;
   if (!audio || audio.tagName !== 'AUDIO') return; // R442: DOM変異ガード（拡張機能等でノードが挿入された場合）
   if (audio.style.display === 'none' || !audio.style.display) {
-    // 他の再生中の音声をすべて停止
+    // 他の表示中の音声をすべて停止・非表示
+    // R486: was !a.paused — user-paused-but-visible audio stayed open when opening a new one; check visibility instead
     document.querySelectorAll('#hist-qa-body audio, #hist-ft-body audio').forEach(a => {
-      if (a !== audio && !a.paused) {
+      if (a !== audio && a.style.display !== 'none' && a.style.display !== '') {
         a.pause();
+        a.oncanplay = null; a.onerror = null; // R486: clear pending handlers on force-close
         a.style.display = 'none';
         const b = a.nextElementSibling;
-        if (b) b.textContent = '🔊 録音を聴く';
+        if (b && b.classList.contains('audio-btn')) b.textContent = '🔊 録音を聴く';
       }
     });
     if (!audio.src || audio.src === window.location.href) {
