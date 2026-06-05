@@ -1083,6 +1083,7 @@ function beginRec() {
   setCnt(curLimit);
   document.getElementById('r-rec-row').style.visibility = 'hidden';
   document.getElementById('r-stop').style.display = 'none';
+  document.getElementById('r-status').textContent = ''; // R471: clear live region so next set always triggers aria-live
   nav('s-record');
   recCancelled = false;
   navigator.mediaDevices.getUserMedia({
@@ -1741,7 +1742,7 @@ function buildHistHTML(hist, isFT) {
       const trStr = (it.tr != null) ? String(it.tr) : ''; // R434: 非文字列ガード
       const trText = trStr ? trStr.slice(0,80) + (trStr.length>80?'…':'') : '';
       return '<div class="hist-item">' +
-        '<div class="hist-meta">' + lvBadge + '<span class="badge badge-time">⏱ ' + lim + '</span><span style="font-size:11px;color:#767676">　' + t + '</span></div>' + // R449
+        '<div class="hist-meta">' + lvBadge + '<span class="badge badge-time">⏱ ' + lim + '</span><span style="font-size:11px;color:#767676">　' + escHtml(t) + '</span></div>' + // R449; R472: escHtml(t) for consistency (locale time strings are safe in practice but policy is to escape all dynamic text)
         qHtml +
         (trStr ? '<div class="hist-tr">' + escHtml(trText) + '</div>' : '') +
         '<audio controls aria-label="録音再生 ' + escHtml(t) + ' (' + lim + ')"' + // R459: AT context — which recording this is
