@@ -261,7 +261,7 @@
 <body>
 
 <!-- ══ HOME ══ -->
-<div id="s-home" class="screen active">
+<div id="s-home" class="screen active" role="main"><!-- R443: initial main landmark -->
   <div class="hdr">
     <span class="hdr-title">🎯 SEIKA ロープレ</span>
     <button class="hdr-act" onclick="nav('s-settings')">設定</button>
@@ -947,6 +947,9 @@ function nav(id) {
   document.querySelectorAll('.screen').forEach(s => { if (s !== el) s.classList.remove('active'); });
   if (id === 's-home')     refreshHome();
   if (id === 's-settings') loadSettings();
+  // R443: WCAG 1.3.6 — SPA画面切替時に role="main" をアクティブ画面のみに付与
+  document.querySelectorAll('.screen[role="main"]').forEach(s => s.removeAttribute('role'));
+  if (el) el.setAttribute('role', 'main');
   // R432: SPA的な画面切替で focus が <body> に落ちないよう、新画面の見出しへ移動（WCAG 2.4.3 フォーカス順序）。
   // preventScroll でレイアウトジャンプを防止。失敗しても致命的でないため try/catch で握りつぶす。
   if (el) {
