@@ -1667,17 +1667,20 @@ function buildHistHTML(hist, isFT) {
       const dd  = new Date(it.date);
       const t   = isNaN(dd.getTime()) ? '--:--' : dd.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}); // R403
       const lim = safeInt(it.limit) + '秒'; // R301: standardize on 秒 (was 1分 for 60s) — consistent with rest of app; R303-style guard
-      const lc  = (it.lv||'').replace('級','').toLowerCase();
-      const lvBadge = lc ? '<span class="badge badge-' + lc + '" style="font-size:10px">' + escHtml(it.lv) + '</span> ' : ''; // R8: XSS
+      // R434: 破損/旧スキーマで lv/tr が非文字列の場合 .replace/.slice が throw し履歴画面全体が壊れる問題を防止（String 強制）
+      const lvStr = (it.lv != null) ? String(it.lv) : '';
+      const lc  = lvStr.replace('級','').toLowerCase();
+      const lvBadge = lc ? '<span class="badge badge-' + escHtml(lc) + '" style="font-size:10px">' + escHtml(lvStr) + '</span> ' : ''; // R8: XSS
       // Fix14: XSSを防ぐためit.qとit.trにescHtmlを適用
       const qHtml = !isFT
         ? '<div class="hist-q">' + escHtml(it.q||'') + '</div>'
         : '<div class="hist-q" style="color:#aaa">フリートーク（' + lim + '）</div>';
-      const trText = it.tr ? it.tr.slice(0,80) + (it.tr.length>80?'…':'') : '';
+      const trStr = (it.tr != null) ? String(it.tr) : ''; // R434: 非文字列ガード
+      const trText = trStr ? trStr.slice(0,80) + (trStr.length>80?'…':'') : '';
       return '<div class="hist-item">' +
         '<div class="hist-meta">' + lvBadge + '<span class="badge badge-time">⏱ ' + lim + '</span><span style="font-size:11px;color:#aaa">　' + t + '</span></div>' +
         qHtml +
-        (it.tr ? '<div class="hist-tr">' + escHtml(trText) + '</div>' : '') +
+        (trStr ? '<div class="hist-tr">' + escHtml(trText) + '</div>' : '') +
         '<audio data-rec-id="' + it.id + '" controls style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' +
         '<button class="audio-btn" onclick="toggleAudio(this)" data-id="' + it.id + '">🔊 録音を聴く</button>' +
         '</div>';
