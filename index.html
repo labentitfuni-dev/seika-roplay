@@ -1167,7 +1167,10 @@ function startRecog() {
       transcript = final + interim;
     };
     r.onerror = e => {
-      if (e.error === 'not-allowed') { transcript = '（音声認識の許可が必要です）'; recogShouldRun = false; return; }
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { transcript = '（音声認識の許可が必要です）'; recogShouldRun = false; return; }
+      // R431: 'aborted'（意図的なstop）と 'no-speech'（無音）は失敗ではない。
+      // 誤った「失敗しました」表示を防ぐ。録音音声は保持され、空文字でも評価は安全に処理される。
+      if (e.error === 'aborted' || e.error === 'no-speech') { return; }
       if (e.error === 'network') {
         // Android Chromeではnetworkエラー後にonendが来ないことがある
         if (recogShouldRun && recorder && recorder.state === 'recording') {
