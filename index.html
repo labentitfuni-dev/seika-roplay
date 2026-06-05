@@ -1267,7 +1267,8 @@ function openReview() {
   noSaveBtn.textContent = '保存しない';
   nav('s-review');
   // ★ 自動保存しない。ユーザーが「保存」を押したときだけ記録する
-  pendingHistItem = { id: recId, date: new Date().toISOString(), limit: curLimit, tr: '', q: curQ, lv: curLv };
+  // R490: for FT mode, store empty q/lv so history items don't show stale QA-level badges from a previous session
+  pendingHistItem = { id: recId, date: new Date().toISOString(), limit: curLimit, tr: '', q: isFT ? '' : curQ, lv: isFT ? '' : curLv };
   pendingIsFT = isFT;
   const sessionRecId = recId; // R21/R56: capture session to detect abandoned review
   setTimeout(() => {
