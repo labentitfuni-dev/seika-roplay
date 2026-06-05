@@ -353,8 +353,8 @@
   <div class="rec-screen">
     <div class="q-mini" id="r-q-mini"></div>
     <div class="timer-hint" id="r-timer-lbl"></div>
-    <div class="prog-wrap"><div class="prog-bar" id="r-prog" style="width:100%"></div></div>
-    <div class="cnt cnt-ok" id="r-cnt">30</div>
+    <div class="prog-wrap"><div class="prog-bar" id="r-prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-label="録音残り時間" style="width:100%"></div></div><!-- R453: WCAG 4.1.2 -->
+    <div class="cnt cnt-ok" id="r-cnt" role="timer" aria-label="残り30秒" aria-live="off">30</div><!-- R453: role=timer + aria-label for AT; aria-live=off prevents per-tick announcements -->
     <div class="rec-label" id="r-rec-row" style="visibility:hidden">
       <div class="rec-dot"></div><span>録音中</span>
     </div>
@@ -1141,10 +1141,11 @@ function beginRec() {
 function setCnt(n) {
   const el = document.getElementById('r-cnt');
   el.textContent = n;
+  el.setAttribute('aria-label', '残り' + n + '秒'); // R453: keep AT label in sync (role=timer)
   const r = curLimit > 0 ? n / curLimit : 0; // Fix8: ゼロ除算ガード
   el.className = 'cnt ' + (r > .5 ? 'cnt-ok' : r > .25 ? 'cnt-w' : 'cnt-d');
   const p = document.getElementById('r-prog');
-  if (p) p.style.width = (r * 100) + '%';
+  if (p) { p.style.width = (r * 100) + '%'; p.setAttribute('aria-valuenow', Math.round(r * 100)); } // R453: keep progressbar in sync
 }
 let recCancelled = false;
 let recogShouldRun = false;
@@ -1264,6 +1265,7 @@ function openReview() {
 }
 // Fix6: ボタン二重タップ防止 + async/await + try/catch
 async function saveAndNext() {
+  evalAbortCtrl?.abort(); evalAbortCtrl = null; // R452b: abort eval when navigating away via save
   const saveBtn   = document.getElementById('rv-save-btn');
   const noSaveBtn = document.getElementById('rv-nosave-btn');
   if (saveBtn) saveBtn.disabled = true;
@@ -1302,6 +1304,7 @@ async function saveAndNext() {
   }
 }
 function discardAndNext() {
+  evalAbortCtrl?.abort(); evalAbortCtrl = null; // R452b: abort eval when navigating away via discard
   // R2: revoke blob URL; R36: notify user; R74: .catch() on deleteAudio
   if (recId) deleteAudio(recId).catch(() => {});
   if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
@@ -1807,8 +1810,9 @@ function clearKey() {
 function saveYearGoal() {
   // R402: floor to integer so decimals like 365.7 don't render as "目標 365.7 回"
   const v = Math.floor(+(document.getElementById('cfg-year-goal').value));
-  if (v > 0) { localStorage.setItem('year_goal', v); document.getElementById('cfg-year-goal').value = v; toast('年間目標を ' + v + ' 回に設定しました 🎯'); }
-  else { localStorage.removeItem('year_goal'); toast('年間目標をリセットしました'); }
+  if (v > 0 && isFinite(v)) { // R453: isFinite guard — Math.floor(Infinity)=Infinity passes v>0 without guard
+    localStorage.setItem('year_goal', v); document.getElementById('cfg-year-goal').value = v; toast('年間目標を ' + v + ' 回に設定しました 🎯');
+  } else { localStorage.removeItem('year_goal'); toast('年間目標をリセットしました'); }
 }
 function setYearGoalQuick(n) {
   document.getElementById('cfg-year-goal').value = n;
