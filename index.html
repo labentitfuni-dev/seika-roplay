@@ -1648,6 +1648,15 @@ function switchHistTab(tab) {
   ftBtn.setAttribute('tabindex', tab === 'ft' ? '0' : '-1');
   document.getElementById('hist-qa-body').style.display = tab === 'qa' ? 'block' : 'none';
   document.getElementById('hist-ft-body').style.display = tab === 'ft' ? 'block' : 'none';
+  // R465: stop any audio playing in the now-hidden panel (prevents ghost playback across tab switch)
+  const hiddenPanel = document.getElementById(tab === 'qa' ? 'hist-ft-body' : 'hist-qa-body');
+  hiddenPanel.querySelectorAll('audio').forEach(a => {
+    if (!a.paused) {
+      a.pause(); a.style.display = 'none';
+      const b = a.nextElementSibling;
+      if (b && b.classList.contains('audio-btn')) b.textContent = '🔊 録音を聴く';
+    }
+  });
 }
 function renderHist() {
   const wrap = document.getElementById('year-prog-wrap');
