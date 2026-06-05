@@ -1095,12 +1095,14 @@ function beginRec() {
     // R372: wrap recorder setup so a MediaRecorder constructor failure still releases the mic stream
     try {
       chunks = []; recId = Date.now().toString() + Math.random().toString(36).slice(2,6); // R33: collision-safe ID
+      const capturedRecId = recId; // R480: capture session ID at closure creation — guards stale onstop from a cancelled session
       // Android Chrome は webm;codecs=opus が最も安定。iOS は mp4
       const mimeType = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg']
         .find(t => MediaRecorder.isTypeSupported(t)) || '';
       recorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
       recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
       recorder.onstop = () => {
+        if (recId !== capturedRecId) { stream.getTracks().forEach(t => t.stop()); return; } // R480: discard stale callback from a previous session
         if (recCancelled) { recCancelled = false; stream.getTracks().forEach(t => t.stop()); return; }
         const blobType = recorder.mimeType || mimeType || 'audio/webm;codecs=opus';
         audioBlob = new Blob(chunks, { type: blobType });
