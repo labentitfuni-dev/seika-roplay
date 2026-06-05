@@ -1111,6 +1111,7 @@ function beginRec() {
         document.getElementById('r-stop').style.display = 'block';
         // Fix13: Date.now()ベースのタイマー精度向上（200ms間隔）
         const startTime = Date.now();
+        clearInterval(timerInt); // R442: 二重タイマー防止（getUserMedia後500ms window中の再入対策）
         timerInt = setInterval(() => {
           const elapsed = Math.floor((Date.now() - startTime) / 1000);
           const left = Math.max(curLimit - elapsed, 0);
@@ -1693,6 +1694,7 @@ function buildHistHTML(hist, isFT) {
 function toggleAudio(btn) {
   const id    = btn.dataset.id;
   const audio = btn.previousElementSibling;
+  if (!audio || audio.tagName !== 'AUDIO') return; // R442: DOM変異ガード（拡張機能等でノードが挿入された場合）
   if (audio.style.display === 'none' || !audio.style.display) {
     // 他の再生中の音声をすべて停止
     document.querySelectorAll('#hist-qa-body audio, #hist-ft-body audio').forEach(a => {
