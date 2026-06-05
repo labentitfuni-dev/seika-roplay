@@ -1703,6 +1703,9 @@ function toggleAudio(btn) {
     });
     if (!audio.src || audio.src === window.location.href) {
       loadAudio(id).then(blob => {
+        // R435: DOM再構築（renderHist呼び出し）で要素がdetachされた場合、blob URLを作ってもrevoke機会がなくリーク。
+        // isConnected で確認して detach 済みなら早期リターン。
+        if (!audio.isConnected) { return; }
         if (blob) {
           if (audio.src && audio.src.startsWith('blob:')) URL.revokeObjectURL(audio.src);
           audio.src = URL.createObjectURL(blob);
