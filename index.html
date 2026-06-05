@@ -1817,7 +1817,7 @@ function saveKey() {
   if (!v) { toast('APIキーを入力してください'); return; }
   // R43: validate key format
   if (!v.startsWith('sk-ant-')) { toast('形式が正しくありません（sk-ant-で始まるキーを入力してください）'); return; }
-  localStorage.setItem('api_key', v); toast('APIキーを保存しました ✅');
+  localStorage.setItem('api_key', v); document.getElementById('cfg-key').value = v; toast('APIキーを保存しました ✅');// R464: show trimmed value in field
 }
 // R166: allow user to remove saved API key from the UI
 function clearKey() {
@@ -1917,7 +1917,7 @@ window.addEventListener('beforeunload', e => {
     });
   } catch(e) {}
 })();
-initDB().then(() => console.log('DB ready')).catch(() => console.warn('IndexedDB unavailable'));
+initDB().catch(() => console.warn('IndexedDB unavailable'));// R463: removed debug log
 try { refreshHome(); } catch(e) { console.warn('refreshHome: localStorage unavailable', e); } // E3
 </script>
 </body>
