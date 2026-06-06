@@ -371,7 +371,7 @@
 <!-- ══ REVIEW ══ -->
 <div id="s-review" class="screen">
   <div class="hdr">
-    <button type="button" class="hdr-back" onclick="reviewBack()" aria-label="前の画面へ戻る">←</button><!-- R217: was "録音画面へ戻る" but backs to question/FT-select, not record -->
+    <button type="button" class="hdr-back" id="rv-back-btn" onclick="reviewBack()" aria-label="前の画面へ戻る">←</button><!-- R217; R557: id added so saveAndNext() can disable it during async IDB save, preventing reviewBack() race -->
     <span class="hdr-title">振り返り</span>
     <div style="width:60px"></div>
   </div>
@@ -480,7 +480,7 @@
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v4.6<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R513: v4.5→v4.6 reflects R509-R513 SR double-start/stale-load/WCAG/date-grouping fixes -->
+      <p class="set-note">SEIKA ロープレツール v4.7<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R557: v4.6→v4.7 reflects R514(copyPrompt safety)/R557(saveAndNext back-btn lock) fixes -->
     </div>
   </div>
 </div>
@@ -1279,7 +1279,9 @@ function openReview() {
   // ボタンラベル更新
   const saveBtn   = document.getElementById('rv-save-btn');
   const noSaveBtn = document.getElementById('rv-nosave-btn');
+  const backBtn   = document.getElementById('rv-back-btn');
   saveBtn.disabled = false; noSaveBtn.disabled = false; // reset from previous session
+  if (backBtn) backBtn.disabled = false; // R557: re-enable back btn that saveAndNext() may have disabled
   saveBtn.textContent   = isFT ? '✅ 記録を保存してフリートークへ' : '✅ 記録を保存して次の問題へ';
   noSaveBtn.textContent = '保存しない';
   nav('s-review');
@@ -1312,8 +1314,10 @@ async function saveAndNext() {
   if (rvAudioS) { rvAudioS.onerror = null; rvAudioS.pause(); rvAudioS.src = ''; } // R492: clear onerror before src='' prevents stale handler firing
   const saveBtn   = document.getElementById('rv-save-btn');
   const noSaveBtn = document.getElementById('rv-nosave-btn');
-  if (saveBtn) saveBtn.disabled = true;
+  const backBtn   = document.getElementById('rv-back-btn');
+  if (saveBtn)   saveBtn.disabled   = true;
   if (noSaveBtn) noSaveBtn.disabled = true;
+  if (backBtn)   backBtn.disabled   = true; // R557: lock back btn during async save — prevents reviewBack() racing deleteAudio() against saveAudio()
   // R354: capture & null pendingHistItem up-front. Previously stats (history + savePractice) ran
   // BEFORE `await saveAudio`; if the audio save threw, pendingHistItem stayed set and the re-enabled
   // buttons allowed a retry that DUPLICATED the history entry and DOUBLE-counted the practice.
@@ -1351,8 +1355,10 @@ function discardAndNext() {
   evalAbortCtrl?.abort(); evalAbortCtrl = null; // R452b: abort eval when navigating away via discard
   const saveBtn   = document.getElementById('rv-save-btn');
   const noSaveBtn = document.getElementById('rv-nosave-btn');
-  if (saveBtn) saveBtn.disabled = true;
+  const backBtn   = document.getElementById('rv-back-btn');
+  if (saveBtn)   saveBtn.disabled   = true;
   if (noSaveBtn) noSaveBtn.disabled = true; // R504: prevent double-click race — same guard as saveAndNext()
+  if (backBtn)   backBtn.disabled   = true; // R557: consistency — all review nav locked during teardown
   // R473: stop rv-audio before navigating away (same fix as saveAndNext above)
   const rvAudioD = document.getElementById('rv-audio');
   if (rvAudioD) { rvAudioD.onerror = null; rvAudioD.pause(); rvAudioD.src = ''; } // R492: clear onerror before src=''
@@ -1611,13 +1617,17 @@ function copyPrompt() {
     catch(e2) { toast('コピーできませんでした。手動でコピーしてください'); }
     document.body.removeChild(ta);
   };
+  // R514: safety reset — if writeText() never resolves (browser bug), debounce flag stays true forever locking the button
+  const resetCopy = () => { copyingPrompt = false; };
+  const safetyTimer = setTimeout(resetCopy, 5000); // R514: max 5s before auto-unlock
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(promptText)
-      .then(() => { toast('コピーしました！Claudeに貼り付けてください ✅'); copyingPrompt = false; })
-      .catch(() => { fallbackCopy(); copyingPrompt = false; });
+      .then(() => { clearTimeout(safetyTimer); toast('コピーしました！Claudeに貼り付けてください ✅'); resetCopy(); })
+      .catch(() => { clearTimeout(safetyTimer); fallbackCopy(); resetCopy(); });
   } else {
+    clearTimeout(safetyTimer);
     fallbackCopy();
-    copyingPrompt = false;
+    resetCopy();
   }
 }
 
