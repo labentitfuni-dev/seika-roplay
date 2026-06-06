@@ -213,7 +213,7 @@
     .date-hdr{font-size:11px;color:#767676;letter-spacing:.5px;margin:16px 0 8px;font-weight:700}/* R449 */
     .empty{text-align:center;padding:48px 20px;color:#767676;font-size:14px}/* R449 */
     .audio-btn{
-      background:#f5f5f5;border:none;color:#555;padding:8px 14px;
+      background:#f5f5f5;border:1.5px solid #767676;color:#555;padding:8px 14px;/* R512: was border:none — #f5f5f5 on #fff=1.09:1 fails WCAG 1.4.11 non-text ≥3:1; #767676 border=4.52:1 ✓ */
       border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;
       width:100%;text-align:left;transition:background .15s;
       touch-action:manipulation; /* R11 */
@@ -480,7 +480,7 @@
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v4.5<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R504: v4.4→v4.5 reflects R499-R504 WCAG/aria/double-click fixes -->
+      <p class="set-note">SEIKA ロープレツール v4.6<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R513: v4.5→v4.6 reflects R509-R513 SR double-start/stale-load/WCAG/date-grouping fixes -->
     </div>
   </div>
 </div>
@@ -1201,6 +1201,7 @@ function startRecog() {
   function createRecog() {
     const r = new SR();
     r.lang = 'ja-JP'; r.continuous = true; r.interimResults = true;
+    let netRetryTimer = null; // R509: track network-retry timer so onend can cancel it before firing its own restart
     r.onresult = e => {
       let interim = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -1217,7 +1218,8 @@ function startRecog() {
       if (e.error === 'network') {
         // Android Chromeではnetworkエラー後にonendが来ないことがある
         if (recogShouldRun && recorder && recorder.state === 'recording') {
-          setTimeout(() => {
+          netRetryTimer = setTimeout(() => { // R509: store id so onend can cancel this timeout
+            netRetryTimer = null;
             if (!recogShouldRun) return;
             try { recognition = createRecog(); recognition.start(); } catch(ex) {}
           }, 800);
@@ -1227,6 +1229,10 @@ function startRecog() {
       if (!transcript) transcript = '（音声認識に失敗しました）';
     };
     r.onend = () => {
+      // R509: cancel the 800ms network-retry timer — onerror(network) queues a setTimeout restart AND
+      // the browser also fires onend right after onerror, which would create a SECOND instance.
+      // Cancelling the timer here means onend is the sole restart path, preventing double-start.
+      if (netRetryTimer) { clearTimeout(netRetryTimer); netRetryTimer = null; }
       if (recogShouldRun && recorder && recorder.state === 'recording') {
         try { recognition = createRecog(); recognition.start(); } catch(e) {}
       }
@@ -1697,13 +1703,17 @@ function switchHistTab(tab) {
   if (histDelBtn) histDelBtn.setAttribute('aria-label', tab === 'qa' ? 'Q&A履歴を削除' : 'フリートーク履歴を削除');
   // R465/R488: hide all visible audio elements in the now-hidden panel
   // R488: was !a.paused — paused-but-visible audio stayed open when switching back to the tab
+  // R511: also cancel any in-progress IDB load in the hidden panel (same race as R510)
   const hiddenPanel = document.getElementById(tab === 'qa' ? 'hist-ft-body' : 'hist-qa-body');
   hiddenPanel.querySelectorAll('audio').forEach(a => {
     if (a.style.display !== 'none' && a.style.display !== '') {
       a.pause(); a.oncanplay = null; a.onerror = null; // R488: clear pending handlers
       a.style.display = 'none';
-      const b = a.nextElementSibling;
-      if (b && b.classList.contains('audio-btn')) b.textContent = '🔊 録音を聴く';
+    }
+    const b = a.nextElementSibling;
+    if (b && b.classList.contains('audio-btn')) {
+      if (b.disabled) { delete b.dataset.loadToken; b.disabled = false; } // R511: cancel stale IDB load on tab switch
+      b.textContent = '🔊 録音を聴く';
     }
   });
 }
@@ -1759,7 +1769,8 @@ function buildHistHTML(hist, isFT) {
   hist.forEach(item => {
     // R403/R269: gracefully handle corrupted dates instead of rendering "Invalid Date"
     const d = new Date(item.date);
-    const lbl = isNaN(d.getTime()) ? '日付不明' : d.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
+    // R513: include year in group key — without it, Jan 5 2025 and Jan 5 2026 share one date-header
+    const lbl = isNaN(d.getTime()) ? '日付不明' : d.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
     (grouped[lbl] = grouped[lbl] || []).push(item);
   });
   return Object.entries(grouped).map(([date, items]) =>
@@ -1798,19 +1809,30 @@ function toggleAudio(btn) {
   if (audio.style.display === 'none' || !audio.style.display) {
     // 他の表示中の音声をすべて停止・非表示
     // R486: was !a.paused — user-paused-but-visible audio stayed open when opening a new one; check visibility instead
+    // R510: also cancel any in-progress IDB load — without this, a slow IDB read for audio A completes AFTER
+    // audio B is opened and both end up visible+playing simultaneously (display:none check misses loading state)
     document.querySelectorAll('#hist-qa-body audio, #hist-ft-body audio').forEach(a => {
-      if (a !== audio && a.style.display !== 'none' && a.style.display !== '') {
-        a.pause();
-        a.oncanplay = null; a.onerror = null; // R486: clear pending handlers on force-close
-        a.style.display = 'none';
+      if (a !== audio) {
+        if (a.style.display !== 'none' && a.style.display !== '') {
+          a.pause();
+          a.oncanplay = null; a.onerror = null; // R486: clear pending handlers on force-close
+          a.style.display = 'none';
+        }
         const b = a.nextElementSibling;
-        if (b && b.classList.contains('audio-btn')) b.textContent = '🔊 録音を聴く';
+        if (b && b.classList.contains('audio-btn')) {
+          if (b.disabled) { delete b.dataset.loadToken; b.disabled = false; } // R510: invalidate stale load
+          b.textContent = '🔊 録音を聴く';
+        }
       }
     });
     if (!audio.src || audio.src === window.location.href) {
+      const loadToken = String(Date.now() + Math.random()); // R510: unique token per IDB load attempt
+      btn.dataset.loadToken = loadToken;
       btn.disabled = true; // R505: prevent parallel loadAudio() calls from double-tap during async IDB read
       loadAudio(id).then(blob => {
         btn.disabled = false; // R505: re-enable after IDB read completes
+        // R510: stale load — another audio was opened while this one was loading; discard result (blob never had a URL assigned so no revoke needed)
+        if (btn.dataset.loadToken !== loadToken) { return; }
         // R435: DOM再構築（renderHist呼び出し）で要素がdetachされた場合、blob URLを作ってもrevoke機会がなくリーク。
         // isConnected で確認して detach 済みなら早期リターン。
         if (!audio.isConnected) { return; }
