@@ -18,9 +18,12 @@
   <title>SEIKA ロープレツール</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    /* R575: 洗練リデザイン — 余白のある淡色キャンバス＋白の浮遊カード＋上質な字組み（デザイントークン） */
+    :root{--bg:#fafaf9;--surface:#fff;--ink:#17181c;--line:#ececec;--shadow-card:0 1px 2px rgba(20,20,30,.05),0 6px 20px rgba(20,20,30,.05);--r:16px}
     body{
-      font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN',sans-serif;
-      background:#fff;color:#111;min-height:100vh;max-width:480px;margin:0 auto;
+      font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic UI','Segoe UI','Noto Sans JP',sans-serif;/* R575: 新しめの和文書体を優先 */
+      background:var(--bg);color:var(--ink);min-height:100vh;max-width:480px;margin:0 auto;
+      -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;letter-spacing:.01em;/* R575: アンチエイリアス＋字間で描画を上質に */
     }
     .screen{display:none;flex-direction:column;min-height:100vh}
     .screen.active{display:flex}
@@ -41,7 +44,7 @@
     /* ─ ホーム ─ */
     .stat-bar{
       display:flex;gap:0;margin-bottom:24px;
-      background:#f5f5f5;border-radius:12px;overflow:hidden;
+      background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow-card);/* R575: フラット灰色→白の浮遊カード */
     }
     .stat-cell{flex:1;text-align:center;padding:12px 6px;border-right:1px solid #eee}
     .stat-cell:last-child{border-right:none}
@@ -51,13 +54,14 @@
     /* ─ メインボタン ─ */
     .main-btn{
       display:flex;align-items:center;gap:14px;
-      width:100%;padding:20px 18px;border-radius:14px;border:none;
-      text-align:left;cursor:pointer;margin-bottom:12px;
-      transition:opacity .15s;
+      width:100%;padding:22px 20px;border-radius:var(--r);border:none;
+      text-align:left;cursor:pointer;margin-bottom:14px;
+      transition:opacity .15s,box-shadow .15s,transform .15s;/* R575 */
     }
+    .main-btn:active{transform:scale(.99)}/* R575: 上質な押下フィードバック */
     .main-btn:active{opacity:.75}
-    .main-btn-qa{background:#111;color:#fff}
-    .main-btn-ft{background:#f0f0f0;color:#111;border:1.5px solid #767676}/* R450: WCAG 1.4.11 — #ddd(1.6:1) → #767676(4.52:1) */
+    .main-btn-qa{background:var(--ink);color:#fff;box-shadow:0 2px 10px rgba(23,24,28,.18)}/* R575: 主CTAに奥行き */
+    .main-btn-ft{background:var(--surface);color:var(--ink);border:1px solid #767676;box-shadow:var(--shadow-card)}/* R575: 白カード化; border #767676 維持(WCAG 1.4.11 非テキスト4.52:1) */
     .main-btn-text{flex:1}/* R571: 未使用の .main-btn-icon ルール削除（絵文字アイコン廃止に伴う） */
     .main-btn-title{font-size:16px;font-weight:700;display:block}
     .main-btn-sub{font-size:12px;opacity:.7;margin-top:2px;display:block}/* R485: .6→.7 — on .main-btn-ft(#f0f0f0 bg) opacity:.6 composed ≈4.38:1 < WCAG 1.4.3 AA 4.5:1 for 12px text; .7 gives ≈6.4:1 ✓ */
@@ -109,7 +113,7 @@
       padding:32px 24px calc(32px + env(safe-area-inset-bottom, 0px));text-align:center;/* R507: bottom safe-area keeps cancel btn above iOS home indicator */
       overflow-y:auto; /* R51: small screens don't clip content */
     }
-    .cnt{font-size:96px;font-weight:900;line-height:1;letter-spacing:-3px;transition:color .3s}
+    .cnt{font-size:104px;font-weight:800;line-height:1;letter-spacing:-3px;transition:color .3s}/* R575: 字重900→800・サイズ微増で端正に */
     .cnt-ok{color:#15803d}.cnt-w{color:#b45309}.cnt-d{color:#dc2626}/* R418: AA contrast on white */
     .prog-wrap{width:100%;height:3px;background:#888;border-radius:99px;overflow:hidden;margin:16px 0}/* R506: #eee(1.16:1)→#888(3.55:1) on #fff — WCAG 1.4.11 non-text ≥3:1; fill(#111) vs track(#888)=5.31:1 ✓ */
     .prog-bar{height:100%;background:#111;border-radius:99px;transition:width .1s linear}
@@ -130,7 +134,7 @@
       transition:opacity .15s;
     }
     .btn:active{opacity:.75}
-    .btn-black{background:#111;color:#fff}
+    .btn-black{background:var(--ink);color:#fff}/* R575 */
     .btn-gray{background:#f0f0f0;color:#111;border:1.5px solid #767676}/* R450: WCAG 1.4.11 */
     .btn-red{background:#dc2626;color:#fff}
     .btn-sub{background:none;border:none;font-size:14px;color:#767676;cursor:pointer;padding:10px;touch-action:manipulation}/* R449; R477: touch-action prevents double-tap-zoom */
@@ -143,7 +147,7 @@
     audio{width:100%;margin-top:0;border-radius:8px}
 
     /* ─ 年間進捗 ─ */
-    .year-prog{background:#f5f5f5;border-radius:12px;padding:14px 16px;margin-bottom:16px}
+    .year-prog{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-card)}/* R575: 白の浮遊カード */
     .year-prog-title{font-size:11px;color:#595959;font-weight:700;letter-spacing:.5px;margin-bottom:10px}/* R499: #767676(4.17:1) → #595959(6.43:1) on #f5f5f5 — WCAG 1.4.3 AA 4.5:1 */
     .year-prog-nums{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
     .year-count{font-size:28px;font-weight:900;color:#111}
@@ -251,13 +255,108 @@
     /* ─ Toast ─ */
     #toast{
       position:fixed;bottom:calc(24px + env(safe-area-inset-bottom, 0px));left:50%;transform:translateX(-50%) translateY(10px);/* R507: safe-area-inset-bottom keeps toast above iOS home indicator in standalone PWA */
-      background:#222;color:#fff;padding:10px 20px;border-radius:100px;
+      background:var(--ink);color:#fff;padding:11px 22px;border-radius:100px;box-shadow:0 6px 24px rgba(20,20,30,.22);/* R575 */
       font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .25s,transform .25s;
       max-width:calc(100vw - 32px);white-space:normal;text-align:center;pointer-events:none;/* R458: prevent overflow on narrow screens */
     }
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     /* R467: visually-hidden live-region helper — hidden from sighted users, readable by AT */
     .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0}/* R498: clip is deprecated CSS 2.1 — modern clip-path:inset(50%) added for forward compatibility */
+    /* ═══ R576: 全体デザイン刷新 — KAIGOのR575「quiet premium」トークン体系を全コンポーネントへ統一適用（白カード＋ヘアライン＋淡影＋上質な字組み）。後段ルールでカスケード上書き。JS契約(クラス/ID)・WCAGコントラスト厳守。muted文字は暖色キャンバス#fafaf9上で#767676(4.33:1)がAA不足→5.4:1へ是正 ═══ */
+    :root{
+      --surface-2:#f4f4f2;   /* 沈めた面（文字起こし/入力） */
+      --ink-2:#393a40;       /* 二次テキスト（#fff 8.8:1 / #fafaf9 8.3:1） */
+      --muted:#5f6168;       /* 三次/ラベル（#fafaf9 5.4:1 / #fff 5.8:1 — AA準拠） */
+      --bd:#767676;          /* 操作要素の境界（WCAG 1.4.11 非テキスト≥3:1） */
+      --r-sm:12px;--r-xs:10px;--pill:100px;
+      --shadow-cta:0 2px 12px rgba(23,24,28,.20);--focus:#2563eb;
+    }
+    .body{padding:22px 18px;padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))}
+    /* ヘッダー */
+    .hdr{background:var(--surface);border-bottom:1px solid var(--line);padding:15px 18px}
+    .hdr-title{color:var(--ink);letter-spacing:.02em}
+    .hdr-back{color:var(--ink-2)}
+    .hdr-act{color:var(--muted)} .hdr-act:active{color:var(--ink)}
+    /* 統計バー */
+    .stat-cell{border-right:1px solid var(--line);padding:14px 6px}
+    .stat-n{color:var(--ink);font-size:23px;letter-spacing:-.01em}
+    .stat-l{color:var(--muted);letter-spacing:.04em;margin-top:3px}
+    /* メインCTA：主=インク／副=白カード */
+    .main-btn-sub{opacity:1}
+    .main-btn-qa .main-btn-sub{color:rgba(255,255,255,.74)}
+    .main-btn-ft .main-btn-sub{color:var(--muted)}
+    .main-btn-title{letter-spacing:.01em}
+    /* サブリンクを白カードのピルに */
+    .sub-links{gap:10px;margin-top:10px}
+    .sub-link{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--ink-2);box-shadow:var(--shadow-card);padding:13px;transition:background .15s,box-shadow .15s}
+    .sub-link:active{background:var(--surface-2);color:var(--ink)}
+    /* 問題画面 */
+    .q-text{color:var(--ink);font-size:23px;line-height:1.55;letter-spacing:.005em}
+    .q-mini{color:var(--muted)}
+    .timer-hint{color:var(--ink-2)}
+    /* フリートーク選択：白カードのタイル */
+    .ft-cell{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--shadow-card);padding:30px 16px;transition:transform .12s,box-shadow .15s,background .15s}
+    .ft-cell:active{background:var(--surface-2);border-color:var(--bd);transform:scale(.98)}
+    .ft-cell-n{color:var(--ink)}
+    .ft-cell-u{color:var(--muted)}
+    /* 録音画面：進捗の塗りをインクに */
+    .prog-bar{background:var(--ink)}
+    /* 汎用ボタン */
+    .btn{border-radius:var(--r-sm);letter-spacing:.01em}
+    .btn-black{box-shadow:var(--shadow-cta)} .btn-black:active{box-shadow:none}
+    .btn-gray{background:var(--surface);color:var(--ink);border:1px solid var(--bd);box-shadow:var(--shadow-card)}
+    .btn-gray:active{background:var(--surface-2)}
+    .btn-red{box-shadow:0 2px 12px rgba(220,38,38,.25)}
+    .btn-sub{color:var(--muted)} .btn-sub:active{color:var(--ink)}
+    /* 振り返り */
+    .rv-label{color:var(--muted);letter-spacing:.06em}
+    .rv-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);color:var(--ink-2);box-shadow:var(--shadow-card);padding:15px}
+    .rv-tr-meta{color:var(--muted)}
+    /* 年間進捗 */
+    .year-prog-title{color:var(--muted)}
+    .year-count{color:var(--ink)}
+    .year-goal-lbl{color:var(--muted)}
+    .year-prog-fill{background:var(--ink)}
+    .prog-pct{color:var(--muted)}
+    .goal-btn{background:var(--surface);border:1px solid var(--bd);border-radius:var(--pill);color:var(--ink-2);box-shadow:var(--shadow-card)}
+    .goal-btn:active{background:var(--surface-2)}
+    /* 評価カード */
+    .ev-score{color:var(--ink);letter-spacing:-.02em}
+    .ev-score-unit{color:var(--muted)}
+    .ev-item{color:var(--ink-2)}
+    .ev-loading{color:var(--muted)}
+    .ev-card{border-radius:var(--r-sm)}
+    /* 履歴：タブと項目 */
+    .tab-bar{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:4px}
+    .tab-btn{color:var(--muted);border-radius:var(--r-xs)}
+    .tab-btn.active{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-card)}
+    .hist-item{border-bottom:1px solid var(--line)}
+    .hist-q{color:var(--ink-2)}
+    .hist-tr{color:var(--muted)}
+    .date-hdr{color:var(--muted);letter-spacing:.06em}
+    .empty{color:var(--muted)}
+    .audio-btn{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-xs);color:var(--ink-2)}
+    .audio-btn:active{background:var(--surface-2)}
+    /* 設定：各セクションを白カード化して上質にグルーピング */
+    .set-section{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-card);padding:18px;margin-bottom:14px}
+    .set-label{color:var(--muted);letter-spacing:.06em}
+    .inp{background:var(--surface-2);border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--ink)}
+    .inp:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(23,24,28,.12)}
+    .tog-row{border-bottom:1px solid var(--line)}
+    .tog-label{color:var(--ink)}
+    .tog-track{background:var(--bd)}
+    input:checked~.tog-track{background:var(--ink)}
+    .lv-fb{background:var(--surface);border:1px solid var(--bd);border-radius:var(--pill);color:var(--ink-2)}
+    .lv-fb.sel-ALL,.lv-fb.sel-S,.lv-fb.sel-A,.lv-fb.sel-B,.lv-fb.sel-C,.lv-fb.sel-D{background:var(--ink);color:#fff;border-color:var(--ink)}
+    .set-note{color:var(--muted)}
+    /* R577: トグルのキーボードフォーカスを可視化 — input は opacity:0 なので :focus-visible の outline が透明になる。可視の兄弟 .tog-track にリングを描く（WCAG 2.4.7） */
+    .tog-wrap input:focus-visible ~ .tog-track{outline:2px solid var(--focus);outline-offset:2px}
+    /* ポインタ環境のみホバー（タッチ誤発火を防ぐ） */
+    @media (hover:hover){
+      .sub-link:hover,.goal-btn:hover,.audio-btn:hover,.btn-gray:hover{background:var(--surface-2)}
+      .lv-fb:hover{border-color:var(--ink)}
+      .main-btn:hover,.ft-cell:hover{box-shadow:var(--shadow-cta)}
+    }
   </style>
 </head>
 <body>
@@ -325,7 +424,7 @@
     <div style="width:60px"></div>
   </div>
   <div class="body">
-    <p style="font-size:14px;color:#767676;margin-bottom:16px">タイマーを選んでください</p><!-- R449 -->
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px">タイマーを選んでください</p><!-- R449; R576: #767676→--muted (AA on warm canvas) -->
     <div class="ft-grid"><!-- R411: role/tabindex/onkeydown make these keyboard-accessible (WCAG 2.1.1) -->
       <div class="ft-cell" role="button" tabindex="0" aria-label="5秒のフリートークを開始" onclick="startFT(5)" onkeydown="ftKey(event,5)">
         <div class="ft-cell-n">5</div><div class="ft-cell-u">秒</div>
@@ -477,7 +576,7 @@
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v4.9<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound -->
+      <p class="set-note">SEIKA ロープレツール v5.2<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
     </div>
   </div>
 </div>
@@ -917,10 +1016,13 @@ function saveAudio(id, blob) {
 function loadAudio(id) {
   if (!db) return Promise.resolve(null);
   return new Promise((res, rej) => {
-    const tx = db.transaction('recs', 'readonly');
+    let tx;
+    try { tx = db.transaction('recs', 'readonly'); }
+    catch (e) { return rej(e instanceof Error ? e : new Error('tx_open_failed')); } // R577: db closing/InvalidStateError must reject (previously threw synchronously to the global handler)
     const r  = tx.objectStore('recs').get(id);
     r.onsuccess = e => res(e.target.result?.blob || null);
-    r.onerror = rej;
+    r.onerror = () => rej(r.error || new Error('req_error')); // R577: reject with a real Error (was the raw DOM Event → downstream e.message was undefined)
+    tx.onerror = () => rej(tx.error || new Error('tx_error')); // R577: symmetric with saveAudio/deleteAudio — a transaction-level error previously left this Promise PENDING FOREVER, permanently wedging toggleAudio()'s disabled play button (it awaits loadAudio before re-enabling)
     tx.onabort = () => res(null); // R433: 読み取りabortは「音声なし」として安全にフォールバック
   });
 }
@@ -1152,6 +1254,8 @@ function beginRec() {
         if (myAttempt !== recAttempt) { stream.getTracks().forEach(t => t.stop()); return; }
         // R1/R39: cancelRec or goHome may have fired during the 500ms wait (they already released curStream via releaseStream)
         if (recCancelled) { return; }
+        // R577: if the page was hidden during the 500ms pre-roll, do NOT arm a recorder that can't be timed (countdown setInterval throttled while hidden → unbounded clip + live mic). Release this attempt's stream and route back. (finalizeOnHide already aborts via cancelRec at hide time; this guards the throttled-fire-while-hidden case.)
+        if (document.hidden) { stream.getTracks().forEach(t => t.stop()); curStream = null; killRecog(); if (mode === 'ft') nav('s-ft-select'); else nav('s-question'); return; }
         // R475: guard recorder.start() — throws InvalidStateError if recorder somehow not 'inactive'
         try { recorder.start(1000); } catch(startErr) {
           stream.getTracks().forEach(t => t.stop()); curStream = null; killRecog(); // R558: clear curStream on start failure
@@ -1179,6 +1283,7 @@ function beginRec() {
       if (mode === 'ft') nav('s-ft-select'); else nav('s-question');
     }
   }).catch(err => {
+    if (myAttempt !== recAttempt) return; // R577: a superseded attempt's LATE getUserMedia rejection must not clobber the current session — mirrors the supersession guards at the .then (R558) and the 500ms timer. getUserMedia rejected, so there is no stream to release.
     recStarting = false; // Fix5: エラー時もフラグ解除
     const msg = err.name === 'NotAllowedError' ? 'マイクへのアクセスを許可してください'
               : err.name === 'NotFoundError'   ? 'マイクが見つかりません'
@@ -1576,9 +1681,10 @@ function renderEval(text) {
   // R77: normalize CRLF line endings from Claude API
   text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const scoreM = text.match(/SCORE:[\s*]*([0-9０-９]+|-)/);// R570/R573: tolerate full-width digits (０-９) and markdown bold (**80**); single [\s*]* char-class avoids the O(n²) backtracking that \s*\**\s* could hit on a pathological all-whitespace response
-  const goodM  = text.match(/GOOD:\n([\s\S]*?)(?=IMPROVE:|ADVICE:|$)/);
-  const impM   = text.match(/IMPROVE:\n([\s\S]*?)(?=ADVICE:|$)/);
-  const advM   = text.match(/ADVICE:\n([\s\S]*?)$/);
+  // R577: tolerate markdown-decorated headers (**GOOD:**, ## GOOD:, GOOD**:) AND inline values (GOOD: text on the same line). Previously required a literal "LABEL:\n", so any decorated/inline Claude output silently dropped that whole section — the user saw a bare score with no written feedback (no raw-text fallback fires once SCORE matched).
+  const goodM  = text.match(/[*#\s]*GOOD[*\s]*:[*\s]*\n?([\s\S]*?)(?=[*#\s]*(?:IMPROVE|ADVICE)[*\s]*:|$)/);
+  const impM   = text.match(/[*#\s]*IMPROVE[*\s]*:[*\s]*\n?([\s\S]*?)(?=[*#\s]*ADVICE[*\s]*:|$)/);
+  const advM   = text.match(/[*#\s]*ADVICE[*\s]*:[*\s]*\n?([\s\S]*?)$/);
 
   if (!scoreM) {
     return '<div class="rv-box" style="white-space:pre-wrap">' + escHtml(text) + '</div>';
@@ -1590,8 +1696,9 @@ function renderEval(text) {
   // R418: AA-compliant score colors on white (#ca8a04 amber failed 3:1 at 2.94)
   const scoreColor = scoreNum >= 80 ? '#15803d' : scoreNum >= 60 ? '#b45309' : '#dc2626';
 
+  // R577: strip markdown bold (**) then a leading bullet of any common kind (・ - * •) — Claude routinely emits "- item" or "**item**", not only "・item", which previously rendered with literal "- "/"*" characters
   const toItems = block => (block || '').trim().split('\n')
-    .map(l => l.replace(/^・\s*/,'').trim()).filter(Boolean);
+    .map(l => l.replace(/\*\*/g,'').replace(/^\s*[・\-*•]\s*/,'').trim()).filter(Boolean);
 
   let html = '';
 
@@ -1773,7 +1880,7 @@ function renderHist() {
       '<div class="year-prog">' +
         '<div class="year-prog-title">' + year + '年の進捗</div>' +
         '<div class="year-prog-nums">' +
-          '<span><span class="year-count">' + fmtN(yearCount) + '</span><span style="font-size:13px;color:#666;font-weight:400"> 回</span></span>' +
+          '<span><span class="year-count">' + fmtN(yearCount) + '</span><span style="font-size:13px;color:var(--muted);font-weight:400"> 回</span></span>' +/* R577: 取り残しの#666→--muted（R576デザイントークン統一・隣の目標なし分岐と灰色を一致） */
           '<span class="year-goal-lbl">目標 ' + fmtN(goal) + ' 回</span>' +
         '</div>' +
         '<div class="year-prog-bar"><div class="year-prog-fill" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + fillW + '" aria-label="年間達成率" style="width:' + fillW + '%"></div></div>' + // R454: WCAG 4.1.2 progressbar
@@ -1830,11 +1937,11 @@ function buildHistHTML(hist, isFT) {
       // Fix14: XSSを防ぐためit.qとit.trにescHtmlを適用
       const qHtml = !isFT
         ? '<div class="hist-q">' + escHtml(it.q||'') + '</div>'
-        : '<div class="hist-q" style="color:#767676">フリートーク（' + lim + '）</div>'; // R449
+        : '<div class="hist-q" style="color:var(--muted)">フリートーク（' + lim + '）</div>'; // R449; R577: inline #767676=4.35:1 on #fafaf9(AA不足)→--muted #5f6168(5.4:1)
       const trStr = (it.tr != null) ? String(it.tr) : ''; // R434: 非文字列ガード
       const trText = trStr ? trStr.slice(0,80) + (trStr.length>80?'…':'') : '';
       return '<div class="hist-item">' +
-        '<div class="hist-meta">' + lvBadge + '<span class="badge badge-time">' + lim + '</span><span style="font-size:11px;color:#767676">　' + escHtml(t) + '</span></div>' + // R449; R472: escHtml(t) for consistency (locale time strings are safe in practice but policy is to escape all dynamic text)
+        '<div class="hist-meta">' + lvBadge + '<span class="badge badge-time">' + lim + '</span><span style="font-size:11px;color:var(--muted)">　' + escHtml(t) + '</span></div>' + // R449; R577: inline #767676→--muted (AA on #fafaf9); R472: escHtml(t) for consistency (locale time strings are safe in practice but policy is to escape all dynamic text)
         qHtml +
         (trStr ? '<div class="hist-tr">' + escHtml(trText) + '</div>' : '') +
         '<audio controls aria-label="録音再生 ' + escHtml(t) + ' (' + lim + ')" style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' + // R459: AT context; R483: was split across two lines with a stray leading '+' that produced '...)"NaN style=...' via double-+ unary coercion
@@ -2030,7 +2137,11 @@ window.addEventListener('beforeunload', e => {
   if (recorder && recorder.state === 'recording') { e.preventDefault(); e.returnValue = ''; }
 });
 // R560: backgrounding/screen-lock throttles the countdown setInterval, so auto-stop-at-curLimit cannot fire while hidden — on Android the recorder keeps capturing and the saved clip overruns the limit by the whole background duration (N1). Finalize the in-progress take when the page is hidden so it stops at the limit instead of running unbounded; this also pre-empts the iOS audio-session interruption that can otherwise strand s-record (N2). stopRec()->killRec() handles a 'paused' recorder (R560).
-function finalizeOnHide() { if (recorder && (recorder.state === 'recording' || recorder.state === 'paused')) stopRec(); }
+function finalizeOnHide() {
+  if (recorder && (recorder.state === 'recording' || recorder.state === 'paused')) { stopRec(); return; }
+  // R577: pre-start window — getUserMedia resolved (curStream live) but the deferred recorder.start() hasn't run yet, so the recording/paused guard above misses it. Abort like Cancel so the mic is freed and no recording auto-starts while hidden. curStream is null on home/review/settings (onstop & teardown null it), so this only fires during an actual pre-roll.
+  if (curStream) cancelRec();
+}
 document.addEventListener('visibilitychange', () => { if (document.hidden) finalizeOnHide(); });
 window.addEventListener('pagehide', finalizeOnHide);
 
