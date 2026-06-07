@@ -31,7 +31,7 @@
       padding:14px 16px;border-bottom:1px solid #eee;background:#fff;
       position:sticky;top:0;z-index:10;
     }
-    .hdr-title{font-size:16px;font-weight:700;color:#111}
+    .hdr-title{font-size:16px;font-weight:700;color:#111;letter-spacing:.04em}/* R571: 字間調整で見出しを洗練 */
     .hdr-back{background:none;border:none;font-size:20px;cursor:pointer;color:#555;padding:4px 8px}
     .hdr-act{background:none;border:none;font-size:13px;cursor:pointer;color:#767676;padding:4px 8px;font-weight:600}/* R449 */
 
@@ -58,8 +58,7 @@
     .main-btn:active{opacity:.75}
     .main-btn-qa{background:#111;color:#fff}
     .main-btn-ft{background:#f0f0f0;color:#111;border:1.5px solid #767676}/* R450: WCAG 1.4.11 — #ddd(1.6:1) → #767676(4.52:1) */
-    .main-btn-icon{font-size:28px;line-height:1;flex-shrink:0}
-    .main-btn-text{flex:1}
+    .main-btn-text{flex:1}/* R571: 未使用の .main-btn-icon ルール削除（絵文字アイコン廃止に伴う） */
     .main-btn-title{font-size:16px;font-weight:700;display:block}
     .main-btn-sub{font-size:12px;opacity:.7;margin-top:2px;display:block}/* R485: .6→.7 — on .main-btn-ft(#f0f0f0 bg) opacity:.6 composed ≈4.38:1 < WCAG 1.4.3 AA 4.5:1 for 12px text; .7 gives ≈6.4:1 ✓ */
 
@@ -266,7 +265,7 @@
 <!-- ══ HOME ══ -->
 <div id="s-home" class="screen active" role="main"><!-- R443: initial main landmark -->
   <div class="hdr">
-    <span class="hdr-title">🎯 SEIKA ロープレ</span>
+    <span class="hdr-title">SEIKA ロープレ</span><!-- R571: 絵文字🎯削除（洗練リデザイン） -->
     <button type="button" class="hdr-act" onclick="nav('s-settings')">設定</button>
   </div>
   <div class="body">
@@ -274,19 +273,17 @@
       <div class="stat-cell"><div class="stat-n" id="h-today">0</div><div class="stat-l">今日</div></div>
       <div class="stat-cell"><div class="stat-n" id="h-month">0</div><div class="stat-l">今月</div></div>
       <div class="stat-cell"><div class="stat-n" id="h-total">0</div><div class="stat-l">累計</div></div>
-      <div class="stat-cell"><div class="stat-n" id="h-streak">0</div><div class="stat-l">連続🔥</div></div>
+      <div class="stat-cell"><div class="stat-n" id="h-streak">0</div><div class="stat-l">連続</div></div><!-- R571: 絵文字🔥削除 -->
     </div>
 
-    <button type="button" class="main-btn main-btn-qa" onclick="startQA()">
-      <span class="main-btn-icon">🎤</span>
+    <button type="button" class="main-btn main-btn-qa" onclick="startQA()"><!-- R571: 絵文字🎤アイコン削除（テキスト主体の洗練デザイン） -->
       <span class="main-btn-text">
         <span class="main-btn-title">即興 Q&amp;A</span>
         <span class="main-btn-sub">400問ランダム ／ 10秒・30秒</span>
       </span>
     </button>
 
-    <button type="button" class="main-btn main-btn-ft" onclick="nav('s-ft-select')">
-      <span class="main-btn-icon">⏱</span>
+    <button type="button" class="main-btn main-btn-ft" onclick="nav('s-ft-select')"><!-- R571: 絵文字⏱アイコン削除 -->
       <span class="main-btn-text">
         <span class="main-btn-title">フリートーク</span>
         <span class="main-btn-sub">5秒・10秒・30秒・60秒</span><!-- R301: match FT select cell units (60秒 not 1分) -->
@@ -294,8 +291,8 @@
     </button>
 
     <div class="sub-links">
-      <button type="button" class="sub-link" onclick="showHistory('qa')">📋 Q&amp;A記録</button>
-      <button type="button" class="sub-link" onclick="showHistory('ft')">📋 フリートーク記録</button>
+      <button type="button" class="sub-link" onclick="showHistory('qa')">Q&amp;A記録</button>
+      <button type="button" class="sub-link" onclick="showHistory('ft')">フリートーク記録</button><!-- R571: 絵文字📋削除 -->
     </div>
   </div>
 </div>
@@ -310,12 +307,12 @@
   <div class="q-wrap">
     <div class="q-meta">
       <span class="badge badge-s" id="q-lv">S級</span>
-      <span class="badge badge-time" id="q-tbadge">⏱ 30秒</span>
+      <span class="badge badge-time" id="q-tbadge">30秒</span><!-- R571: 絵文字⏱削除 -->
     </div>
     <div class="q-text" id="q-text" aria-live="polite" aria-atomic="true">---</div><!-- R439: SR向けliveリージョン — 「別の問題」で質問が変わったとき読み上げられる -->
     <div class="q-actions">
-      <button type="button" class="btn btn-black" onclick="beginRec()">🎤 録音開始</button>
-      <button type="button" class="btn btn-gray" onclick="pickQ()">⏭ 別の問題</button>
+      <button type="button" class="btn btn-black" onclick="beginRec()">録音開始</button>
+      <button type="button" class="btn btn-gray" onclick="pickQ()">別の問題</button><!-- R571: 絵文字🎤⏭削除 -->
     </div>
   </div>
 </div>
@@ -361,7 +358,7 @@
     <div class="rec-label" id="r-rec-row" style="visibility:hidden">
       <div class="rec-dot"></div><span>録音中</span>
     </div>
-    <button type="button" class="btn btn-red" id="r-stop" style="display:none;width:200px;margin:0 auto" onclick="stopRec()">⏹ 停止・保存</button>
+    <button type="button" class="btn btn-red" id="r-stop" style="display:none;width:200px;margin:0 auto" onclick="stopRec()">停止・保存</button><!-- R571: 絵文字⏹削除 -->
     <button type="button" class="btn-sub" onclick="cancelRec()">キャンセル</button>
     <!-- R467: WCAG 4.1.3 Status Messages — announces recording-start to AT without disrupting layout -->
     <div id="r-status" role="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
@@ -388,23 +385,23 @@
       <div class="rv-box"><span class="badge badge-time" id="rv-ft-dur"></span></div>
     </div>
     <div class="rv-section">
-      <div class="rv-label">🔊 録音を聴く</div>
+      <div class="rv-label">録音を聴く</div><!-- R571: 絵文字🔊削除 -->
       <audio id="rv-audio" controls preload="none" aria-label="練習録音の再生" style="width:100%;border-radius:8px"></audio><!-- R28/R436 -->
     </div>
     <div class="rv-section">
-      <div class="rv-label">📝 文字起こし</div>
+      <div class="rv-label">文字起こし</div><!-- R571: 絵文字📝削除 -->
       <div class="rv-box" id="rv-tr" aria-live="polite" aria-atomic="true">認識中…</div><!-- R446: SR向け — 1200ms後に文字起こしが入るとき読み上げ -->
     </div>
     <div class="rv-section">
-      <div class="rv-label">🤖 Claude 評価</div>
+      <div class="rv-label">Claude 評価</div><!-- R571: 絵文字🤖削除 -->
       <div id="rv-eval" aria-live="polite" aria-atomic="true"><div class="ev-loading">評価生成中…</div></div><!-- R446: 評価完了時にSRへ通知 -->
-      <button type="button" class="btn btn-gray" style="margin-top:10px" onclick="copyPrompt()">📋 Claudeへコピーして詳細評価</button>
+      <button type="button" class="btn btn-gray" style="margin-top:10px" onclick="copyPrompt()">Claudeへコピーして詳細評価</button><!-- R571: 絵文字📋削除 -->
     </div>
     <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#166534">
-      💾 録音を記録に残しますか？
+      録音を記録に残しますか？
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:0">
-      <button type="button" class="btn btn-black" id="rv-save-btn" onclick="saveAndNext()">✅ 記録を保存して次へ</button>
+      <button type="button" class="btn btn-black" id="rv-save-btn" onclick="saveAndNext()">記録を保存して次へ</button><!-- R571: 絵文字✅削除 -->
       <button type="button" class="btn btn-gray" id="rv-nosave-btn" onclick="discardAndNext()">保存しない</button>
     </div>
   </div>
@@ -420,8 +417,8 @@
   <div class="body">
     <div id="year-prog-wrap"></div>
     <div class="tab-bar" role="tablist" aria-label="練習記録タブ" onkeydown="histTabKey(event)"><!-- R445; R460: arrow-key nav per ARIA APG -->
-      <button type="button" class="tab-btn active" id="tab-qa" role="tab" aria-selected="true" aria-controls="hist-qa-body" tabindex="0" onclick="switchHistTab('qa')">🎤 Q&amp;A</button>
-      <button type="button" class="tab-btn" id="tab-ft" role="tab" aria-selected="false" aria-controls="hist-ft-body" tabindex="-1" onclick="switchHistTab('ft')">⏱ フリートーク</button>
+      <button type="button" class="tab-btn active" id="tab-qa" role="tab" aria-selected="true" aria-controls="hist-qa-body" tabindex="0" onclick="switchHistTab('qa')">Q&amp;A</button>
+      <button type="button" class="tab-btn" id="tab-ft" role="tab" aria-selected="false" aria-controls="hist-ft-body" tabindex="-1" onclick="switchHistTab('ft')">フリートーク</button><!-- R571: 絵文字🎤⏱削除 -->
     </div>
     <div id="hist-qa-body" role="tabpanel" aria-labelledby="tab-qa"></div>
     <div id="hist-ft-body" role="tabpanel" aria-labelledby="tab-ft" style="display:none"></div>
@@ -480,7 +477,7 @@
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v4.7<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R557: v4.6→v4.7 reflects R514(copyPrompt safety)/R557(saveAndNext back-btn lock) fixes -->
+      <p class="set-note">SEIKA ロープレツール v4.9<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound -->
     </div>
   </div>
 </div>
@@ -943,6 +940,8 @@ let timerInt = null, recorder = null, chunks = [], audioBlob = null, audioUrl = 
 let recognition = null, transcript = '', activeFilter = 'ALL', histTab = 'qa';
 let pendingHistItem = null, pendingIsFT = false, finalTranscript = '';
 let recStarting = false; // Fix5: 二重起動防止フラグ
+let curStream = null; // R558: live MediaStream of the current attempt — lets cancelRec/goHome release the mic during the post-getUserMedia / pre-start 'inactive' window where killRec() is a no-op (F2)
+let recAttempt = 0;   // R558: monotonic generation counter — a superseded/orphaned getUserMedia resolution or stale 500ms timer (myAttempt!==recAttempt) bails instead of clobbering the current session (F1/F8/F11)
 
 /* ── ナビ ── */
 function nav(id) {
@@ -964,7 +963,7 @@ function nav(id) {
 }
 // R4/R17/R60: set recCancelled so in-flight getUserMedia/recorder.onstop won't call openReview
 // R491: recId=null mirrors cancelRec() — closes stale-onstop race window on fast nav-home+re-record
-function goHome() { recCancelled = true; recStarting = false; recId = null; stopTimer(); killRec(); killRecog(); nav('s-home'); }
+function goHome() { recCancelled = true; recStarting = false; recId = null; stopTimer(); killRec(); killRecog(); releaseStream(); nav('s-home'); }// R558: releaseStream() frees the pre-start mic stream (killRec only acts on state==='recording')
 function showHistory(tab) { histTab = tab; nav('s-history'); renderHist(); }
 
 /* ── ホーム統計 ── */
@@ -1000,9 +999,20 @@ function getYearCount() {
 function safeInt(v) { const n = +v; return (isNaN(n) || !isFinite(n)) ? 0 : n; } // R444: guard Infinity/-Infinity (isNaN(Infinity)===false)
 // R419: thousands-separated display for readability (e.g. 1234 -> "1,234")
 function fmtN(n) { try { return safeInt(n).toLocaleString('ja-JP'); } catch(e) { return String(safeInt(n)); } }
+// R562: the stored streak is only recomputed on save; reconcile it on display so a broken streak (a missed day) is not shown stale/inflated when the user opens the app after a gap
+function reconcileStreak() {
+  try {
+    const last = localStorage.getItem('last_day') || '';
+    if (!last) return;
+    const today = localDateStr();
+    const yd = new Date(); yd.setDate(yd.getDate() - 1);
+    if (last !== today && last !== localDateStr(yd)) localStorage.setItem('streak', '0'); // streak alive only if last practice was today or yesterday
+  } catch(e) {}
+}
 function refreshHome() {
   // E4: internal guard so home navigation never throws even if localStorage is unavailable
   try {
+    reconcileStreak(); // R562: decay a broken streak before display (covers boot + s-home nav, both routed through refreshHome)
     document.getElementById('h-today').textContent  = fmtN(localStorage.getItem(dayKey())); // R419
     document.getElementById('h-month').textContent  = fmtN(getMonthCount());
     document.getElementById('h-total').textContent  = fmtN(localStorage.getItem('total'));
@@ -1039,7 +1049,10 @@ function filteredQ() {
 function pickQ() {
   const pool = filteredQ();
   if (!pool.length) { toast('該当レベルの問題がありません'); return false; }
-  const it = pool[Math.floor(Math.random() * pool.length)];
+  // R567: don't return the identical current question — "別の問題" must actually change it (pure random-with-replacement could re-pick curQ)
+  let it;
+  if (pool.length > 1 && curQ) { let _n = 0; do { it = pool[Math.floor(Math.random() * pool.length)]; } while (it.q === curQ && ++_n < pool.length); } // R574: bound the re-roll so a future duplicate question can never hang the loop
+  else { it = pool[Math.floor(Math.random() * pool.length)]; }
   curQ = it.q; curLv = it.lv;
   document.getElementById('q-text').textContent = curQ;
   const lc = curLv.replace('級','');
@@ -1049,11 +1062,17 @@ function pickQ() {
   const rnd = document.getElementById('cfg-rnd')?.checked ?? true;
   curLimit = (rnd && Math.random() < .5) ? 10 : 30;
   const tb = document.getElementById('q-tbadge');
-  tb.textContent = curLimit === 10 ? '⚡ 10秒' : '⏱ 30秒';
+  tb.textContent = curLimit === 10 ? '10秒' : '30秒';// R571: 絵文字⚡⏱削除
   return true;
 }
-function startQA() { mode = 'qa'; if (pickQ()) nav('s-question'); }
-function nextQA()  { mode = 'qa'; if (pickQ()) nav('s-question'); }
+// R563: pickQ() sets q-text while s-question is display:none (not announced) and nav() focuses the heading; re-set q-text after the screen is visible so SR users hear the question (clear-then-set forces a fresh polite live-region event). The in-place 別の問題 buttons call pickQ() directly and already work (screen visible), so they are unchanged.
+function announceQuestion() {
+  const el = document.getElementById('q-text'); if (!el) return;
+  const t = el.textContent;
+  requestAnimationFrame(() => { el.textContent = ''; requestAnimationFrame(() => { el.textContent = t; }); });
+}
+function startQA() { mode = 'qa'; if (pickQ()) { nav('s-question'); announceQuestion(); } }
+function nextQA()  { mode = 'qa'; if (pickQ()) { nav('s-question'); announceQuestion(); } }
 
 /* ── フリートーク ── */
 function startFT(sec) { mode = 'ft'; curLimit = sec; beginRec(); } // R215: removed dead ftDur assignment
@@ -1076,6 +1095,7 @@ function beginRec() {
     return;
   }
   recStarting = true;
+  const myAttempt = ++recAttempt; // R558: this attempt's generation id — captured by the getUserMedia .then and the 500ms timer to detect supersession by a later beginRec()
 
   const isFT = mode === 'ft';
   document.getElementById('r-title').textContent = isFT ? 'フリートーク' : '録音中';
@@ -1097,9 +1117,12 @@ function beginRec() {
     }
     throw err; // re-throw NotAllowedError, NotFoundError, etc. to .catch() below
   }).then(stream => {
+    // R558: a superseded/orphaned attempt (cancel+re-record before this getUserMedia resolved) must not clobber the current session — stop ITS OWN stream and bail before touching any shared state
+    if (myAttempt !== recAttempt) { stream.getTracks().forEach(t => t.stop()); return; }
     recStarting = false; // Fix5: 取得完了でフラグ解除
+    curStream = stream;  // R558: adopt as the current attempt's stream so cancelRec/goHome can release it during the pre-start window
     // R372: if cancel/goHome fired while getUserMedia was pending, release the mic immediately
-    if (recCancelled) { stream.getTracks().forEach(t => t.stop()); return; }
+    if (recCancelled) { releaseStream(); return; } // R558: releaseStream() also nulls curStream
     // R372: wrap recorder setup so a MediaRecorder constructor failure still releases the mic stream
     try {
       chunks = []; recId = Date.now().toString() + Math.random().toString(36).slice(2,6); // R33: collision-safe ID
@@ -1119,17 +1142,19 @@ function beginRec() {
         if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; } // Fix4: 旧URLを解放
         // R484: createObjectURL can fail under memory pressure — guard so the mic is still released
         try { audioUrl = URL.createObjectURL(audioBlob); }
-        catch(urlErr) { stream.getTracks().forEach(t => t.stop()); toast('録音の処理に失敗しました。もう一度お試しください'); if (mode === 'ft') nav('s-ft-select'); else nav('s-question'); return; }
-        stream.getTracks().forEach(t => t.stop());
+        catch(urlErr) { stream.getTracks().forEach(t => t.stop()); curStream = null; toast('録音の処理に失敗しました。もう一度お試しください'); if (mode === 'ft') nav('s-ft-select'); else nav('s-question'); return; }
+        stream.getTracks().forEach(t => t.stop()); curStream = null; // R558: stream finalized — clear curStream so a later cancelRec/goHome releaseStream() is a clean no-op
         openReview();
       };
       startRecog();
       setTimeout(() => {
-        // R1/R39: cancelRec or goHome may have fired during the 500ms wait
-        if (recCancelled) { stream.getTracks().forEach(t => t.stop()); return; }
+        // R558: superseded attempt — stop our own stream, don't touch the current session's curStream/recorder/timer
+        if (myAttempt !== recAttempt) { stream.getTracks().forEach(t => t.stop()); return; }
+        // R1/R39: cancelRec or goHome may have fired during the 500ms wait (they already released curStream via releaseStream)
+        if (recCancelled) { return; }
         // R475: guard recorder.start() — throws InvalidStateError if recorder somehow not 'inactive'
         try { recorder.start(1000); } catch(startErr) {
-          stream.getTracks().forEach(t => t.stop()); killRecog();
+          stream.getTracks().forEach(t => t.stop()); curStream = null; killRecog(); // R558: clear curStream on start failure
           toast('録音の開始に失敗しました'); if (mode === 'ft') nav('s-ft-select'); else nav('s-question'); return;
         } // 1秒ごとにchunks収集（バックグラウンド対策）
         document.getElementById('r-rec-row').style.visibility = 'visible';
@@ -1148,7 +1173,7 @@ function beginRec() {
       }, 500);
     } catch(setupErr) {
       // R372: MediaRecorder构造失敗时にマイクを解放（点きっぱなし防止）
-      stream.getTracks().forEach(t => t.stop());
+      stream.getTracks().forEach(t => t.stop()); curStream = null; // R558
       killRecog();
       toast('録音の初期化に失敗しました');
       if (mode === 'ft') nav('s-ft-select'); else nav('s-question');
@@ -1175,18 +1200,23 @@ let recCancelled = false;
 let recogShouldRun = false;
 let evalAbortCtrl = null; // R452: abort pending Claude eval on nav-away
 function stopTimer() { clearInterval(timerInt); timerInt = null; }
-function killRec()   { if (recorder && recorder.state === 'recording') recorder.stop(); }
+function releaseStream() { if (curStream) { curStream.getTracks().forEach(t => t.stop()); curStream = null; } } // R558: idempotent mic release for the post-getUserMedia / pre-start 'inactive' window
+function killRec()   {
+  if (!recorder) return;
+  if (recorder.state === 'recording') recorder.stop();
+  else if (recorder.state === 'paused') { try { recorder.resume(); } catch(e){} try { recorder.stop(); } catch(e){} } // R560: an OS interruption (iOS screen-lock) can leave the recorder 'paused'; finalize via onstop instead of stranding s-record with a frozen countdown
+}
 function killRecog() {
   recogShouldRun = false; // 再起動ループを停止
   if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
 }
-function stopRec()   { stopTimer(); killRec(); killRecog(); }
+function stopRec()   { stopTimer(); killRec(); killRecog(); releaseStream(); }// R572: symmetric with cancelRec/goHome — finalizeOnHide()/auto-stop reach teardown via stopRec, so it must also release the pre-start mic stream (releaseStream is idempotent → clean no-op once onstop nulled curStream)
 function cancelRec() {
   recCancelled = true;
   recStarting = false; // R508: mirror goHome() — if getUserMedia is still pending when Cancel is pressed, recStarting stays true and silently blocks the next beginRec() until the dialog resolves
   recId = null; // R491: nullify recId so a delayed stale onstop that fires after beginRec resets recCancelled (capturedRecId guard relies on recId being updated by getUserMedia.then, which may not have run yet) is still blocked by recId !== capturedRecId
   pendingHistItem = null; // Fix7: 保留中の保存をキャンセル
-  stopTimer(); killRec(); killRecog();
+  stopTimer(); killRec(); killRecog(); releaseStream(); // R558: releaseStream() frees the pre-start mic stream (killRec only acts on state==='recording')
   if (mode === 'ft') nav('s-ft-select');
   else nav('s-question');
 }
@@ -1217,7 +1247,7 @@ function startRecog() {
       if (e.error === 'aborted' || e.error === 'no-speech') { return; }
       if (e.error === 'network') {
         // Android Chromeではnetworkエラー後にonendが来ないことがある
-        if (recogShouldRun && recorder && recorder.state === 'recording') {
+        if (recogShouldRun) {// R559: was gated on recorder.state==='recording' — but recognition starts ~500ms before the recorder does, so an early onend/network error in that pre-roll left recognition permanently dead (empty transcript). recogShouldRun is cleared by killRecog/stopRec/cancelRec so teardown stays bounded
           netRetryTimer = setTimeout(() => { // R509: store id so onend can cancel this timeout
             netRetryTimer = null;
             if (!recogShouldRun) return;
@@ -1233,7 +1263,7 @@ function startRecog() {
       // the browser also fires onend right after onerror, which would create a SECOND instance.
       // Cancelling the timer here means onend is the sole restart path, preventing double-start.
       if (netRetryTimer) { clearTimeout(netRetryTimer); netRetryTimer = null; }
-      if (recogShouldRun && recorder && recorder.state === 'recording') {
+      if (recogShouldRun) {// R559: decouple restart from recorder.state (see network-error branch) so the 500ms pre-roll window is covered
         try { recognition = createRecog(); recognition.start(); } catch(e) {}
       }
     };
@@ -1251,7 +1281,7 @@ function openReview() {
   document.getElementById('rv-ft-box').style.display = isFT ? 'block' : 'none';
   if (!isFT) {
     document.getElementById('rv-q').textContent      = curQ;
-    document.getElementById('rv-tbadge').textContent = '⏱ ' + curLimit + '秒制限';
+    document.getElementById('rv-tbadge').textContent = curLimit + '秒制限';// R571: 絵文字⏱削除
     const lc = curLv.replace('級','');
     const rvLv = document.getElementById('rv-lv');
     rvLv.textContent = curLv;
@@ -1282,7 +1312,7 @@ function openReview() {
   const backBtn   = document.getElementById('rv-back-btn');
   saveBtn.disabled = false; noSaveBtn.disabled = false; // reset from previous session
   if (backBtn) backBtn.disabled = false; // R557: re-enable back btn that saveAndNext() may have disabled
-  saveBtn.textContent   = isFT ? '✅ 記録を保存してフリートークへ' : '✅ 記録を保存して次の問題へ';
+  saveBtn.textContent   = isFT ? '記録を保存してフリートークへ' : '記録を保存して次の問題へ';// R571: 絵文字✅削除
   noSaveBtn.textContent = '保存しない';
   nav('s-review');
   // ★ 自動保存しない。ユーザーが「保存」を押したときだけ記録する
@@ -1324,13 +1354,13 @@ async function saveAndNext() {
   const item = pendingHistItem;
   const isFT = pendingIsFT;
   if (item) {
-    item.tr = finalTranscript || '';
+    item.tr = (finalTranscript || transcript || '').trim();// R565: fast save (<1200ms) left finalTranscript='' though the live `transcript` already held speech — fall back so we never persist a blank transcript (mirrors copyPrompt's R309 fallback)
     if (isFT) saveFTHist(item); else saveQAHist(item);
     savePractice();
     pendingHistItem = null; // committed — no retry can duplicate these stats
     try {
       await saveAudio(item.id, audioBlob);
-      toast('記録を保存しました ✅');
+      toast('記録を保存しました');
     } catch(e) {
       // Stats are already persisted; only the audio blob failed. Inform but proceed forward.
       const msg = e.message === 'db_unavailable'
@@ -1512,9 +1542,9 @@ ADVICE:
   const timeoutId = setTimeout(() => controller.abort(), 15000);
   const navListener = navSignal ? () => controller.abort() : null;
   if (navListener) navSignal.addEventListener('abort', navListener);
-  let res;
+  let d;
   try {
-    res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       signal: controller.signal,
       headers: {
@@ -1528,24 +1558,24 @@ ADVICE:
         messages: [{ role: 'user', content: prompt }]
       })
     });
+    // Fix2: HTTPステータスコードチェック
+    if (!res.ok) {
+      if (res.status === 429) throw new Error('rate_limit');
+      if (res.status === 401 || res.status === 403) throw new Error('auth_error');
+      throw new Error('api_error_' + res.status);
+    }
+    d = await res.json();// R561: read the body INSIDE the try so the 15s timeout / nav-abort still covers a stalled or trickled response body — previously res.json() ran AFTER finally cleared the timeout and could hang the spinner forever
   } finally {
     clearTimeout(timeoutId);
     if (navListener) navSignal.removeEventListener('abort', navListener); // R452: cleanup
   }
-  // Fix2: HTTPステータスコードチェック
-  if (!res.ok) {
-    if (res.status === 429) throw new Error('rate_limit');
-    if (res.status === 401 || res.status === 403) throw new Error('auth_error');
-    throw new Error('api_error_' + res.status);
-  }
-  const d = await res.json();
   return d.content?.[0]?.text || '評価を取得できませんでした';
 }
 
 function renderEval(text) {
   // R77: normalize CRLF line endings from Claude API
   text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  const scoreM = text.match(/SCORE:\s*(\d+|-)/);
+  const scoreM = text.match(/SCORE:[\s*]*([0-9０-９]+|-)/);// R570/R573: tolerate full-width digits (０-９) and markdown bold (**80**); single [\s*]* char-class avoids the O(n²) backtracking that \s*\**\s* could hit on a pathological all-whitespace response
   const goodM  = text.match(/GOOD:\n([\s\S]*?)(?=IMPROVE:|ADVICE:|$)/);
   const impM   = text.match(/IMPROVE:\n([\s\S]*?)(?=ADVICE:|$)/);
   const advM   = text.match(/ADVICE:\n([\s\S]*?)$/);
@@ -1554,7 +1584,7 @@ function renderEval(text) {
     return '<div class="rv-box" style="white-space:pre-wrap">' + escHtml(text) + '</div>';
   }
 
-  let scoreNum = parseInt(scoreM[1]);
+  let scoreNum = parseInt(String(scoreM[1]).replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)), 10);// R570: fold full-width digits to ASCII before parse (parseInt('-')=NaN is preserved, so the no-score branch still works)
   // R401: clamp out-of-range scores (malformed Claude output like "SCORE: 200" was displayed verbatim)
   if (!isNaN(scoreNum)) scoreNum = Math.max(0, Math.min(100, scoreNum));
   // R418: AA-compliant score colors on white (#ca8a04 amber failed 3:1 at 2.94)
@@ -1571,21 +1601,21 @@ function renderEval(text) {
 
   const goodItems = toItems(goodM ? goodM[1] : '');
   if (goodItems.length) {
-    html += `<div class="ev-card ev-good"><div class="ev-card-title">✅ 良かった点</div>`;
+    html += `<div class="ev-card ev-good"><div class="ev-card-title">良かった点</div>`;
     goodItems.forEach(l => { html += `<div class="ev-item">${escHtml(l)}</div>`; });
     html += `</div>`;
   }
 
   const impItems = toItems(impM ? impM[1] : '');
   if (impItems.length) {
-    html += `<div class="ev-card ev-imp"><div class="ev-card-title">💡 改善点</div>`;
+    html += `<div class="ev-card ev-imp"><div class="ev-card-title">改善点</div>`;
     impItems.forEach(l => { html += `<div class="ev-item">${escHtml(l)}</div>`; });
     html += `</div>`;
   }
 
   const advice = advM ? advM[1].trim() : '';
   if (advice) {
-    html += `<div class="ev-card ev-advice"><div class="ev-card-title">🎯 次回へのアドバイス</div><div class="ev-item">${escHtml(advice)}</div></div>`;
+    html += `<div class="ev-card ev-advice"><div class="ev-card-title">次回へのアドバイス</div><div class="ev-item">${escHtml(advice)}</div></div>`;
   }
 
   return html || '<div class="rv-box" style="white-space:pre-wrap">' + escHtml(text) + '</div>';
@@ -1609,20 +1639,22 @@ function copyPrompt() {
     : '営業質問（' + curLv + '）：' + curQ;
   const promptText = 'M&A営業のプロトレーナーとして以下のロールプレイを評価してください。\n\n【種類】' + ctx + '\n【制限時間】' + curLimit + '秒\n\n【回答（文字起こし）】\n' + t + '\n\n① 総合スコア（100点満点）と理由\n② 良かった点（2〜3つ、具体的に）\n③ 改善点（2〜3つ、どう直すか具体的に）\n④ 次回へのアドバイス（一言）\n\n評価観点：論理構造（結論→理由→具体例）・数字の活用・顧客への共感・質問の技術・言葉の明確さ';
   const fallbackCopy = () => {
+    const prevFocus = document.activeElement; // R569: removing the focused textarea drops focus to <body>; capture so we can restore the user's focus point (the 📋 button)
     const ta = document.createElement('textarea');
     ta.value = promptText; // 変数を使い回す（Samsung Internet対応）
     ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;width:1px;height:1px';
     document.body.appendChild(ta); ta.focus(); ta.select();
-    try { document.execCommand('copy'); toast('コピーしました！Claudeに貼り付けてください ✅'); }
+    try { document.execCommand('copy'); toast('コピーしました！Claudeに貼り付けてください'); }
     catch(e2) { toast('コピーできませんでした。手動でコピーしてください'); }
     document.body.removeChild(ta);
+    try { if (prevFocus && typeof prevFocus.focus === 'function') prevFocus.focus({ preventScroll: true }); } catch(e3) {} // R569: restore focus after removing the transient textarea (WCAG 2.4.3)
   };
   // R514: safety reset — if writeText() never resolves (browser bug), debounce flag stays true forever locking the button
   const resetCopy = () => { copyingPrompt = false; };
   const safetyTimer = setTimeout(resetCopy, 5000); // R514: max 5s before auto-unlock
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(promptText)
-      .then(() => { clearTimeout(safetyTimer); toast('コピーしました！Claudeに貼り付けてください ✅'); resetCopy(); })
+      .then(() => { clearTimeout(safetyTimer); toast('コピーしました！Claudeに貼り付けてください'); resetCopy(); })
       .catch(() => { clearTimeout(safetyTimer); fallbackCopy(); resetCopy(); });
   } else {
     clearTimeout(safetyTimer);
@@ -1723,7 +1755,7 @@ function switchHistTab(tab) {
     const b = a.nextElementSibling;
     if (b && b.classList.contains('audio-btn')) {
       if (b.disabled) { delete b.dataset.loadToken; b.disabled = false; } // R511: cancel stale IDB load on tab switch
-      b.textContent = '🔊 録音を聴く';
+      b.textContent = '録音を聴く';
     }
   });
 }
@@ -1735,7 +1767,7 @@ function renderHist() {
   const monthCount = getMonthCount();
   const todayCount = safeInt(localStorage.getItem(dayKey())); // R303: was +() — NaN would render "NaN回"
   if (goal > 0) {
-    const pct = Math.min(Math.round(yearCount / goal * 100), 100);
+    const pct = Math.min(Math.floor(yearCount / goal * 100), 100);// R564: floor (not round) — was showing "100% 達成" + full bar at e.g. 364/365, before the goal is actually reached
     const fillW = Math.min(pct, 100);
     wrap.innerHTML =
       '<div class="year-prog">' +
@@ -1794,7 +1826,7 @@ function buildHistHTML(hist, isFT) {
       // R440: class属性注入防止 — lv が '" onclick=...' 等を含む場合に quote が class 属性を抜け出して
       // イベントハンドラを注入できる。[^a-z]除去で英小文字のみに制限。
       const lc  = lvStr.replace('級','').toLowerCase().replace(/[^a-z]/g,'');
-      const lvBadge = lc ? '<span class="badge badge-' + escHtml(lc) + '" style="font-size:10px">' + escHtml(lvStr) + '</span> ' : ''; // R8: XSS
+      const lvBadge = (!isFT && lc) ? '<span class="badge badge-' + escHtml(lc) + '" style="font-size:10px">' + escHtml(lvStr) + '</span> ' : ''; // R8: XSS; R566: never render a level badge on FT rows — legacy pre-R490 FT items stored a QA lv and showed a stale colored badge
       // Fix14: XSSを防ぐためit.qとit.trにescHtmlを適用
       const qHtml = !isFT
         ? '<div class="hist-q">' + escHtml(it.q||'') + '</div>'
@@ -1802,11 +1834,11 @@ function buildHistHTML(hist, isFT) {
       const trStr = (it.tr != null) ? String(it.tr) : ''; // R434: 非文字列ガード
       const trText = trStr ? trStr.slice(0,80) + (trStr.length>80?'…':'') : '';
       return '<div class="hist-item">' +
-        '<div class="hist-meta">' + lvBadge + '<span class="badge badge-time">⏱ ' + lim + '</span><span style="font-size:11px;color:#767676">　' + escHtml(t) + '</span></div>' + // R449; R472: escHtml(t) for consistency (locale time strings are safe in practice but policy is to escape all dynamic text)
+        '<div class="hist-meta">' + lvBadge + '<span class="badge badge-time">' + lim + '</span><span style="font-size:11px;color:#767676">　' + escHtml(t) + '</span></div>' + // R449; R472: escHtml(t) for consistency (locale time strings are safe in practice but policy is to escape all dynamic text)
         qHtml +
         (trStr ? '<div class="hist-tr">' + escHtml(trText) + '</div>' : '') +
         '<audio controls aria-label="録音再生 ' + escHtml(t) + ' (' + lim + ')" style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' + // R459: AT context; R483: was split across two lines with a stray leading '+' that produced '...)"NaN style=...' via double-+ unary coercion
-        '<button type="button" class="audio-btn" onclick="toggleAudio(this)" data-id="' + String(it.id).replace(/[^a-z0-9]/gi,'') + '">🔊 録音を聴く</button>' + // R441: data-id注入防止
+        '<button type="button" class="audio-btn" onclick="toggleAudio(this)" data-id="' + String(it.id).replace(/[^a-z0-9]/gi,'') + '">録音を聴く</button>' + // R441: data-id注入防止
         '</div>';
     }).join('')
   ).join('');
@@ -1831,7 +1863,7 @@ function toggleAudio(btn) {
         const b = a.nextElementSibling;
         if (b && b.classList.contains('audio-btn')) {
           if (b.disabled) { delete b.dataset.loadToken; b.disabled = false; } // R510: invalidate stale load
-          b.textContent = '🔊 録音を聴く';
+          b.textContent = '録音を聴く';
         }
       }
     });
@@ -1850,7 +1882,7 @@ function toggleAudio(btn) {
           if (audio.src && audio.src.startsWith('blob:')) URL.revokeObjectURL(audio.src);
           audio.src = URL.createObjectURL(blob);
           audio.style.display = 'block';
-          btn.textContent = '🔇 閉じる';
+          btn.textContent = '閉じる';
           // Android Chrome: src設定直後にplay()するとAbortErrorになるのでoncanplayを使う
           audio.oncanplay = () => {
             audio.play().catch(() => {});
@@ -1864,14 +1896,14 @@ function toggleAudio(btn) {
           audio.onerror = () => {
             audio.onerror = null; audio.oncanplay = null;
             if (audio.src && audio.src.startsWith('blob:')) { URL.revokeObjectURL(audio.src); audio.src = ''; }
-            audio.style.display = 'none'; btn.textContent = '🔊 録音を聴く';
+            audio.style.display = 'none'; btn.textContent = '録音を聴く';
             toast('音声の再生に失敗しました');
           };
         } else { toast('録音データが見つかりません'); }
       }).catch(() => { btn.disabled = false; toast('録音データの読み込みに失敗しました'); }); // R10; R505: re-enable on error
     } else {
       audio.style.display = 'block';
-      btn.textContent = '🔇 閉じる';
+      btn.textContent = '閉じる';
       audio.play().catch(() => {});
     }
   } else {
@@ -1879,7 +1911,7 @@ function toggleAudio(btn) {
     audio.oncanplay = null; // R54: clear dangling handler
     audio.onerror = null;   // R481: clear sibling guard on deliberate hide
     audio.style.display = 'none';
-    btn.textContent = '🔊 録音を聴く';
+    btn.textContent = '録音を聴く';
   }
 }
 // Fix11 + R9 + R102: revoke blob URLs, clear DB, catch errors
@@ -1923,7 +1955,7 @@ function saveKey() {
   // R43: validate key format
   if (!v.startsWith('sk-ant-')) { toast('形式が正しくありません（sk-ant-で始まるキーを入力してください）'); return; }
   // R493: wrap setItem so QuotaExceededError shows a helpful message instead of a generic global-error toast
-  try { localStorage.setItem('api_key', v); document.getElementById('cfg-key').value = v; toast('APIキーを保存しました ✅'); } // R464: show trimmed value in field
+  try { localStorage.setItem('api_key', v); document.getElementById('cfg-key').value = v; toast('APIキーを保存しました'); } // R464: show trimmed value in field
   catch(e) { toast('保存に失敗しました（ストレージ容量不足の可能性があります）'); }
 }
 // R166: allow user to remove saved API key from the UI
@@ -1933,18 +1965,20 @@ function clearKey() {
   toast('APIキーを削除しました');
 }
 function saveYearGoal() {
+  // R568: only an EMPTY field is an intentional reset; a non-empty invalid value (0, 0.5, -5, abc) must NOT wipe a previously-saved goal
+  const raw = document.getElementById('cfg-year-goal').value.trim();
+  if (raw === '') { localStorage.removeItem('year_goal'); document.getElementById('cfg-year-goal').value = ''; toast('年間目標をリセットしました'); return; }
   // R402: floor to integer so decimals like 365.7 don't render as "目標 365.7 回"
-  const v = Math.floor(+(document.getElementById('cfg-year-goal').value));
-  if (v > 0 && isFinite(v)) { // R453: isFinite guard — Math.floor(Infinity)=Infinity passes v>0 without guard
-    // R493: wrap setItem for QuotaExceededError
-    try { localStorage.setItem('year_goal', v); document.getElementById('cfg-year-goal').value = v; toast('年間目標を ' + v + ' 回に設定しました 🎯'); }
-    catch(e) { toast('保存に失敗しました（ストレージ容量不足の可能性があります）'); }
-  } else { localStorage.removeItem('year_goal'); toast('年間目標をリセットしました'); }
+  const v = Math.floor(+raw);
+  if (!(v > 0 && isFinite(v))) { toast('1以上の数値を入力してください'); return; } // R568: keep the existing goal on invalid input; R453: isFinite guards Math.floor(Infinity)
+  // R493: wrap setItem for QuotaExceededError
+  try { localStorage.setItem('year_goal', v); document.getElementById('cfg-year-goal').value = v; toast('年間目標を ' + v + ' 回に設定しました'); }
+  catch(e) { toast('保存に失敗しました（ストレージ容量不足の可能性があります）'); }
 }
 function setYearGoalQuick(n) {
   document.getElementById('cfg-year-goal').value = n;
   // R493: wrap setItem for QuotaExceededError
-  try { localStorage.setItem('year_goal', n); toast('年間目標を ' + n + ' 回に設定しました 🎯'); }
+  try { localStorage.setItem('year_goal', n); toast('年間目標を ' + n + ' 回に設定しました'); }
   catch(e) { toast('保存に失敗しました（ストレージ容量不足の可能性があります）'); }
   // R476: removed dead code — s-history and s-settings cannot both be active simultaneously
 }
@@ -1995,6 +2029,10 @@ window.addEventListener('unhandledrejection', e => reportGlobalError('Unhandled 
 window.addEventListener('beforeunload', e => {
   if (recorder && recorder.state === 'recording') { e.preventDefault(); e.returnValue = ''; }
 });
+// R560: backgrounding/screen-lock throttles the countdown setInterval, so auto-stop-at-curLimit cannot fire while hidden — on Android the recorder keeps capturing and the saved clip overruns the limit by the whole background duration (N1). Finalize the in-progress take when the page is hidden so it stops at the limit instead of running unbounded; this also pre-empts the iOS audio-session interruption that can otherwise strand s-record (N2). stopRec()->killRec() handles a 'paused' recorder (R560).
+function finalizeOnHide() { if (recorder && (recorder.state === 'recording' || recorder.state === 'paused')) stopRec(); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) finalizeOnHide(); });
+window.addEventListener('pagehide', finalizeOnHide);
 
 /* ── 起動 ── */
 // Fix15: 起動時にフィルターとタイマー設定をlocalStorageから復元
