@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,viewport-fit=cover"><!-- R25: allow pinch-zoom; R507: viewport-fit=cover enables env(safe-area-inset-*) for notched iPhones -->
   <!-- R425: mobile/PWA integration — standalone home-screen app feel, status bar theming -->
   <meta name="description" content="M&A営業ロールプレイ練習ツール。即興Q&Aとフリートークで営業トークを録音し、論理構造を評価します。">
-  <meta name="theme-color" content="#111111">
+  <meta name="theme-color" content="#ffffff"><!-- R579: 暖色ライトUI(R575/R576)に合わせPWAテーマ色を#111→#fff（#fffヘッダーと一致） -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"><!-- R579: black→default — ライト見出しの上に暗いステータスバー帯が出ないよう、暗文字×明背景に -->
   <meta name="apple-mobile-web-app-title" content="SEIKAロープレ">
   <meta name="format-detection" content="telephone=no">
   <!-- R426: installable PWA — manifest + icon (served alongside index.html on GitHub Pages) -->
@@ -576,7 +576,7 @@
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v5.2<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
+      <p class="set-note">SEIKA ロープレツール v5.3<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
     </div>
   </div>
 </div>
@@ -1682,9 +1682,10 @@ function renderEval(text) {
   text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const scoreM = text.match(/SCORE:[\s*]*([0-9０-９]+|-)/);// R570/R573: tolerate full-width digits (０-９) and markdown bold (**80**); single [\s*]* char-class avoids the O(n²) backtracking that \s*\**\s* could hit on a pathological all-whitespace response
   // R577: tolerate markdown-decorated headers (**GOOD:**, ## GOOD:, GOOD**:) AND inline values (GOOD: text on the same line). Previously required a literal "LABEL:\n", so any decorated/inline Claude output silently dropped that whole section — the user saw a bare score with no written feedback (no raw-text fallback fires once SCORE matched).
-  const goodM  = text.match(/[*#\s]*GOOD[*\s]*:[*\s]*\n?([\s\S]*?)(?=[*#\s]*(?:IMPROVE|ADVICE)[*\s]*:|$)/);
-  const impM   = text.match(/[*#\s]*IMPROVE[*\s]*:[*\s]*\n?([\s\S]*?)(?=[*#\s]*ADVICE[*\s]*:|$)/);
-  const advM   = text.match(/[*#\s]*ADVICE[*\s]*:[*\s]*\n?([\s\S]*?)$/);
+  // R579/R580: anchor section headers to line starts (/m, ^) and exclude newlines from the leading/inner classes ([ \t*#] / [ \t*]) — kills the O(n²) ReDoS backtracking of the old [*#\s]*…[*\s]* form. R580 fix: the end alternative is (?![\s\S]) (true end-of-input), NOT $ — under /m, $ matches end-of-LINE, which truncated a multi-line section to only its first item. advM captures greedily to the end. Keeps markdown(**GOOD:**/##)/inline(GOOD: x)/bullet(・-*•) tolerance and multi-line items.
+  const goodM  = text.match(/^[ \t*#]*GOOD[ \t*]*:[ \t*]*\n?([\s\S]*?)(?=^[ \t*#]*(?:IMPROVE|ADVICE)[ \t*]*:|(?![\s\S]))/m);
+  const impM   = text.match(/^[ \t*#]*IMPROVE[ \t*]*:[ \t*]*\n?([\s\S]*?)(?=^[ \t*#]*ADVICE[ \t*]*:|(?![\s\S]))/m);
+  const advM   = text.match(/^[ \t*#]*ADVICE[ \t*]*:[ \t*]*\n?([\s\S]*)/m);
 
   if (!scoreM) {
     return '<div class="rv-box" style="white-space:pre-wrap">' + escHtml(text) + '</div>';
@@ -1720,7 +1721,7 @@ function renderEval(text) {
     html += `</div>`;
   }
 
-  const advice = advM ? advM[1].trim() : '';
+  const advice = advM ? advM[1].replace(/\*\*/g,'').trim() : '';// R579: strip trailing/inline markdown bold so advice doesn't render literal ** (parity with toItems)
   if (advice) {
     html += `<div class="ev-card ev-advice"><div class="ev-card-title">次回へのアドバイス</div><div class="ev-item">${escHtml(advice)}</div></div>`;
   }
