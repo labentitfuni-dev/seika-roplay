@@ -14,7 +14,7 @@
   <!-- R426: installable PWA — manifest + icon (served alongside index.html on GitHub Pages) -->
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
-  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png"><!-- R584/F6: iOSはapple-touch-iconにSVG不可→PNGラスタを供給（ホーム画面アイコンがページのスクショ化する問題を解消）。SVGは下のrel=iconでChrome/Android用に保持 -->
   <title>SEIKA ロープレツール</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -178,6 +178,7 @@
       .prog-bar,.year-prog-fill{background:Highlight;}
       .rec-dot{background:Highlight;forced-color-adjust:none;}
       .tab-btn.active{outline:2px solid Highlight;outline-offset:-2px;}
+      .lv-fb.sel-ALL,.lv-fb.sel-S,.lv-fb.sel-A,.lv-fb.sel-B,.lv-fb.sel-C,.lv-fb.sel-D{outline:2px solid Highlight;outline-offset:-2px;}/* R582: HCM/forced-colorsで選択中レベルフィルタの状態(背景色のみで表現)が消える問題を是正 — .tab-btn.activeと対称に */
       input:checked~.tog-track{background:Highlight;}
       .tog-track::after{background:Canvas;}
     }
@@ -563,7 +564,7 @@
     <div class="set-section">
       <div class="set-label">年間目標（回）</div>
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
-        <input type="number" class="inp" id="cfg-year-goal" placeholder="例：365" min="1" step="1" aria-label="年間目標回数" autocomplete="off" style="width:110px;padding:10px 12px"><!-- R233: min/step; R416: aria-label -->
+        <input type="number" class="inp" id="cfg-year-goal" placeholder="例：365" min="1" step="1" aria-label="年間目標回数" autocomplete="off" style="width:110px;padding:10px 12px;margin-bottom:0"><!-- R233: min/step; R416: aria-label; R583: margin-bottom:0 — .inp基底のmargin-bottom:10pxがalign-items:center flex行で入力欄を約5px上へずらし保存ボタンと不揃いになるのを打消し -->
         <button type="button" class="btn btn-black" style="width:auto;padding:10px 20px;font-size:13px;border-radius:10px" onclick="saveYearGoal()" aria-label="年間目標を保存">保存</button><!-- R501: WCAG 2.4.6 -->
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -576,7 +577,7 @@
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v5.3<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
+      <p class="set-note">SEIKA ロープレツール v5.4<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
     </div>
   </div>
 </div>
@@ -1685,7 +1686,7 @@ function renderEval(text) {
   // R579/R580: anchor section headers to line starts (/m, ^) and exclude newlines from the leading/inner classes ([ \t*#] / [ \t*]) — kills the O(n²) ReDoS backtracking of the old [*#\s]*…[*\s]* form. R580 fix: the end alternative is (?![\s\S]) (true end-of-input), NOT $ — under /m, $ matches end-of-LINE, which truncated a multi-line section to only its first item. advM captures greedily to the end. Keeps markdown(**GOOD:**/##)/inline(GOOD: x)/bullet(・-*•) tolerance and multi-line items.
   const goodM  = text.match(/^[ \t*#]*GOOD[ \t*]*:[ \t*]*\n?([\s\S]*?)(?=^[ \t*#]*(?:IMPROVE|ADVICE)[ \t*]*:|(?![\s\S]))/m);
   const impM   = text.match(/^[ \t*#]*IMPROVE[ \t*]*:[ \t*]*\n?([\s\S]*?)(?=^[ \t*#]*ADVICE[ \t*]*:|(?![\s\S]))/m);
-  const advM   = text.match(/^[ \t*#]*ADVICE[ \t*]*:[ \t*]*\n?([\s\S]*)/m);
+  const advM   = text.match(/^[ \t*#]*ADVICE[ \t*]*:[ \t*]*\n?([\s\S]*?)(?=^[ \t*#]*(?:GOOD|IMPROVE)[ \t*]*:|(?![\s\S]))/m);// R581: lazy + lookahead terminator (next GOOD/IMPROVE header OR true end) — was greedy [\s\S]*, which on OUT-OF-ORDER Claude output (ADVICE before IMPROVE/GOOD) swallowed the following sections into the advice card AND duplicated them; now symmetric with goodM/impM, multi-line advice still preserved
 
   if (!scoreM) {
     return '<div class="rv-box" style="white-space:pre-wrap">' + escHtml(text) + '</div>';
