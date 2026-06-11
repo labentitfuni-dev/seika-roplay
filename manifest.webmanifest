@@ -1,7 +1,7 @@
 {
   "name": "SEIKA ロープレツール",
   "short_name": "SEIKAロープレ",
-  "description": "M&A営業ロールプレイ練習ツール。即興Q&Aとフリートークで営業トークを録音・評価します。",
+  "description": "M&A営業ロールプレイ練習ツール。Q&Aとフリートークで営業トークを録音・評価します。",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
