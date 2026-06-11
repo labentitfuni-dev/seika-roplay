@@ -358,6 +358,30 @@
       .lv-fb:hover{border-color:var(--ink)}
       .main-btn:hover,.ft-cell:hover{box-shadow:var(--shadow-cta)}
     }
+    /* ═══ R588: 白黒＋グラデーションの上質リファイン（和文palt・階層・カウント刷新）。後段カスケードで上書き ═══ */
+    :root{
+      --bg:#f3f4f6; --ink:#0b0b0d;
+      --grad-ink:linear-gradient(180deg,#26272d 0%,#0b0b0d 100%);
+      --grad-cta:linear-gradient(155deg,#2c2d33 0%,#0a0b0d 100%);
+    }
+    body{font-feature-settings:'palt' 1,'kern' 1;letter-spacing:.015em}
+    .hdr-title{letter-spacing:.08em;font-weight:700}
+    .main-btn-title{letter-spacing:.01em;font-weight:800}
+    .q-text{letter-spacing:.005em;font-weight:800}
+    .set-label,.rv-label,.date-hdr,.stat-l,.year-prog-title{letter-spacing:.12em;font-weight:700}
+    .main-btn-qa{background:var(--grad-cta);box-shadow:0 6px 20px rgba(10,11,13,.30),inset 0 1px 0 rgba(255,255,255,.08)}
+    .btn-black{background:var(--grad-cta);box-shadow:0 4px 14px rgba(10,11,13,.26),inset 0 1px 0 rgba(255,255,255,.07)}
+    .hdr{background:linear-gradient(180deg,#ffffff 0%,#f7f7f9 100%);border-bottom:1px solid var(--line)}
+    .prog-bar,.year-prog-fill{background:var(--grad-ink)}
+    .stat-bar,.year-prog,.set-section,.ft-cell,.sub-link,.rv-box,.main-btn-ft,.btn-gray{background-image:linear-gradient(180deg,rgba(255,255,255,.85),rgba(246,247,249,.55))}
+    .cnt{font-size:120px;font-weight:800;letter-spacing:-6px;line-height:.95;font-variant-numeric:tabular-nums}
+    @supports ((-webkit-background-clip:text) or (background-clip:text)){
+      .cnt-ok{background:linear-gradient(180deg,#22a35c,#15803d);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+      .cnt-w{background:linear-gradient(180deg,#d6831a,#b45309);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+      .cnt-d{background:linear-gradient(180deg,#f04444,#dc2626);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    }
+    .rec-dot{box-shadow:0 0 0 4px rgba(220,38,38,.15)}
+    @media (forced-colors: active){ .cnt-ok,.cnt-w,.cnt-d{-webkit-text-fill-color:CanvasText;background:none} }
   </style>
 </head>
 <body>
@@ -366,7 +390,7 @@
 <div id="s-home" class="screen active" role="main"><!-- R443: initial main landmark -->
   <div class="hdr">
     <span class="hdr-title">SEIKA ロープレ</span><!-- R571: 絵文字🎯削除（洗練リデザイン） -->
-    <button type="button" class="hdr-act" onclick="nav('s-settings')">設定</button>
+    <button type="button" class="hdr-act" onclick="nav('s-settings')" aria-label="設定" style="display:inline-flex;align-items:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
   <div class="body">
     <div class="stat-bar">
@@ -393,6 +417,9 @@
     <div class="sub-links">
       <button type="button" class="sub-link" onclick="showHistory('qa')">Q&amp;A記録</button>
       <button type="button" class="sub-link" onclick="showHistory('ft')">フリートーク記録</button><!-- R571: 絵文字📋削除 -->
+    </div>
+    <div class="sub-links" style="margin-top:10px"><!-- R591: 休憩タイマー入口 -->
+      <button type="button" class="sub-link" onclick="openBreak()">休憩タイマー</button>
     </div>
   </div>
 </div>
@@ -432,6 +459,9 @@
       </div>
       <div class="ft-cell" role="button" tabindex="0" aria-label="10秒のフリートークを開始" onclick="startFT(10)" onkeydown="ftKey(event,10)">
         <div class="ft-cell-n">10</div><div class="ft-cell-u">秒</div>
+      </div>
+      <div class="ft-cell" role="button" tabindex="0" aria-label="15秒のフリートークを開始" onclick="startFT(15)" onkeydown="ftKey(event,15)"><!-- R590: 15秒オプション追加 -->
+        <div class="ft-cell-n">15</div><div class="ft-cell-u">秒</div>
       </div>
       <div class="ft-cell" role="button" tabindex="0" aria-label="30秒のフリートークを開始" onclick="startFT(30)" onkeydown="ftKey(event,30)">
         <div class="ft-cell-n">30</div><div class="ft-cell-u">秒</div>
@@ -545,7 +575,7 @@
     <div class="set-section">
       <div class="set-label">Q&amp;A タイマー設定</div>
       <div class="tog-row">
-        <span class="tog-label">ランダム（10秒 / 30秒）</span>
+        <span class="tog-label">ランダム（10秒 / 15秒 / 30秒）</span><!-- R590: 15秒追加 -->
         <label class="tog-wrap"><input type="checkbox" role="switch" id="cfg-rnd" checked aria-label="ランダムタイマー（10秒 / 30秒）"><!-- R437: aria-label追加; R451: role=switch + visually-hidden --><span class="tog-track"></span></label>
       </div>
       <p class="set-note" style="margin-top:8px">OFFにすると常に30秒になります。</p>
@@ -587,6 +617,32 @@
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
       <p class="set-note">SEIKA ロープレツール v5.6<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
+    </div>
+  </div>
+</div>
+
+<!-- ══ BREAK TIMER (R591) ══ -->
+<div id="s-break" class="screen">
+  <div class="hdr">
+    <button type="button" class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
+    <span class="hdr-title">休憩タイマー</span>
+    <div style="width:60px"></div>
+  </div>
+  <div class="body">
+    <div id="break-pick">
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px">ロープレに疲れたら、休憩する時間を選んでください</p>
+      <div class="ft-grid">
+        <div class="ft-cell" role="button" tabindex="0" aria-label="1分休憩" onclick="startBreak(60)" onkeydown="breakKey(event,60)"><div class="ft-cell-n">1</div><div class="ft-cell-u">分</div></div>
+        <div class="ft-cell" role="button" tabindex="0" aria-label="3分休憩" onclick="startBreak(180)" onkeydown="breakKey(event,180)"><div class="ft-cell-n">3</div><div class="ft-cell-u">分</div></div>
+        <div class="ft-cell" role="button" tabindex="0" aria-label="5分休憩" onclick="startBreak(300)" onkeydown="breakKey(event,300)"><div class="ft-cell-n">5</div><div class="ft-cell-u">分</div></div>
+        <div class="ft-cell" role="button" tabindex="0" aria-label="10分休憩" onclick="startBreak(600)" onkeydown="breakKey(event,600)"><div class="ft-cell-n">10</div><div class="ft-cell-u">分</div></div>
+      </div>
+    </div>
+    <div id="break-run" style="display:none;text-align:center;padding-top:24px">
+      <div class="cnt cnt-ok" id="break-cnt" role="timer" aria-live="off" style="font-size:88px;letter-spacing:-3px">00:00</div>
+      <p style="color:var(--muted);margin:10px 0 24px">休憩中… ゆっくり休んでください</p>
+      <button type="button" class="btn btn-gray" style="max-width:240px;margin:0 auto" onclick="stopBreak()">休憩を終える</button>
+      <div id="break-status" role="status" aria-live="polite" class="sr-only"></div>
     </div>
   </div>
 </div>
@@ -1229,7 +1285,7 @@ function pickQ() {
   lbEl.textContent = curLv;
   lbEl.className = 'badge badge-' + lc.toLowerCase();
   const rnd = document.getElementById('cfg-rnd')?.checked ?? true;
-  curLimit = (rnd && Math.random() < .5) ? 10 : 30;
+  curLimit = rnd ? [10, 15, 30][Math.floor(Math.random() * 3)] : 30;// R590: Q&Aのランダムに15秒を追加（10/15/30秒）
   const tb = document.getElementById('q-tbadge');
   tb.textContent = curLimit === 10 ? '10秒' : '30秒';// R571: 絵文字⚡⏱削除
   return true;
@@ -1250,6 +1306,36 @@ function ftKey(e, sec) {
   if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); startFT(sec); }
 }
 
+/* ── R591: 休憩タイマー ── */
+let breakInt = null;
+function breakKey(e, sec){ if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); startBreak(sec); } }
+function stopBreakTimer(){ if (breakInt) { clearInterval(breakInt); breakInt = null; } }
+function openBreak(){ stopBreakTimer(); document.getElementById('break-pick').style.display = ''; document.getElementById('break-run').style.display = 'none'; nav('s-break'); }
+function startBreak(sec){
+  stopBreakTimer();
+  document.getElementById('break-pick').style.display = 'none';
+  document.getElementById('break-run').style.display = '';
+  const total = sec, end = Date.now() + sec * 1000;
+  const el = document.getElementById('break-cnt');
+  const tick = () => {
+    const left = Math.max(0, Math.round((end - Date.now()) / 1000));
+    const m = Math.floor(left / 60), s = left % 60;
+    el.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    const r = total > 0 ? left / total : 0;
+    el.className = 'cnt ' + (r > .5 ? 'cnt-ok' : r > .25 ? 'cnt-w' : 'cnt-d');
+    if (left <= 0) {
+      stopBreakTimer();
+      try { if (navigator.vibrate) navigator.vibrate([200,120,200]); } catch(e){}
+      toast('休憩おわり！ロープレを再開しましょう');
+      const st = document.getElementById('break-status'); if (st) st.textContent = '休憩が終わりました';
+      document.getElementById('break-pick').style.display = '';
+      document.getElementById('break-run').style.display = 'none';
+    }
+  };
+  tick(); breakInt = setInterval(tick, 250);
+}
+function stopBreak(){ stopBreakTimer(); document.getElementById('break-pick').style.display = ''; document.getElementById('break-run').style.display = 'none'; }
+
 /* ── 録音フロー ── */
 function beginRec() {
   if (recStarting) return; // Fix5: 二重起動防止
@@ -1260,7 +1346,7 @@ function beginRec() {
   }
   // R248: navigator.mediaDevices is undefined on non-HTTPS pages — check before use to avoid uncaught TypeError
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    toast('マイクへのアクセスにはHTTPS接続が必要です');
+    toast('録音にはHTTPS接続が必要です。AndroidではこのhttpのURLでマイクを使えません — 公開URL（https://…）でお使いください');// R587: Androidはhttp(非セキュア)でgetUserMedia不可
     return;
   }
   recStarting = true;
@@ -1343,9 +1429,11 @@ function beginRec() {
   }).catch(err => {
     if (myAttempt !== recAttempt) return; // R577: a superseded attempt's LATE getUserMedia rejection must not clobber the current session — mirrors the supersession guards at the .then (R558) and the 500ms timer. getUserMedia rejected, so there is no stream to release.
     recStarting = false; // Fix5: エラー時もフラグ解除
-    const msg = err.name === 'NotAllowedError' ? 'マイクへのアクセスを許可してください'
+    const msg = err.name === 'NotAllowedError' ? 'マイクへのアクセスを許可してください（ブラウザ設定でマイクをブロックしていないかご確認ください）'
               : err.name === 'NotFoundError'   ? 'マイクが見つかりません'
-              : 'マイクの起動に失敗しました（HTTPS接続が必要な場合があります）';
+              : (err.name === 'NotReadableError' || err.name === 'AbortError') ? 'マイクを使用中の他のアプリ／タブを閉じてから、もう一度お試しください' // R587: Android Chromeで多い「デバイス使用中」
+              : err.name === 'SecurityError' ? '録音にはHTTPS接続が必要です（公開URL https:// でお使いください）' // R587
+              : 'マイクの起動に失敗しました（Android等ではHTTPS接続が必須です。公開URL https:// をお使いください）';// R587
     toast(msg); goHome();
   });
 }
@@ -1368,7 +1456,7 @@ function micAlive() { return !!(curStream && curStream.getTracks().some(t => t.r
 // R585: acquire the mic ONCE and reuse it across recordings so permission is requested only once. Resolves immediately with the live stream when already granted; otherwise prompts (with the R482 constraint fallback) and caches it in curStream.
 function getMic() {
   if (micAlive()) return Promise.resolve(curStream);
-  curStream = null;
+  releaseStream(); // R587: fully stop any lingering/ended tracks before re-acquiring — on Android Chrome a not-fully-released mic device can throw NotReadableError ("device in use") on the next getUserMedia
   return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } })
     .catch(err => { if (err.name === 'OverconstrainedError' || err.name === 'ConstraintNotSatisfiedError') return navigator.mediaDevices.getUserMedia({ audio: true }); throw err; })
     .then(s => { curStream = s; return s; });
