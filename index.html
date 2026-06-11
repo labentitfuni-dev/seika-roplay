@@ -460,6 +460,52 @@
     }
     @media (prefers-reduced-motion: reduce){ .ink-drop{display:none} }
     @media (forced-colors: active){ body::before{display:none} .ink-drop{display:none} }
+
+    /* ═══ R601: 見出し文字の立体化 — SEIKA ロープレほか全ヘッダータイトルを「墨のグラデ＋紙のエンボス」で浮かせる ═══ */
+    .hdr-title{
+      font-weight:800;letter-spacing:.1em;
+      background:linear-gradient(180deg,#3a3b42 0%,#0b0b0d 55%,#26272d 100%);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 1px 0 rgba(255,255,255,.85)) drop-shadow(0 2px 2px rgba(11,12,16,.22));/* 上=紙の光、下=落ち影で文字が紙から浮く */
+    }
+    @media (forced-colors: active){ .hdr-title{-webkit-text-fill-color:CanvasText;background:none;filter:none} }
+
+    /* ═══ R602: カウントダウン数字の刷新 — 極太から「極細・端正」へ。tabular-numsは維持（桁ブレ防止） ═══ */
+    .cnt{
+      font-size:112px;font-weight:200;letter-spacing:-.01em;line-height:.95;
+      font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1;
+      filter:drop-shadow(0 2px 6px rgba(11,12,16,.10));
+    }
+    @supports ((-webkit-background-clip:text) or (background-clip:text)){
+      .cnt-ok{background:linear-gradient(180deg,#2fae6b,#177a44)}
+      .cnt-w{background:linear-gradient(180deg,#dd8d22,#a8500a)}
+      .cnt-d{background:linear-gradient(180deg,#ef5350,#c62828)}
+      .cnt-ok,.cnt-w,.cnt-d{-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    }
+
+    /* ═══ R603: 選択画面（フリートーク/クールタイマー）の数字を洗練 — 900極太を細身の墨グラデへ、単位はマイクロタイポ ═══ */
+    .ft-cell-n{
+      font-size:48px;font-weight:200;letter-spacing:-.01em;line-height:1;
+      font-variant-numeric:tabular-nums;
+      background:linear-gradient(180deg,#33343b 0%,#0b0b0d 70%);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .ft-cell-u{font-size:10px;letter-spacing:.3em;text-indent:.3em;color:var(--muted);margin-top:6px;font-weight:700}
+    @media (forced-colors: active){ .ft-cell-n{-webkit-text-fill-color:CanvasText;background:none} }
+
+    /* ═══ R604: 水彩のドリフト — 余白の中間域に小さな彩雲を3つ浮かべ、ごくゆっくり漂わせる（reduced-motionで静止） ═══ */
+    body::after{
+      content:'';position:fixed;inset:-4%;z-index:-1;pointer-events:none;
+      background:
+        radial-gradient(20% 15% at 80% 28%, rgba(167,199,231,.26), transparent 70%),
+        radial-gradient(15% 12% at 15% 55%, rgba(247,206,196,.24), transparent 70%),
+        radial-gradient(17% 13% at 86% 74%, rgba(178,223,200,.24), transparent 70%);
+      filter:blur(20px);
+      animation:inkDrift 26s ease-in-out infinite alternate;
+    }
+    @keyframes inkDrift{from{transform:translate3d(-1.2%,-.8%,0) scale(1)}to{transform:translate3d(1.2%,1.2%,0) scale(1.05)}}
+    @media (prefers-reduced-motion: reduce){ body::after{animation:none} }
+    @media (forced-colors: active){ body::after{display:none} }
   </style>
 </head>
 <body>
@@ -493,8 +539,8 @@
     </button>
 
     <div class="sub-links">
-      <button type="button" class="sub-link" onclick="showHistory('qa')">Q&amp;A記録</button>
-      <button type="button" class="sub-link" onclick="showHistory('ft')">フリートーク記録</button><!-- R571: 絵文字📋削除 -->
+      <button type="button" class="sub-link" onclick="showHistory('qa')">Q&amp;Aログ</button><!-- R600: 記録→ログ -->
+      <button type="button" class="sub-link" onclick="showHistory('ft')">フリートークログ</button><!-- R600: 記録→ログ -->
     </div>
     <div class="sub-links" style="margin-top:10px"><!-- R591: 休憩タイマー入口 -->
       <button type="button" class="sub-link" onclick="openBreak()">クールタイマー</button><!-- R597: 名称変更 休憩タイマー → クールタイマー -->
@@ -619,12 +665,12 @@
 <div id="s-history" class="screen">
   <div class="hdr">
     <button type="button" class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
-    <span class="hdr-title">練習記録</span>
+    <span class="hdr-title">トレーニングログ</span><!-- R599/R600: 練習記録→トレーニングログ -->
     <button type="button" class="hdr-act" style="color:#dc2626" onclick="clearCurrentHistory()" aria-label="Q&amp;A履歴を削除">削除</button><!-- R487: default aria-label matches initial histTab='qa'; switchHistTab() updates it dynamically -->
   </div>
   <div class="body">
     <div id="year-prog-wrap"></div>
-    <div class="tab-bar" role="tablist" aria-label="練習記録タブ" onkeydown="histTabKey(event)"><!-- R445; R460: arrow-key nav per ARIA APG -->
+    <div class="tab-bar" role="tablist" aria-label="トレーニングログタブ" onkeydown="histTabKey(event)"><!-- R445; R460: arrow-key nav per ARIA APG -->
       <button type="button" class="tab-btn active" id="tab-qa" role="tab" aria-selected="true" aria-controls="hist-qa-body" tabindex="0" onclick="switchHistTab('qa')">Q&amp;A</button>
       <button type="button" class="tab-btn" id="tab-ft" role="tab" aria-selected="false" aria-controls="hist-ft-body" tabindex="-1" onclick="switchHistTab('ft')">フリートーク</button><!-- R571: 絵文字🎤⏱削除 -->
     </div>
@@ -641,6 +687,15 @@
     <div style="width:60px"></div>
   </div>
   <div class="body">
+    <div class="set-section"><!-- R605: シンプルアカウント — IDだけのログイン。データをID単位の束(u§<id>)に分離し、同一ブラウザならURL(パス)が変わっても同じIDで引き継げる -->
+      <div class="set-label">アカウント</div>
+      <p class="set-note" id="acct-note" style="margin-top:0;margin-bottom:8px">未ログイン：この端末の共用データを使用中</p>
+      <div style="display:flex;gap:10px;align-items:center">
+        <input class="inp" id="acct-id" maxlength="12" placeholder="例：taro01" aria-label="アカウントID（3〜12文字の半角英数字）" autocomplete="off" autocapitalize="off" spellcheck="false" style="flex:1;margin-bottom:0" onkeydown="if(event.key==='Enter'){event.preventDefault();acctLogin();}">
+        <button type="button" class="btn btn-black" style="width:auto;padding:10px 20px;font-size:13px;border-radius:10px" onclick="acctLogin()" aria-label="アカウントにログイン">ログイン</button>
+      </div>
+      <p class="set-note" style="margin-top:8px">IDだけの簡単ログイン（3〜12文字の半角英数字、- _ 可）。トレーニングデータがIDに紐づき、アプリのURLが変わっても同じブラウザで同じIDを入れれば続きから使えます。初回ログイン時は、いまのデータがそのままこのIDに引き継がれます。端末をまたぐ場合は下の「書き出す／復元」を使ってください。</p>
+    </div>
     <div class="set-section">
       <div class="set-label">Claude APIキー（任意）</div>
       <input type="password" class="inp" id="cfg-key" placeholder="sk-ant-..." aria-label="Claude APIキー" autocomplete="off"><!-- R416 -->
@@ -690,11 +745,11 @@
         <button type="button" class="btn btn-gray" style="width:auto;padding:10px 18px;font-size:13px;border-radius:10px" onclick="document.getElementById('import-file').click()" aria-label="バックアップファイルから復元する">復元（読み込み）</button>
         <input type="file" id="import-file" accept="application/json,.json" style="display:none" aria-hidden="true" onchange="if(this.files&amp;&amp;this.files[0]){importData(this.files[0]);} this.value='';">
       </div>
-      <p class="set-note" style="margin-top:8px">統計・練習履歴・録音をまとめて1つのファイルに保存できます。URLや端末が変わっても、万一消えても、このファイルから元に戻せます。<b>更新の前に「書き出す」がおすすめです。</b></p>
+      <p class="set-note" style="margin-top:8px">統計・トレーニング履歴・録音をまとめて1つのファイルに保存できます。URLや端末が変わっても、万一消えても、このファイルから元に戻せます。<b>更新の前に「書き出す」がおすすめです。</b></p>
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v6.1<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R596-R598 (v6.0→v6.1): ①R596 録音の共有 — 履歴の各録音に「共有」ボタン。Web Share API(canShare files)対応ならOS共有シート(LINE/メール等)へ、非対応(PC等)やジェスチャ失効時はファイル保存にフォールバック。AbortError(シートを閉じただけ)は無音。toggleAudioのprevious/nextElementSibling依存を壊さぬよう audio→聴く→共有 の兄弟順を維持し聴くボタンをcalc(100%-86px)に縮小 ②R597 名称変更: 休憩タイマー→クールタイマー(ホームのサブリンク/画面ヘッダー) ③R598 水彩のあそび — body::before(z-index:-1,blur26px)で四隅に空色/藤/青磁/桜貝の淡いウォッシュ、pointerdownでインクがポワンと広がる演出(.ink-drop: multiply+blur10px, 1.15s bloom, 同時6滴上限, doneフラグで二重減算防止, reduced-motion/forced-colorsで消灯)。装飾のみpointer-events:none・カード/文字色不変=コントラスト影響なし / R594/R595 (v5.9→v6.0): ①R594 休憩タイマー刷新 — プリセットを2/3/4/5分に変更(旧1/3/5/10分)＋自由入力追加(1〜180分の整数, number入力+開始ボタン, Enter対応, 不正値はtoastで明示し黙って丸めない) ②R595 統計バーのラベルを英字マイクロタイポへ(今日/今月/累計/連続→TODAY/MONTH/TOTAL/STREAK, 9px/.22em広トラッキング, sr-onlyの日本語で読み上げ意味維持) ③R593追従: manifest descriptionの「即興Q&A」→「Q&A」 / R592 (v5.8→v5.9): 全ボタンの立体化 — 即興Q&A/黒ボタン(.main-btn-qa/.btn-black)は天面ハイライト＋黒い底エッジ4px＋浮遊影で物理キー風、押下でtranslateY(3px)沈下(基底opacity:.75を打消し)。白カード型(.main-btn-ft/.btn-gray/.ft-cell/.sub-link/.goal-btn)は白の天面ハイライト＋薄い底エッジ＋層化影で隆起、押下でtranslateY(2px)。マウス環境のみホバーで浮上(R575の.main-btn:hover/.ft-cell:hoverを後段上書き)。色/コントラストは不変・影とtransformのみ、prefers-reduced-motionでtransform無効化。R588ブロック直後に後段カスケード追加 / R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
+      <p class="set-note">SEIKA ロープレツール v6.2<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R599-R605 (v6.1→v6.2): ①R599 練習→トレーニング(ログ画面/年間進捗/バックアップ説明/簡易評価アドバイス/評価プロンプト; 評価パーサーはSCORE/GOOD等の英語ラベル依存なので影響なし) ②R600 記録→ログ(Q&Aログ/フリートークログ/トレーニングログ/空メッセージ) ③R601 ヘッダータイトル立体化(墨グラデbackground-clip:text＋上=白光/下=落ち影のdrop-shadowで紙から浮く表現; forced-colorsでCanvasText) ④R602 カウントダウン数字刷新(900極太→200極細112px・tnum維持・色グラデ柔らか化) ⑤R603 選択画面の数字洗練(.ft-cell-n 38px/900→48px/200墨グラデ、単位は.3emトラッキングのマイクロタイポ) ⑥R604 水彩ドリフト(body::afterに彩雲3つ、26sでゆっくり漂う、reduced-motionで静止) ⑦R605 シンプルアカウント — IDだけのログイン。既存コードのキーは不変のまま、切替時に平キー一式⇄u§<id>束を入替。初回ログインは現データをIDが引継ぎ、未ログイン→既存IDは共用データをu§_backup_anonに退避(どちらも消えない)。録音IDBは時刻IDで衝突せず履歴経由参照のみのため入替不要。api_keyとu§*束は端末共通。R586バックアップに束ごと含まれ端末間移行も可 / R596-R598 (v6.0→v6.1): ①R596 録音の共有 — 履歴の各録音に「共有」ボタン。Web Share API(canShare files)対応ならOS共有シート(LINE/メール等)へ、非対応(PC等)やジェスチャ失効時はファイル保存にフォールバック。AbortError(シートを閉じただけ)は無音。toggleAudioのprevious/nextElementSibling依存を壊さぬよう audio→聴く→共有 の兄弟順を維持し聴くボタンをcalc(100%-86px)に縮小 ②R597 名称変更: 休憩タイマー→クールタイマー(ホームのサブリンク/画面ヘッダー) ③R598 水彩のあそび — body::before(z-index:-1,blur26px)で四隅に空色/藤/青磁/桜貝の淡いウォッシュ、pointerdownでインクがポワンと広がる演出(.ink-drop: multiply+blur10px, 1.15s bloom, 同時6滴上限, doneフラグで二重減算防止, reduced-motion/forced-colorsで消灯)。装飾のみpointer-events:none・カード/文字色不変=コントラスト影響なし / R594/R595 (v5.9→v6.0): ①R594 休憩タイマー刷新 — プリセットを2/3/4/5分に変更(旧1/3/5/10分)＋自由入力追加(1〜180分の整数, number入力+開始ボタン, Enter対応, 不正値はtoastで明示し黙って丸めない) ②R595 統計バーのラベルを英字マイクロタイポへ(今日/今月/累計/連続→TODAY/MONTH/TOTAL/STREAK, 9px/.22em広トラッキング, sr-onlyの日本語で読み上げ意味維持) ③R593追従: manifest descriptionの「即興Q&A」→「Q&A」 / R592 (v5.8→v5.9): 全ボタンの立体化 — 即興Q&A/黒ボタン(.main-btn-qa/.btn-black)は天面ハイライト＋黒い底エッジ4px＋浮遊影で物理キー風、押下でtranslateY(3px)沈下(基底opacity:.75を打消し)。白カード型(.main-btn-ft/.btn-gray/.ft-cell/.sub-link/.goal-btn)は白の天面ハイライト＋薄い底エッジ＋層化影で隆起、押下でtranslateY(2px)。マウス環境のみホバーで浮上(R575の.main-btn:hover/.ft-cell:hoverを後段上書き)。色/コントラストは不変・影とtransformのみ、prefers-reduced-motionでtransform無効化。R588ブロック直後に後段カスケード追加 / R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
     </div>
   </div>
 </div>
@@ -1451,6 +1506,62 @@ function stopBreak(){ stopBreakTimer(); document.getElementById('break-pick').st
   }, { passive: true });
 })();
 
+/* ── R605: シンプルアカウント — IDだけのログイン（パスワードなし・個人情報なし）。
+   仕組み: 既存コードのlocalStorageキーは一切変えず、アカウント切替時に「平キー一式 ⇄ u§<id> 束(JSON)」を丸ごと入れ替える。
+   ・初回ログイン(未ログイン→新規ID): いまのデータをそのままそのIDが引き継ぐ（消えない）
+   ・未ログイン→既存ID: 共用データは u§_backup_anon に退避してからIDの束を展開（こちらも消えない）
+   ・録音(IndexedDB)はIDが時刻ベースで衝突せず、各アカウントの履歴からしか参照されないため入替不要
+   ・api_key と u§* 束自体は端末共通（束に含めない）
+   ・R586バックアップは全localStorageを書き出すので束ごと移行され、端末をまたぐ復元でも全アカウントが戻る ── */
+function acctDataKeys(){
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k !== 'acct_current' && k !== 'api_key' && !k.startsWith('u§')) keys.push(k);
+  }
+  return keys;
+}
+function acctRefresh(){
+  const el = document.getElementById('acct-note');
+  if (!el) return;
+  const cur = localStorage.getItem('acct_current');
+  el.textContent = cur ? 'ログイン中：' + cur : '未ログイン：この端末の共用データを使用中';
+}
+function acctLogin(){
+  const inp = document.getElementById('acct-id');
+  const id = (inp.value || '').trim();
+  if (!/^[A-Za-z0-9_-]{3,12}$/.test(id)) { toast('IDは3〜12文字の半角英数字（- _ 可）にしてください'); return; }
+  const cur = localStorage.getItem('acct_current');
+  if (cur === id) { toast('すでに ' + id + ' でログイン中です'); return; }
+  try {
+    const keys = acctDataKeys();
+    const snap = {}; keys.forEach(k => { snap[k] = localStorage.getItem(k); });
+    const bundleRaw = localStorage.getItem('u§' + id);
+    if (cur) {
+      localStorage.setItem('u§' + cur, JSON.stringify(snap));   // 現アカウントを束に保存
+      keys.forEach(k => localStorage.removeItem(k));
+    } else if (bundleRaw && keys.length) {
+      localStorage.setItem('u§_backup_anon', JSON.stringify(snap)); // 共用データを退避（消さない）
+      keys.forEach(k => localStorage.removeItem(k));
+    }
+    /* 未ログイン→新規ID は何もしない = いまの平キーをそのまま引き継ぐ */
+    if (bundleRaw) {
+      let bundle = null;
+      try { bundle = JSON.parse(bundleRaw); } catch(e){}
+      if (bundle && typeof bundle === 'object') {
+        for (const k in bundle) { if (Object.prototype.hasOwnProperty.call(bundle, k)) { try { localStorage.setItem(k, bundle[k]); } catch(e){} } }
+      }
+    }
+    localStorage.setItem('acct_current', id);
+    acctRefresh();
+    toast(id + ' でログインしました');
+    setTimeout(() => location.reload(), 700); // 統計・履歴・設定UIを新しいデータで全再構築
+  } catch (e) {
+    toast('ログインに失敗しました（保存容量不足の可能性があります）');
+  }
+}
+acctRefresh(); // 初期表示（scriptはbody末尾なのでDOMは構築済み）
+
 /* ── R596: 録音の共有 — Web Share API(ファイル)対応ならOSの共有シートへ、非対応(PC等)はファイル保存にフォールバック ── */
 async function shareAudio(btn){
   if (btn.disabled) return;
@@ -1909,9 +2020,9 @@ function localEval(t) {// R470: removed unused isFT parameter — evaluation log
   if (good.length    === 0) good.push('チャレンジできています');
   if (improve.length === 0) improve.push('さらに磨きをかけていきましょう');
 
-  const advice = s >= 80 ? '高水準です！相手の反応に応じた柔軟な切り返しを練習しましょう'
+  const advice = s >= 80 ? '高水準です！相手の反応に応じた柔軟な切り返しをトレーニングしましょう'
                : s >= 60 ? '良い調子です。数字と具体例をもっと積極的に使ってみましょう'
-               :           '基本から固めましょう。まず「結論→理由→具体例」の順で話す練習をしてください';
+               :           '基本から固めましょう。まず「結論→理由→具体例」の順で話すトレーニングをしてください';
 
   return 'SCORE: ' + s
     + '\nGOOD:\n・' + good.join('\n・')
@@ -1941,7 +2052,7 @@ IMPROVE:
 ・[改善点1（どう直すか具体的に）]
 ・[改善点2（どう直すか具体的に）]
 ADVICE:
-[次回練習時の一言（20〜30字）]
+[次回トレーニング時の一言（20〜30字）]
 
 評価観点：
 - 論理構造（結論→理由→具体例の順になっているか）
@@ -2202,7 +2313,7 @@ function renderHist() {
   } else {
     wrap.innerHTML =
       '<div class="year-prog" style="text-align:center">' +
-        '<div class="year-prog-title">' + year + '年の練習</div>' +
+        '<div class="year-prog-title">' + year + '年のトレーニング</div>' + // R599: 練習→トレーニング
         '<div style="font-size:30px;font-weight:900;color:#111;margin:4px 0">' + fmtN(yearCount) + '<span style="font-size:14px;color:#595959;font-weight:400"> 回</span></div>' + // R499: #767676→#595959 on #f5f5f5 — WCAG 1.4.3 AA
         '<div style="font-size:12px;color:#595959;margin-top:4px">今月 ' + fmtN(monthCount) + '回　|　今日 ' + fmtN(todayCount) + '回</div>' + // R499: #767676→#595959
         '<div style="font-size:11px;color:#595959;margin-top:6px">設定から年間目標を設定できます</div>' + // R499: #767676→#595959
@@ -2217,13 +2328,13 @@ function renderHist() {
 function renderQAHist() {
   const body = document.getElementById('hist-qa-body');
   const hist = getQAHist();
-  if (!hist.length) { body.innerHTML = '<div class="empty">Q&A練習の記録がありません</div>'; return; }
+  if (!hist.length) { body.innerHTML = '<div class="empty">Q&Aログはまだありません</div>'; return; } // R599/R600
   body.innerHTML = buildHistHTML(hist, false);
 }
 function renderFTHist() {
   const body = document.getElementById('hist-ft-body');
   const hist = getFTHist();
-  if (!hist.length) { body.innerHTML = '<div class="empty">フリートークの記録がありません</div>'; return; }
+  if (!hist.length) { body.innerHTML = '<div class="empty">フリートークのログはまだありません</div>'; return; } // R599/R600
   body.innerHTML = buildHistHTML(hist, true);
 }
 function buildHistHTML(hist, isFT) {
