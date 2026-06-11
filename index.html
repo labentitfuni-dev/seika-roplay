@@ -434,6 +434,32 @@
 
     /* R595: 統計バーの英字マイクロタイポ — 大文字英字は広めトラッキングで上質に（色は--muted維持=AA不変） */
     .stat-l{font-size:9px;letter-spacing:.22em;font-weight:700;text-indent:.22em}/* text-indent: 最終文字の右余白ぶん光学センター補正 */
+
+    /* ═══ R598: 水彩のあそび — 余白に淡い水彩のにじみ（四隅のウォッシュ）＋タップでインクがポワンと広がる演出。
+       装飾のみ: pointer-events:none / コンテンツの白カード・文字色は不変（にじみは余白=bodyの背面、インクはmultiplyで紙に染みる表現）。
+       reduced-motion/forced-colorsでは消灯。 ═══ */
+    body::before{
+      content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+      background:
+        radial-gradient(46% 34% at 8% 4%,   rgba(167,199,231,.42), transparent 70%),  /* 空色（みずいろ） */
+        radial-gradient(40% 30% at 97% 10%, rgba(213,186,228,.34), transparent 70%),  /* 藤 */
+        radial-gradient(44% 34% at 4% 96%,  rgba(178,223,200,.38), transparent 70%),  /* 青磁 */
+        radial-gradient(44% 32% at 96% 94%, rgba(247,206,196,.36), transparent 70%);  /* 桜貝 */
+      filter:blur(26px) saturate(1.05);
+    }
+    .ink-drop{
+      position:fixed;border-radius:50%;pointer-events:none;z-index:9998;/* toast(9999)の下 */
+      mix-blend-mode:multiply;filter:blur(10px);
+      transform:translate(-50%,-50%) scale(.12);opacity:0;
+      animation:inkBloom 1.15s cubic-bezier(.16,.7,.3,1) forwards;
+    }
+    @keyframes inkBloom{
+      0%{transform:translate(-50%,-50%) scale(.12);opacity:.5}
+      70%{opacity:.26}
+      100%{transform:translate(-50%,-50%) scale(1);opacity:0}
+    }
+    @media (prefers-reduced-motion: reduce){ .ink-drop{display:none} }
+    @media (forced-colors: active){ body::before{display:none} .ink-drop{display:none} }
   </style>
 </head>
 <body>
@@ -471,7 +497,7 @@
       <button type="button" class="sub-link" onclick="showHistory('ft')">フリートーク記録</button><!-- R571: 絵文字📋削除 -->
     </div>
     <div class="sub-links" style="margin-top:10px"><!-- R591: 休憩タイマー入口 -->
-      <button type="button" class="sub-link" onclick="openBreak()">休憩タイマー</button>
+      <button type="button" class="sub-link" onclick="openBreak()">クールタイマー</button><!-- R597: 名称変更 休憩タイマー → クールタイマー -->
     </div>
   </div>
 </div>
@@ -668,7 +694,7 @@
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v6.0<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R594/R595 (v5.9→v6.0): ①R594 休憩タイマー刷新 — プリセットを2/3/4/5分に変更(旧1/3/5/10分)＋自由入力追加(1〜180分の整数, number入力+開始ボタン, Enter対応, 不正値はtoastで明示し黙って丸めない) ②R595 統計バーのラベルを英字マイクロタイポへ(今日/今月/累計/連続→TODAY/MONTH/TOTAL/STREAK, 9px/.22em広トラッキング, sr-onlyの日本語で読み上げ意味維持) ③R593追従: manifest descriptionの「即興Q&A」→「Q&A」 / R592 (v5.8→v5.9): 全ボタンの立体化 — 即興Q&A/黒ボタン(.main-btn-qa/.btn-black)は天面ハイライト＋黒い底エッジ4px＋浮遊影で物理キー風、押下でtranslateY(3px)沈下(基底opacity:.75を打消し)。白カード型(.main-btn-ft/.btn-gray/.ft-cell/.sub-link/.goal-btn)は白の天面ハイライト＋薄い底エッジ＋層化影で隆起、押下でtranslateY(2px)。マウス環境のみホバーで浮上(R575の.main-btn:hover/.ft-cell:hoverを後段上書き)。色/コントラストは不変・影とtransformのみ、prefers-reduced-motionでtransform無効化。R588ブロック直後に後段カスケード追加 / R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
+      <p class="set-note">SEIKA ロープレツール v6.1<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R596-R598 (v6.0→v6.1): ①R596 録音の共有 — 履歴の各録音に「共有」ボタン。Web Share API(canShare files)対応ならOS共有シート(LINE/メール等)へ、非対応(PC等)やジェスチャ失効時はファイル保存にフォールバック。AbortError(シートを閉じただけ)は無音。toggleAudioのprevious/nextElementSibling依存を壊さぬよう audio→聴く→共有 の兄弟順を維持し聴くボタンをcalc(100%-86px)に縮小 ②R597 名称変更: 休憩タイマー→クールタイマー(ホームのサブリンク/画面ヘッダー) ③R598 水彩のあそび — body::before(z-index:-1,blur26px)で四隅に空色/藤/青磁/桜貝の淡いウォッシュ、pointerdownでインクがポワンと広がる演出(.ink-drop: multiply+blur10px, 1.15s bloom, 同時6滴上限, doneフラグで二重減算防止, reduced-motion/forced-colorsで消灯)。装飾のみpointer-events:none・カード/文字色不変=コントラスト影響なし / R594/R595 (v5.9→v6.0): ①R594 休憩タイマー刷新 — プリセットを2/3/4/5分に変更(旧1/3/5/10分)＋自由入力追加(1〜180分の整数, number入力+開始ボタン, Enter対応, 不正値はtoastで明示し黙って丸めない) ②R595 統計バーのラベルを英字マイクロタイポへ(今日/今月/累計/連続→TODAY/MONTH/TOTAL/STREAK, 9px/.22em広トラッキング, sr-onlyの日本語で読み上げ意味維持) ③R593追従: manifest descriptionの「即興Q&A」→「Q&A」 / R592 (v5.8→v5.9): 全ボタンの立体化 — 即興Q&A/黒ボタン(.main-btn-qa/.btn-black)は天面ハイライト＋黒い底エッジ4px＋浮遊影で物理キー風、押下でtranslateY(3px)沈下(基底opacity:.75を打消し)。白カード型(.main-btn-ft/.btn-gray/.ft-cell/.sub-link/.goal-btn)は白の天面ハイライト＋薄い底エッジ＋層化影で隆起、押下でtranslateY(2px)。マウス環境のみホバーで浮上(R575の.main-btn:hover/.ft-cell:hoverを後段上書き)。色/コントラストは不変・影とtransformのみ、prefers-reduced-motionでtransform無効化。R588ブロック直後に後段カスケード追加 / R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
     </div>
   </div>
 </div>
@@ -677,7 +703,7 @@
 <div id="s-break" class="screen">
   <div class="hdr">
     <button type="button" class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
-    <span class="hdr-title">休憩タイマー</span>
+    <span class="hdr-title">クールタイマー</span><!-- R597: 名称変更 -->
     <div style="width:60px"></div>
   </div>
   <div class="body">
@@ -1395,6 +1421,67 @@ function startBreak(sec){
   tick(); breakInt = setInterval(tick, 250);
 }
 function stopBreak(){ stopBreakTimer(); document.getElementById('break-pick').style.display = ''; document.getElementById('break-run').style.display = 'none'; }
+/* ── R598: タップでインクがポワンと広がる（水彩の遊び心）。装飾のみ・本体の操作には一切干渉しない ── */
+(function(){
+  const PIGMENTS = [
+    'rgba(116,169,222,.50)',  /* 空色 */
+    'rgba(186,148,210,.46)',  /* 藤 */
+    'rgba(118,196,162,.48)',  /* 青磁 */
+    'rgba(238,162,148,.46)',  /* 桜貝 */
+    'rgba(238,200,122,.42)'   /* 山吹 */
+  ];
+  let live = 0, idx = 0;
+  const rm = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+  document.addEventListener('pointerdown', e => {
+    if (rm && rm.matches) return;       /* 動きを抑えたい設定では出さない */
+    if (live >= 6) return;              /* 連打しても軽量のまま（同時6滴まで） */
+    if (e.clientX == null || e.clientY == null) return;
+    const d = document.createElement('div');
+    d.className = 'ink-drop'; d.setAttribute('aria-hidden', 'true');
+    const size = 90 + Math.random() * 70;                /* 90〜160px のゆらぎ */
+    d.style.width = d.style.height = size.toFixed(0) + 'px';
+    d.style.left = e.clientX + 'px'; d.style.top = e.clientY + 'px';
+    d.style.background = 'radial-gradient(circle, ' + PIGMENTS[idx++ % PIGMENTS.length] + ' 0%, transparent 70%)';
+    live++;
+    let done = false;
+    const fin = () => { if (!done) { done = true; live--; d.remove(); } };
+    d.addEventListener('animationend', fin);
+    setTimeout(fin, 2000);              /* animationendが来ないケース(タブ非表示中など)の保険 — 二重減算はdoneフラグで防止 */
+    document.body.appendChild(d);
+  }, { passive: true });
+})();
+
+/* ── R596: 録音の共有 — Web Share API(ファイル)対応ならOSの共有シートへ、非対応(PC等)はファイル保存にフォールバック ── */
+async function shareAudio(btn){
+  if (btn.disabled) return;
+  btn.disabled = true;
+  try {
+    const blob = await loadAudio(btn.dataset.id);
+    if (!blob) { toast('この録音は見つかりませんでした'); return; }
+    const type = blob.type || 'audio/webm';
+    const ext  = type.includes('mp4') ? 'm4a' : type.includes('ogg') ? 'ogg' : 'webm';
+    const file = new File([blob], 'seika-roleplay-' + btn.dataset.id + '.' + ext, { type });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: 'SEIKA ロープレ録音' });
+        return; // 共有シート起動成功（キャンセル含むユーザー操作完了）
+      } catch (e) {
+        if (e && e.name === 'AbortError') return; // ユーザーが共有シートを閉じただけ — 何も出さない
+        /* NotAllowedError(ジェスチャ失効)等 → 下のダウンロードへフォールバック */
+      }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = file.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000); // click処理がURLを掴む猶予を置いてから解放
+    toast('録音をファイルとして保存しました');
+  } catch (e) {
+    toast('共有できませんでした');
+  } finally {
+    btn.disabled = false;
+  }
+}
 function startBreakCustom(){ /* R594: 自由入力 — 1〜180分の整数のみ受理（不正値はtoastで明示、黙って丸めない） */
   const raw = document.getElementById('break-min').value.trim();
   const n = Number(raw);
@@ -2171,7 +2258,8 @@ function buildHistHTML(hist, isFT) {
         qHtml +
         (trStr ? '<div class="hist-tr">' + escHtml(trText) + '</div>' : '') +
         '<audio controls aria-label="録音再生 ' + escHtml(t) + ' (' + lim + ')" style="width:100%;margin-bottom:6px;border-radius:8px;display:none"></audio>' + // R459: AT context; R483: was split across two lines with a stray leading '+' that produced '...)"NaN style=...' via double-+ unary coercion
-        '<button type="button" class="audio-btn" onclick="toggleAudio(this)" data-id="' + String(it.id).replace(/[^a-z0-9]/gi,'') + '">録音を聴く</button>' + // R441: data-id注入防止
+        '<button type="button" class="audio-btn" onclick="toggleAudio(this)" data-id="' + String(it.id).replace(/[^a-z0-9]/gi,'') + '" style="width:calc(100% - 86px)">録音を聴く</button>' + // R441: data-id注入防止; R596: 幅を共有ボタン分縮小（audio→聴く→共有 の兄弟順は toggleAudio の previousElementSibling 依存のため不変）
+        '<button type="button" class="audio-btn" onclick="shareAudio(this)" data-id="' + String(it.id).replace(/[^a-z0-9]/gi,'') + '" style="width:78px;margin-left:8px;text-align:center" aria-label="この録音を共有">共有</button>' + // R596: Web Share API(ファイル共有)、非対応はダウンロードへフォールバック
         '</div>';
     }).join('')
   ).join('');
