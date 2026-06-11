@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,viewport-fit=cover"><!-- R25: allow pinch-zoom; R507: viewport-fit=cover enables env(safe-area-inset-*) for notched iPhones -->
   <!-- R425: mobile/PWA integration — standalone home-screen app feel, status bar theming -->
-  <meta name="description" content="M&A営業ロールプレイ練習ツール。即興Q&Aとフリートークで営業トークを録音し、論理構造を評価します。">
+  <meta name="description" content="M&A営業ロールプレイ練習ツール。Q&Aとフリートークで営業トークを録音し、論理構造を評価します。"><!-- R593: 名称変更 即興Q&A → Q&A -->
   <meta name="theme-color" content="#ffffff"><!-- R579: 暖色ライトUI(R575/R576)に合わせPWAテーマ色を#111→#fff（#fffヘッダーと一致） -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -451,7 +451,7 @@
 
     <button type="button" class="main-btn main-btn-qa" onclick="startQA()"><!-- R571: 絵文字🎤アイコン削除（テキスト主体の洗練デザイン） -->
       <span class="main-btn-text">
-        <span class="main-btn-title">即興 Q&amp;A</span>
+        <span class="main-btn-title">Q&amp;A</span><!-- R593: 名称変更 即興 Q&A → Q&A -->
         <span class="main-btn-sub">400問ランダム ／ 10秒・30秒</span>
       </span>
     </button>
@@ -477,7 +477,7 @@
 <div id="s-question" class="screen">
   <div class="hdr">
     <button type="button" class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
-    <span class="hdr-title">即興 Q&amp;A</span>
+    <span class="hdr-title">Q&amp;A</span><!-- R593: 名称変更 -->
     <button type="button" class="hdr-act" onclick="pickQ()">別の問題</button>
   </div>
   <div class="q-wrap">
