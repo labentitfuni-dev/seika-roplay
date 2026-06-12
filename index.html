@@ -444,22 +444,13 @@
       content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
       background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 700' preserveAspectRatio='xMidYMax slice'><circle cx='150' cy='130' r='58' fill='%23c4452f' opacity='.16'/><path fill='%23344c6b' opacity='.30' d='M610 645L838 352Q850 336 864 352L1150 645Z'/><path fill='%23ffffff' opacity='.75' d='M806 394L838 352Q850 336 864 352L902 401L884 390L868 408L851 390L835 407L820 392Z'/><path fill='%232d5c8a' opacity='.20' d='M0 598Q200 545 400 590Q600 632 800 588Q1000 548 1200 596L1200 700L0 700Z'/><path fill='%231f4e79' opacity='.30' d='M-40 700Q-30 560 120 505Q260 455 340 525Q420 470 470 555Q400 535 375 595Q310 555 250 615Q170 575 90 655Q40 685 -40 700Z'/><path fill='%231f4e79' opacity='.26' d='M460 700Q500 610 620 585Q740 562 800 615Q860 580 920 635Q850 625 830 665Q760 640 700 680Q620 655 560 700Z'/><path fill='%232d5c8a' opacity='.30' d='M0 668Q300 625 600 658Q900 690 1200 652L1200 700L0 700Z'/><g fill='%23ffffff' opacity='.6'><circle cx='344' cy='520' r='7'/><circle cx='372' cy='498' r='5'/><circle cx='400' cy='510' r='6'/><circle cx='430' cy='492' r='4'/><circle cx='458' cy='530' r='6'/><circle cx='320' cy='540' r='5'/><circle cx='806' cy='608' r='6'/><circle cx='836' cy='592' r='4'/><circle cx='864' cy='612' r='5'/><circle cx='128' cy='512' r='5'/><circle cx='160' cy='496' r='4'/></g></svg>") no-repeat bottom center / cover;
     }
-    /* ═══ R611: 水墨のあそび（R598のポワンを刷新）— タップで墨がにじみ、なぞると筆致のように色墨の点が連なる。
-       濃いめ（multiply・peak .7-.8）＋繊細（小粒・blur6px・芯と暈かしの二層グラデ）、時間とともにゆっくり紙へ消える（3〜6秒）。 ═══ */
-    .ink-drop{
-      position:fixed;border-radius:50%;pointer-events:none;z-index:9998;/* toast(9999)の下 */
-      mix-blend-mode:multiply;filter:blur(6px);
-      transform:translate(-50%,-50%) scale(.25);opacity:0;
-      animation:sumiBloom var(--dur,4.5s) cubic-bezier(.18,.6,.25,1) forwards;
-    }
-    @keyframes sumiBloom{
-      0%{transform:translate(-50%,-50%) scale(.25);opacity:0}
-      5%{opacity:var(--peak,.8)}                                            /* 墨が紙に落ちる瞬間 */
-      22%{transform:translate(-50%,-50%) scale(.92);opacity:calc(var(--peak,.8)*.72)}/* にじみ広がり */
-      100%{transform:translate(-50%,-50%) scale(1.06);opacity:0}            /* ゆっくり紙に還る */
-    }
-    @media (prefers-reduced-motion: reduce){ .ink-drop{display:none} }
-    @media (forced-colors: active){ body::before{display:none} .ink-drop{display:none} }
+    /* ═══ R614: リアル水墨ストローク（R611の点描DIV方式を全面刷新）— 全画面Canvasに「筆の連続線」を描画。
+       実筆の要素: ①速度で太さが変わる穂（遅い=太く墨が溜まる/速い=細る） ②濃い芯＋shadowBlurのにじみ暈し
+       ③穂先のドライブラシ＝平行する細線が途切れながら走る「かすれ」 ④筆を置いた瞬間の墨だまり
+       ⑤描き終えてからゆっくり紙に還る。multiplyで紙に染みる合成。装飾のみpointer-events:none。 ═══ */
+    #ink-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:9998;pointer-events:none;mix-blend-mode:multiply}/* toast(9999)の下 */
+    @media (prefers-reduced-motion: reduce){ #ink-canvas{display:none} }
+    @media (forced-colors: active){ body::before{display:none} #ink-canvas{display:none} }
 
     /* ═══ R601: 見出し文字の立体化 — SEIKA ロープレほか全ヘッダータイトルを「墨のグラデ＋紙のエンボス」で浮かせる ═══ */
     .hdr-title{
@@ -774,7 +765,7 @@
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v6.7<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R612/R613 (v6.6→v6.7): ①R612 背景を富嶽三十六景風に — 北斎「神奈川沖浪裏」に倣った藍の大波(爪波2つ＋うねり帯)＋白い波頭しぶき11粒＋雪冠の富士＋朱の日輪をインラインSVG(浮世絵の平塗り・blurなし・低不透明度)で描画(R610の水墨山水を置換)。なぞり水墨(R611)と墨の霞(R604)は維持 ②R613 起動時ログイン画面 — s-login新設(名前+4桁+ログイン+「ログインせずに始める」)。acctLoginの認証/切替コアをacctAuthAndSwitch(id,pin)に抽出し設定画面と共用。起動分岐: acct_currentなし＆sessionStorage.login_skipなしの時だけnav('s-login')、ログイン済みは従来どおりホーム直行。スキップはセッション限り(次回起動時は再表示)。ログイン成功はreload→ログイン済み→ホーム / R610/R611 (v6.5→v6.6): 水彩→水墨へ刷新 ①R610 水墨山水画の背景 — 遠山(blur9/op.11)・中山(blur4.5/.15+.13)・近山(blur2/.19×2)の三層をインラインSVG(data URI・依存ゼロ)で描き、白い霞の帯(blur9)で山裾を抜く古典構図。body::before=cover/bottom固定。body::afterの彩雲は薄墨の霞2＋白靄1に置換(30sドリフト) ②R611 タップ＋なぞりの色墨 — pointerdown=大きめの滲み(64-110px/peak.8)、pointermoveで26px間隔の筆点(22-48px/peak.7)が連なる筆致。和顔料6色(墨/藍/朱/緑青/古代紫/黄土)巡回、芯濃く縁暈ける二層radial、multiply+blur6px、3.2〜6.1秒のsumiBloom(--dur/--peak CSS変数)でゆっくり紙に還る。同時36粒上限・doneフラグ・pointerup/cancelで描画終了。reduced-motion/forced-colors消灯は維持 / R609 (v6.4→v6.5): 録音画面のカウントダウン数字上に出ていた残り時間バー(.prog-wrap/#r-prog)を削除 — 数字のみのミニマル表示へ。setCnt()のバー更新は元から if(p) ガード済みのためJS変更なしで安全、残り時間のスクリーンリーダー通知は #r-cnt(role=timer) の aria-label が引き続き担う。CSS(.prog-wrap/.prog-bar)は他画面流用に備え残置 / R608 (v6.3→v6.4): アカウントを「名前＋4桁パスワード」構成に — 4桁はSHA-256(id:pin:salt)で acct_pins 登録簿(端末共通・束に含めない)へ保存し平文を残さない。登録済みの名前はハッシュ一致時のみ切替（不一致は「パスワードが違います」＋入力クリア）。未登録の名前は初回入力の4桁で作成、既存束あり×未登録(v6.2-6.3からの移行)は初回入力を「設定」として登録。acctLoginはasync化(crypto.subtle.digest)、subtle非対応の稀環境はbtoa難読化フォールバック。ログインの永続保存・切替時の束入替ロジック(R605)・常時IDチップ(R607)は不変。acctDataKeysの除外リストにacct_pinsを追加(束に混入しない) / R606/R607 (v6.2→v6.3): ①R606 白カード型ボタンの立体感増強 — 半透明2px底エッジでは黒CTAに比べ浮きが弱かったため、実体のある底エッジ4px(#d4d7dc)＋深い浮遊影(0 14px 26px .14)＋天面ハイライト強化へ。押下も黒と同じ3px沈下、ホバー浮上時はエッジ6px。色不変=コントラスト影響なし ②R607 アカウントの永続ログイン明確化 — ログインは元々localStorage永続(期限切れ/自動ログアウトなし)だが見えなかったため、(a)ホームヘッダーに常時IDチップ表示(歯車と右側グループ化) (b)設定の状態文に「ログインは保存されています」明記 (c)入力欄プレースホルダに現ID表示。挙動変更なし=切替ロジック不変 / R599-R605 (v6.1→v6.2): ①R599 練習→トレーニング(ログ画面/年間進捗/バックアップ説明/簡易評価アドバイス/評価プロンプト; 評価パーサーはSCORE/GOOD等の英語ラベル依存なので影響なし) ②R600 記録→ログ(Q&Aログ/フリートークログ/トレーニングログ/空メッセージ) ③R601 ヘッダータイトル立体化(墨グラデbackground-clip:text＋上=白光/下=落ち影のdrop-shadowで紙から浮く表現; forced-colorsでCanvasText) ④R602 カウントダウン数字刷新(900極太→200極細112px・tnum維持・色グラデ柔らか化) ⑤R603 選択画面の数字洗練(.ft-cell-n 38px/900→48px/200墨グラデ、単位は.3emトラッキングのマイクロタイポ) ⑥R604 水彩ドリフト(body::afterに彩雲3つ、26sでゆっくり漂う、reduced-motionで静止) ⑦R605 シンプルアカウント — IDだけのログイン。既存コードのキーは不変のまま、切替時に平キー一式⇄u§<id>束を入替。初回ログインは現データをIDが引継ぎ、未ログイン→既存IDは共用データをu§_backup_anonに退避(どちらも消えない)。録音IDBは時刻IDで衝突せず履歴経由参照のみのため入替不要。api_keyとu§*束は端末共通。R586バックアップに束ごと含まれ端末間移行も可 / R596-R598 (v6.0→v6.1): ①R596 録音の共有 — 履歴の各録音に「共有」ボタン。Web Share API(canShare files)対応ならOS共有シート(LINE/メール等)へ、非対応(PC等)やジェスチャ失効時はファイル保存にフォールバック。AbortError(シートを閉じただけ)は無音。toggleAudioのprevious/nextElementSibling依存を壊さぬよう audio→聴く→共有 の兄弟順を維持し聴くボタンをcalc(100%-86px)に縮小 ②R597 名称変更: 休憩タイマー→クールタイマー(ホームのサブリンク/画面ヘッダー) ③R598 水彩のあそび — body::before(z-index:-1,blur26px)で四隅に空色/藤/青磁/桜貝の淡いウォッシュ、pointerdownでインクがポワンと広がる演出(.ink-drop: multiply+blur10px, 1.15s bloom, 同時6滴上限, doneフラグで二重減算防止, reduced-motion/forced-colorsで消灯)。装飾のみpointer-events:none・カード/文字色不変=コントラスト影響なし / R594/R595 (v5.9→v6.0): ①R594 休憩タイマー刷新 — プリセットを2/3/4/5分に変更(旧1/3/5/10分)＋自由入力追加(1〜180分の整数, number入力+開始ボタン, Enter対応, 不正値はtoastで明示し黙って丸めない) ②R595 統計バーのラベルを英字マイクロタイポへ(今日/今月/累計/連続→TODAY/MONTH/TOTAL/STREAK, 9px/.22em広トラッキング, sr-onlyの日本語で読み上げ意味維持) ③R593追従: manifest descriptionの「即興Q&A」→「Q&A」 / R592 (v5.8→v5.9): 全ボタンの立体化 — 即興Q&A/黒ボタン(.main-btn-qa/.btn-black)は天面ハイライト＋黒い底エッジ4px＋浮遊影で物理キー風、押下でtranslateY(3px)沈下(基底opacity:.75を打消し)。白カード型(.main-btn-ft/.btn-gray/.ft-cell/.sub-link/.goal-btn)は白の天面ハイライト＋薄い底エッジ＋層化影で隆起、押下でtranslateY(2px)。マウス環境のみホバーで浮上(R575の.main-btn:hover/.ft-cell:hoverを後段上書き)。色/コントラストは不変・影とtransformのみ、prefers-reduced-motionでtransform無効化。R588ブロック直後に後段カスケード追加 / R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
+      <p class="set-note">SEIKA ロープレツール v6.8<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R614 (v6.7→v6.8): リアル水墨ストローク — R611の点描DIV(26px間隔のradialグラデ)を全面刷新し、全画面Canvas(#ink-canvas, multiply, dpr≤2)に筆の連続線を描画。ストローク=点列{x,y,w,j}(jはフレーム間不変の乱数)で、毎フレーム全筆致を年齢αで再描画(rAFは筆致がある間のみ)。リアリティ要素: ①速度→太さ(遅い=MAXW30で墨溜まり/速い=MINW3.5へ細る、lerp0.3で滑らか、4px刻み補間で連続) ②3層描画=にじみ暈し(shadowBlur12+太線α.07)→本体(セグメント毎にlineWidth/α.40-.62のムラ)→穂先かすれ(直交オフセットの毛3本がj+位相で途切れる) ③起筆・タップに墨だまり(不規則楕円7枚重ね) ④描き終え1.4s保持→smoothstepで5.4sかけ紙に還る。同時8筆/360点上限。墨基調+藍朱緑青紫が時折混ざる巡回。reduced-motion/forced-colorsで消灯 / R612/R613 (v6.6→v6.7): ①R612 背景を富嶽三十六景風に — 北斎「神奈川沖浪裏」に倣った藍の大波(爪波2つ＋うねり帯)＋白い波頭しぶき11粒＋雪冠の富士＋朱の日輪をインラインSVG(浮世絵の平塗り・blurなし・低不透明度)で描画(R610の水墨山水を置換)。なぞり水墨(R611)と墨の霞(R604)は維持 ②R613 起動時ログイン画面 — s-login新設(名前+4桁+ログイン+「ログインせずに始める」)。acctLoginの認証/切替コアをacctAuthAndSwitch(id,pin)に抽出し設定画面と共用。起動分岐: acct_currentなし＆sessionStorage.login_skipなしの時だけnav('s-login')、ログイン済みは従来どおりホーム直行。スキップはセッション限り(次回起動時は再表示)。ログイン成功はreload→ログイン済み→ホーム / R610/R611 (v6.5→v6.6): 水彩→水墨へ刷新 ①R610 水墨山水画の背景 — 遠山(blur9/op.11)・中山(blur4.5/.15+.13)・近山(blur2/.19×2)の三層をインラインSVG(data URI・依存ゼロ)で描き、白い霞の帯(blur9)で山裾を抜く古典構図。body::before=cover/bottom固定。body::afterの彩雲は薄墨の霞2＋白靄1に置換(30sドリフト) ②R611 タップ＋なぞりの色墨 — pointerdown=大きめの滲み(64-110px/peak.8)、pointermoveで26px間隔の筆点(22-48px/peak.7)が連なる筆致。和顔料6色(墨/藍/朱/緑青/古代紫/黄土)巡回、芯濃く縁暈ける二層radial、multiply+blur6px、3.2〜6.1秒のsumiBloom(--dur/--peak CSS変数)でゆっくり紙に還る。同時36粒上限・doneフラグ・pointerup/cancelで描画終了。reduced-motion/forced-colors消灯は維持 / R609 (v6.4→v6.5): 録音画面のカウントダウン数字上に出ていた残り時間バー(.prog-wrap/#r-prog)を削除 — 数字のみのミニマル表示へ。setCnt()のバー更新は元から if(p) ガード済みのためJS変更なしで安全、残り時間のスクリーンリーダー通知は #r-cnt(role=timer) の aria-label が引き続き担う。CSS(.prog-wrap/.prog-bar)は他画面流用に備え残置 / R608 (v6.3→v6.4): アカウントを「名前＋4桁パスワード」構成に — 4桁はSHA-256(id:pin:salt)で acct_pins 登録簿(端末共通・束に含めない)へ保存し平文を残さない。登録済みの名前はハッシュ一致時のみ切替（不一致は「パスワードが違います」＋入力クリア）。未登録の名前は初回入力の4桁で作成、既存束あり×未登録(v6.2-6.3からの移行)は初回入力を「設定」として登録。acctLoginはasync化(crypto.subtle.digest)、subtle非対応の稀環境はbtoa難読化フォールバック。ログインの永続保存・切替時の束入替ロジック(R605)・常時IDチップ(R607)は不変。acctDataKeysの除外リストにacct_pinsを追加(束に混入しない) / R606/R607 (v6.2→v6.3): ①R606 白カード型ボタンの立体感増強 — 半透明2px底エッジでは黒CTAに比べ浮きが弱かったため、実体のある底エッジ4px(#d4d7dc)＋深い浮遊影(0 14px 26px .14)＋天面ハイライト強化へ。押下も黒と同じ3px沈下、ホバー浮上時はエッジ6px。色不変=コントラスト影響なし ②R607 アカウントの永続ログイン明確化 — ログインは元々localStorage永続(期限切れ/自動ログアウトなし)だが見えなかったため、(a)ホームヘッダーに常時IDチップ表示(歯車と右側グループ化) (b)設定の状態文に「ログインは保存されています」明記 (c)入力欄プレースホルダに現ID表示。挙動変更なし=切替ロジック不変 / R599-R605 (v6.1→v6.2): ①R599 練習→トレーニング(ログ画面/年間進捗/バックアップ説明/簡易評価アドバイス/評価プロンプト; 評価パーサーはSCORE/GOOD等の英語ラベル依存なので影響なし) ②R600 記録→ログ(Q&Aログ/フリートークログ/トレーニングログ/空メッセージ) ③R601 ヘッダータイトル立体化(墨グラデbackground-clip:text＋上=白光/下=落ち影のdrop-shadowで紙から浮く表現; forced-colorsでCanvasText) ④R602 カウントダウン数字刷新(900極太→200極細112px・tnum維持・色グラデ柔らか化) ⑤R603 選択画面の数字洗練(.ft-cell-n 38px/900→48px/200墨グラデ、単位は.3emトラッキングのマイクロタイポ) ⑥R604 水彩ドリフト(body::afterに彩雲3つ、26sでゆっくり漂う、reduced-motionで静止) ⑦R605 シンプルアカウント — IDだけのログイン。既存コードのキーは不変のまま、切替時に平キー一式⇄u§<id>束を入替。初回ログインは現データをIDが引継ぎ、未ログイン→既存IDは共用データをu§_backup_anonに退避(どちらも消えない)。録音IDBは時刻IDで衝突せず履歴経由参照のみのため入替不要。api_keyとu§*束は端末共通。R586バックアップに束ごと含まれ端末間移行も可 / R596-R598 (v6.0→v6.1): ①R596 録音の共有 — 履歴の各録音に「共有」ボタン。Web Share API(canShare files)対応ならOS共有シート(LINE/メール等)へ、非対応(PC等)やジェスチャ失効時はファイル保存にフォールバック。AbortError(シートを閉じただけ)は無音。toggleAudioのprevious/nextElementSibling依存を壊さぬよう audio→聴く→共有 の兄弟順を維持し聴くボタンをcalc(100%-86px)に縮小 ②R597 名称変更: 休憩タイマー→クールタイマー(ホームのサブリンク/画面ヘッダー) ③R598 水彩のあそび — body::before(z-index:-1,blur26px)で四隅に空色/藤/青磁/桜貝の淡いウォッシュ、pointerdownでインクがポワンと広がる演出(.ink-drop: multiply+blur10px, 1.15s bloom, 同時6滴上限, doneフラグで二重減算防止, reduced-motion/forced-colorsで消灯)。装飾のみpointer-events:none・カード/文字色不変=コントラスト影響なし / R594/R595 (v5.9→v6.0): ①R594 休憩タイマー刷新 — プリセットを2/3/4/5分に変更(旧1/3/5/10分)＋自由入力追加(1〜180分の整数, number入力+開始ボタン, Enter対応, 不正値はtoastで明示し黙って丸めない) ②R595 統計バーのラベルを英字マイクロタイポへ(今日/今月/累計/連続→TODAY/MONTH/TOTAL/STREAK, 9px/.22em広トラッキング, sr-onlyの日本語で読み上げ意味維持) ③R593追従: manifest descriptionの「即興Q&A」→「Q&A」 / R592 (v5.8→v5.9): 全ボタンの立体化 — 即興Q&A/黒ボタン(.main-btn-qa/.btn-black)は天面ハイライト＋黒い底エッジ4px＋浮遊影で物理キー風、押下でtranslateY(3px)沈下(基底opacity:.75を打消し)。白カード型(.main-btn-ft/.btn-gray/.ft-cell/.sub-link/.goal-btn)は白の天面ハイライト＋薄い底エッジ＋層化影で隆起、押下でtranslateY(2px)。マウス環境のみホバーで浮上(R575の.main-btn:hover/.ft-cell:hoverを後段上書き)。色/コントラストは不変・影とtransformのみ、prefers-reduced-motionでtransform無効化。R588ブロック直後に後段カスケード追加 / R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
     </div>
   </div>
 </div>
@@ -813,6 +804,7 @@
   </div>
 </div>
 
+<canvas id="ink-canvas" aria-hidden="true"></canvas><!-- R614: リアル水墨ストロークの描画レイヤー -->
 <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div><!-- R415: announce toasts to screen readers -->
 
 <script>
@@ -1501,54 +1493,150 @@ function startBreak(sec){
   tick(); breakInt = setInterval(tick, 250);
 }
 function stopBreak(){ stopBreakTimer(); document.getElementById('break-pick').style.display = ''; document.getElementById('break-run').style.display = 'none'; }
-/* ── R611: 水墨のあそび（R598水彩ポワンを刷新）— タップで墨がにじみ、なぞる(ドラッグ/スワイプ)と筆致のように色墨の点が連なる。
-   濃いめの和顔料6色を巡回、繊細な小粒（芯＋暈かしの二層）、3〜6秒かけてゆっくり紙に消える。装飾のみ・操作には一切干渉しない ── */
+/* ── R614: リアル水墨ストローク（R611点描を全面刷新）— Canvasに筆の連続線を描く本格レンダラ。
+   構造: ストローク=点列{x,y,w(太さ),j(乱数;フレーム間で不変)}。毎フレーム全ストロークを年齢に応じたαで再描画。
+   太さは速度で変化(遅い=太く墨が溜まる/速い=細る)、3層描画(にじみ暈し→濃い芯→穂先のかすれ)、
+   タップは墨だまり(不規則な重ね楕円)。描き終え→1.4s保持→4s弱かけて紙に還る。装飾のみ・操作に一切干渉しない ── */
 (function(){
-  const SUMI = [
-    'rgba(32,34,40,.85)',    /* 墨 */
-    'rgba(36,72,128,.78)',   /* 藍 */
-    'rgba(168,52,38,.78)',   /* 朱 */
-    'rgba(22,104,82,.78)',   /* 緑青 */
-    'rgba(96,54,118,.75)',   /* 古代紫 */
-    'rgba(146,98,22,.72)'    /* 黄土 */
-  ];
-  let live = 0, idx = 0, drawing = false, lastX = 0, lastY = 0;
+  const cv = document.getElementById('ink-canvas');
+  if (!cv || !cv.getContext) return;
+  const ctx = cv.getContext('2d');
   const rm = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
-  function spawn(x, y, big){
-    if (rm && rm.matches) return;       /* 動きを抑えたい設定では出さない */
-    if (live >= 36) return;             /* なぞり連発でも軽量のまま（同時36粒まで） */
-    const d = document.createElement('div');
-    d.className = 'ink-drop'; d.setAttribute('aria-hidden', 'true');
-    const size = big ? 64 + Math.random() * 46 : 22 + Math.random() * 26; /* タップ=大きめの滲み / なぞり=筆先の点 */
-    const dur = (big ? 4.5 : 3.2) + Math.random() * 1.6;                  /* 3.2〜6.1秒でゆっくり消える */
-    d.style.width = d.style.height = size.toFixed(0) + 'px';
-    d.style.left = x + 'px'; d.style.top = y + 'px';
-    const col = SUMI[idx++ % SUMI.length];
-    d.style.background = 'radial-gradient(circle, ' + col + ' 0%, ' + col.replace(/[\d.]+\)$/, '0.32)') + ' 45%, transparent 70%)'; /* 芯は濃く、縁は暈ける */
-    d.style.setProperty('--dur', dur.toFixed(2) + 's');
-    d.style.setProperty('--peak', big ? '.8' : '.7');
-    live++;
-    let done = false;
-    const fin = () => { if (!done) { done = true; live--; d.remove(); } };
-    d.addEventListener('animationend', fin);
-    setTimeout(fin, dur * 1000 + 800);  /* animationendが来ないケース(タブ非表示中など)の保険 — 二重減算はdoneフラグで防止 */
-    document.body.appendChild(d);
+  let W = 0, H = 0;
+  function resize(){
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
+  resize(); window.addEventListener('resize', resize, { passive: true });
+
+  /* 墨を基調に、時おり藍・朱・緑青・古代紫が混ざる（巡回） */
+  const INKS = ['32,34,40', '32,34,40', '36,72,128', '32,34,40', '150,46,34', '32,34,40', '22,104,82', '32,34,40', '96,54,118'];
+  const LIFE = 5400, HOLD = 1400;       /* ms: 描き終え後この間保持→残りでフェード */
+  const MAXW = 30, MINW = 3.5;
+  let strokes = [], cur = null, inkIdx = 0, rafId = null;
+
+  function start(x, y){
+    if (rm && rm.matches) return;
+    if (strokes.length >= 8) strokes.shift();          /* 古い筆致から消す（軽量維持） */
+    cur = {
+      col: INKS[inkIdx++ % INKS.length],
+      touch: performance.now(), done: false,
+      pts: [{ x, y, w: MAXW * (0.6 + Math.random() * 0.25), j: Math.random() }],
+      /* 穂先(かすれ)を作る3本の毛 — オフセット/濃さ/途切れ位相はストローク毎に固定（フレーム間で安定） */
+      bristles: [ { off: -1, am: .30 + Math.random() * .25, ph: Math.random() },
+                  { off:  .45, am: .25 + Math.random() * .25, ph: Math.random() },
+                  { off:  1, am: .30 + Math.random() * .25, ph: Math.random() } ]
+    };
+    strokes.push(cur);
+    loop();
+  }
+  function move(x, y){
+    if (!cur) return;
+    const pts = cur.pts, p = pts[pts.length - 1];
+    const dx = x - p.x, dy = y - p.y, d = Math.hypot(dx, dy);
+    if (d < 3) return;
+    /* 速いほど細く（本物の筆の抜き）。前回値とlerpして太さ変化を滑らかに */
+    const target = Math.max(MINW, MAXW * 0.95 - d * 0.5);
+    const w = p.w + (target - p.w) * 0.3;
+    const steps = Math.min(Math.ceil(d / 4), 9);       /* 長い移動は4px刻みに補間して連続線に */
+    for (let i = 1; i <= steps && pts.length < 360; i++) {
+      pts.push({ x: p.x + dx * i / steps, y: p.y + dy * i / steps, w, j: Math.random() });
+    }
+    cur.touch = performance.now();                     /* 描いている間はフェードを始めない */
+  }
+  function end(){ if (cur) { cur.done = true; cur.touch = performance.now(); cur = null; } }
+
+  function blot(p, col, a){ /* タップ=墨だまり: 位相の異なる楕円を重ねた不規則な滲み（p.jのみ使用=毎フレーム同形） */
+    ctx.save();
+    ctx.shadowColor = 'rgba(' + col + ',' + (0.45 * a).toFixed(3) + ')';
+    ctx.shadowBlur = 14;
+    for (let i = 0; i < 7; i++) {
+      const ang = (i / 7 + p.j) * 6.283;
+      const rr = p.w * (0.55 + ((p.j * 7 + i * 0.31) % 1) * 0.5);
+      ctx.fillStyle = 'rgba(' + col + ',' + ((0.10 + 0.08 * ((p.j * 13 + i * 0.47) % 1)) * a).toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.ellipse(p.x + Math.cos(ang) * rr * 0.22, p.y + Math.sin(ang) * rr * 0.18, rr, rr * 0.8, ang, 0, 6.283);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+  function drawStroke(s, now){
+    const age = now - s.touch;
+    let a = !s.done || age < HOLD ? 1 : 1 - (age - HOLD) / (LIFE - HOLD);
+    if (a <= 0) return false;
+    a = a * a * (3 - 2 * a);                            /* smoothstep — ふっと消えず徐々に紙へ */
+    const pts = s.pts, n = pts.length, col = s.col;
+    if (n === 1) { blot(pts[0], col, a); return true; }
+    let avgW = 0; for (let i = 0; i < n; i++) avgW += pts[i].w; avgW /= n;
+    /* ① にじみ暈し層 — 輪郭の外へ柔らかく染みる */
+    ctx.save();
+    ctx.lineCap = ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(' + col + ',' + (0.45 * a).toFixed(3) + ')';
+    ctx.shadowBlur = 12;
+    ctx.strokeStyle = 'rgba(' + col + ',' + (0.07 * a).toFixed(3) + ')';
+    ctx.lineWidth = avgW * 1.7;
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < n; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.stroke();
+    ctx.restore();
+    /* ② 本体 — セグメント毎に太さ・濃淡を変える（墨の濃淡ムラ） */
+    ctx.save();
+    ctx.lineCap = ctx.lineJoin = 'round';
+    for (let i = 1; i < n; i++) {
+      const p0 = pts[i - 1], p1 = pts[i];
+      ctx.strokeStyle = 'rgba(' + col + ',' + ((0.40 + 0.22 * p1.j) * a).toFixed(3) + ')';
+      ctx.lineWidth = (p0.w + p1.w) / 2;
+      ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(p1.x, p1.y); ctx.stroke();
+    }
+    /* 起筆の墨だまり（最初の点に濃い溜まり） */
+    ctx.fillStyle = 'rgba(' + col + ',' + (0.30 * a).toFixed(3) + ')';
+    ctx.beginPath(); ctx.arc(pts[0].x, pts[0].y, pts[0].w * 0.62, 0, 6.283); ctx.fill();
+    ctx.restore();
+    /* ③ 穂先のかすれ — 進行方向と直交に毛をずらした細線が途切れながら走る */
+    ctx.save();
+    ctx.lineCap = 'round';
+    for (let b = 0; b < s.bristles.length; b++) {
+      const br = s.bristles[b];
+      ctx.strokeStyle = 'rgba(' + col + ',' + (br.am * a).toFixed(3) + ')';
+      ctx.beginPath();
+      let open = false;
+      for (let i = 1; i < n; i++) {
+        const p0 = pts[i - 1], p1 = pts[i];
+        if (((p1.j + br.ph) % 1) < 0.38) { open = false; continue; }  /* 途切れ＝かすれ */
+        const ddx = p1.x - p0.x, ddy = p1.y - p0.y, dd = Math.hypot(ddx, ddy) || 1;
+        const ox = -ddy / dd, oy = ddx / dd, k = br.off * p1.w * 0.42;
+        if (!open) { ctx.moveTo(p0.x + ox * k, p0.y + oy * k); open = true; }
+        ctx.lineTo(p1.x + ox * k, p1.y + oy * k);
+      }
+      ctx.lineWidth = Math.max(0.8, avgW * 0.12);
+      ctx.stroke();
+    }
+    ctx.restore();
+    return true;
+  }
+  function loop(){
+    if (rafId) return;
+    const step = (now) => {
+      ctx.clearRect(0, 0, W, H);
+      strokes = strokes.filter(s => drawStroke(s, now));
+      if (strokes.length) { rafId = requestAnimationFrame(step); }
+      else { rafId = null; ctx.clearRect(0, 0, W, H); }
+    };
+    rafId = requestAnimationFrame(step);
+  }
+
   document.addEventListener('pointerdown', e => {
     if (e.clientX == null || e.clientY == null) return;
-    drawing = true; lastX = e.clientX; lastY = e.clientY;
-    spawn(e.clientX, e.clientY, true);
+    start(e.clientX, e.clientY);
   }, { passive: true });
   document.addEventListener('pointermove', e => {
-    if (!drawing || e.clientX == null) return;
-    const dx = e.clientX - lastX, dy = e.clientY - lastY;
-    if (dx * dx + dy * dy < 676) return;  /* 26px間隔で筆点を落とす — 繊細さと軽さの両立 */
-    lastX = e.clientX; lastY = e.clientY;
-    spawn(e.clientX, e.clientY, false);
+    if (e.clientX == null) return;
+    move(e.clientX, e.clientY);
   }, { passive: true });
-  const inkEnd = () => { drawing = false; };
-  document.addEventListener('pointerup', inkEnd, { passive: true });
-  document.addEventListener('pointercancel', inkEnd, { passive: true });
+  document.addEventListener('pointerup', end, { passive: true });
+  document.addEventListener('pointercancel', end, { passive: true });
 })();
 
 /* ── R605/R608: シンプルアカウント — 名前＋4桁パスワード（個人情報なし）。
