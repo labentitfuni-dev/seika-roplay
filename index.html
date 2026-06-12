@@ -442,7 +442,7 @@
        浮世絵らしく輪郭は鋭く(blurなし)、可読性のため低不透明度。装飾のみ: 背面z-index:-1/pointer-events:none。 ═══ */
     body::before{
       content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
-      background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 700' preserveAspectRatio='xMidYMax slice'><circle cx='150' cy='130' r='58' fill='%23c4452f' opacity='.16'/><path fill='%23344c6b' opacity='.30' d='M610 645L838 352Q850 336 864 352L1150 645Z'/><path fill='%23ffffff' opacity='.75' d='M806 394L838 352Q850 336 864 352L902 401L884 390L868 408L851 390L835 407L820 392Z'/><path fill='%232d5c8a' opacity='.20' d='M0 598Q200 545 400 590Q600 632 800 588Q1000 548 1200 596L1200 700L0 700Z'/><path fill='%231f4e79' opacity='.30' d='M-40 700Q-30 560 120 505Q260 455 340 525Q420 470 470 555Q400 535 375 595Q310 555 250 615Q170 575 90 655Q40 685 -40 700Z'/><path fill='%231f4e79' opacity='.26' d='M460 700Q500 610 620 585Q740 562 800 615Q860 580 920 635Q850 625 830 665Q760 640 700 680Q620 655 560 700Z'/><path fill='%232d5c8a' opacity='.30' d='M0 668Q300 625 600 658Q900 690 1200 652L1200 700L0 700Z'/><g fill='%23ffffff' opacity='.6'><circle cx='344' cy='520' r='7'/><circle cx='372' cy='498' r='5'/><circle cx='400' cy='510' r='6'/><circle cx='430' cy='492' r='4'/><circle cx='458' cy='530' r='6'/><circle cx='320' cy='540' r='5'/><circle cx='806' cy='608' r='6'/><circle cx='836' cy='592' r='4'/><circle cx='864' cy='612' r='5'/><circle cx='128' cy='512' r='5'/><circle cx='160' cy='496' r='4'/></g></svg>") no-repeat bottom center / cover;
+      background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 700' preserveAspectRatio='xMidYMax slice'><circle cx='150' cy='130' r='58' fill='%23c4452f' opacity='.16'/><path fill='%23344c6b' opacity='.30' d='M610 645L838 352Q850 336 864 352L1150 645Z'/><path fill='%23ffffff' opacity='.75' d='M806 394L838 352Q850 336 864 352L902 401L884 390L868 408L851 390L835 407L820 392Z'/><path fill='%232d5c8a' opacity='.20' d='M0 598Q200 545 400 590Q600 632 800 588Q1000 548 1200 596L1200 700L0 700Z'/><path fill='%231f4e79' opacity='.30' d='M-40 700Q-30 560 120 505Q260 455 340 525Q420 470 470 555Q400 535 375 595Q310 555 250 615Q170 575 90 655Q40 685 -40 700Z'/><path fill='%231f4e79' opacity='.26' d='M460 700Q500 610 620 585Q740 562 800 615Q860 580 920 635Q850 625 830 665Q760 640 700 680Q620 655 560 700Z'/><path fill='%232d5c8a' opacity='.30' d='M0 668Q300 625 600 658Q900 690 1200 652L1200 700L0 700Z'/><g fill='%23ffffff' opacity='.6'><circle cx='344' cy='520' r='7'/><circle cx='372' cy='498' r='5'/><circle cx='400' cy='510' r='6'/><circle cx='430' cy='492' r='4'/><circle cx='458' cy='530' r='6'/><circle cx='320' cy='540' r='5'/><circle cx='806' cy='608' r='6'/><circle cx='836' cy='592' r='4'/><circle cx='864' cy='612' r='5'/><circle cx='128' cy='512' r='5'/><circle cx='160' cy='496' r='4'/></g></svg>") no-repeat bottom center / 100% auto;/* R619: cover→100% auto — スマホ縦長画面で横が切れて富士や波が見えなくなる問題を修正（横幅基準で下端に全景が収まる） */
     }
     /* ═══ R614: リアル水墨ストローク（R611の点描DIV方式を全面刷新）— 全画面Canvasに「筆の連続線」を描画。
        実筆の要素: ①速度で太さが変わる穂（遅い=太く墨が溜まる/速い=細る） ②濃い芯＋shadowBlurのにじみ暈し
@@ -484,6 +484,29 @@
     .ft-cell-u{font-size:10px;letter-spacing:.3em;text-indent:.3em;color:var(--muted);margin-top:6px;font-weight:700}
     @media (forced-colors: active){ .ft-cell-n{-webkit-text-fill-color:CanvasText;background:none} }
 
+    /* R624: 設定画面の圧縮 — セクション余白/文字を詰めて1画面の情報密度を適正化（説明文はR615で要約済み） */
+    #s-settings .set-section{padding:12px 14px;margin-bottom:10px}
+    #s-settings .set-note{font-size:11px;line-height:1.65}
+    #s-settings .set-label{margin-bottom:6px}
+    #s-settings .inp{padding:10px 12px;margin-bottom:8px}
+
+    /* ═══ R622: カレンダー＋朱印スタンプ — トレーニングした日に朱印が押される（チャームポイント） ═══ */
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+    .cal-dow{font-size:9px;letter-spacing:.1em;color:var(--muted);text-align:center;font-weight:700;padding:2px 0}
+    .cal-cell{position:relative;aspect-ratio:1;background:var(--surface);border:1px solid var(--bd);border-radius:10px;cursor:pointer;box-shadow:var(--shadow-card)}
+    .cal-empty{visibility:hidden}
+    .cal-d{font-size:10px;color:var(--muted);position:absolute;top:3px;left:6px;font-weight:700}
+    .cal-today{outline:2px solid var(--ink);outline-offset:1px}
+    .cal-hanko{ /* 朱印 — 練習した証。少し傾いた朱の円に回数 */
+      position:absolute;inset:0;margin:auto;width:64%;height:64%;border-radius:50%;
+      border:2px solid rgba(179,52,42,.85);color:#b3342a;display:flex;align-items:center;justify-content:center;
+      font-weight:800;font-size:13px;transform:rotate(-8deg);
+      background:radial-gradient(circle, rgba(196,69,47,.16), rgba(196,69,47,.04) 72%);
+      box-shadow:inset 0 0 0 1px rgba(179,52,42,.22);
+    }
+    .cal-dot{position:absolute;bottom:4px;right:6px;width:5px;height:5px;border-radius:50%;background:var(--ink-2)}
+    @media (forced-colors: active){ .cal-hanko{border-color:CanvasText;color:CanvasText;background:none} .cal-dot{background:CanvasText} }/* R626: メモ印も可視維持 */
+
     /* R607: ホームのアカウントチップ — ログインが保持されていることの常時表示 */
     .acct-chip{
       font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted);
@@ -518,8 +541,8 @@
       <p class="set-note" style="margin-top:12px">名前と4桁パスワードでログイン<br>初めての名前なら、そのまま新規作成されます</p>
     </div>
     <div class="set-section">
-      <input class="inp" id="login-id" maxlength="12" placeholder="名前（例：taro01）" aria-label="アカウント名（3〜12文字の半角英数字）" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('login-pin').focus();}">
-      <input class="inp" type="password" id="login-pin" maxlength="4" inputmode="numeric" placeholder="4桁パスワード" aria-label="4桁パスワード（数字4つ）" autocomplete="off" style="text-align:center;letter-spacing:.18em" onkeydown="if(event.key==='Enter'){event.preventDefault();loginScreenGo();}">
+      <input class="inp" id="login-id" maxlength="12" placeholder="NAME" aria-label="アカウント名（3〜12文字の半角英数字）" autocomplete="off" autocapitalize="off" spellcheck="false" style="letter-spacing:.08em" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('login-pin').focus();}"><!-- R615: NAME表記 -->
+      <input class="inp" type="password" id="login-pin" maxlength="4" inputmode="numeric" placeholder="PASSWORD" aria-label="4桁パスワード（数字4つ）" autocomplete="off" style="text-align:center;letter-spacing:.12em" onkeydown="if(event.key==='Enter'){event.preventDefault();loginScreenGo();}"><!-- R615: PASSWORD表記 -->
       <button type="button" class="btn btn-black" onclick="loginScreenGo()">ログイン</button>
     </div>
     <button type="button" class="btn btn-sub" onclick="loginSkip()" style="margin-top:6px">ログインせずに始める</button>
@@ -542,14 +565,14 @@
     <button type="button" class="main-btn main-btn-qa" onclick="startQA()"><!-- R571: 絵文字🎤アイコン削除（テキスト主体の洗練デザイン） -->
       <span class="main-btn-text">
         <span class="main-btn-title">Q&amp;A</span><!-- R593: 名称変更 即興 Q&A → Q&A -->
-        <span class="main-btn-sub">400問ランダム ／ 10秒・30秒</span>
+        <span class="main-btn-sub">400問・S〜D級</span><!-- R615: 秒数表記を削除 -->
       </span>
     </button>
 
     <button type="button" class="main-btn main-btn-ft" onclick="nav('s-ft-select')"><!-- R571: 絵文字⏱アイコン削除 -->
       <span class="main-btn-text">
         <span class="main-btn-title">フリートーク</span>
-        <span class="main-btn-sub">5秒・10秒・30秒・60秒</span><!-- R301: match FT select cell units (60秒 not 1分) -->
+        <span class="main-btn-sub">自由なテーマで話す</span><!-- R615: 秒数表記を削除 -->
       </span>
     </button>
 
@@ -559,6 +582,29 @@
     </div>
     <div class="sub-links" style="margin-top:10px"><!-- R591: 休憩タイマー入口 -->
       <button type="button" class="sub-link" onclick="openBreak()">クールタイマー</button><!-- R597: 名称変更 休憩タイマー → クールタイマー -->
+      <button type="button" class="sub-link" onclick="openCal()">カレンダー</button><!-- R622: トレーニングカレンダー（朱印スタンプ） -->
+    </div>
+  </div>
+</div>
+
+<!-- ══ QA SELECT (R617) — 出題の振り分け: ランダム or ランク指定 ══ -->
+<div id="s-qa-select" class="screen">
+  <div class="hdr">
+    <button type="button" class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
+    <span class="hdr-title">Q&amp;A</span>
+    <div style="width:60px"></div>
+  </div>
+  <div class="body">
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px">出題のしかたを選んでください</p>
+    <div class="ft-cell" role="button" tabindex="0" style="margin-bottom:12px" aria-label="全レベルからランダム出題" onclick="qaGo('ALL')" onkeydown="qaKey(event,'ALL')">
+      <div class="ft-cell-n" style="font-size:30px">ランダム</div><div class="ft-cell-u">ALL LEVELS</div>
+    </div>
+    <div class="ft-grid">
+      <div class="ft-cell" role="button" tabindex="0" aria-label="S級から出題" onclick="qaGo('S')" onkeydown="qaKey(event,'S')"><div class="ft-cell-n">S</div><div class="ft-cell-u">級</div></div>
+      <div class="ft-cell" role="button" tabindex="0" aria-label="A級から出題" onclick="qaGo('A')" onkeydown="qaKey(event,'A')"><div class="ft-cell-n">A</div><div class="ft-cell-u">級</div></div>
+      <div class="ft-cell" role="button" tabindex="0" aria-label="B級から出題" onclick="qaGo('B')" onkeydown="qaKey(event,'B')"><div class="ft-cell-n">B</div><div class="ft-cell-u">級</div></div>
+      <div class="ft-cell" role="button" tabindex="0" aria-label="C級から出題" onclick="qaGo('C')" onkeydown="qaKey(event,'C')"><div class="ft-cell-n">C</div><div class="ft-cell-u">級</div></div>
+      <div class="ft-cell" role="button" tabindex="0" style="grid-column:1/-1" aria-label="D級から出題" onclick="qaGo('D')" onkeydown="qaKey(event,'D')"><div class="ft-cell-n">D</div><div class="ft-cell-u">級</div></div>
     </div>
   </div>
 </div>
@@ -566,7 +612,7 @@
 <!-- ══ QUESTION ══ -->
 <div id="s-question" class="screen">
   <div class="hdr">
-    <button type="button" class="hdr-back" onclick="goHome()" aria-label="ホームへ戻る">←</button>
+    <button type="button" class="hdr-back" onclick="nav('s-qa-select')" aria-label="出題選択へ戻る">←</button><!-- R617: 戻り先は振り分け選択 -->
     <span class="hdr-title">Q&amp;A</span><!-- R593: 名称変更 -->
     <button type="button" class="hdr-act" onclick="pickQ()">別の問題</button>
   </div>
@@ -607,6 +653,9 @@
       </div>
       <div class="ft-cell" role="button" tabindex="0" aria-label="60秒のフリートークを開始" onclick="startFT(60)" onkeydown="ftKey(event,60)">
         <div class="ft-cell-n">60</div><div class="ft-cell-u">秒</div><!-- R151: consistent with other cells (5秒/10秒/30秒) -->
+      </div>
+      <div class="ft-cell" role="button" tabindex="0" style="grid-column:1/-1" aria-label="ランダムな秒数でフリートークを開始" onclick="ftRandom()" onkeydown="if(event.key==='Enter'||event.key===' '||event.key==='Spacebar'){event.preventDefault();ftRandom();}"><!-- R618: ランダム秒数セル -->
+        <div class="ft-cell-n" style="font-size:30px">ランダム</div><div class="ft-cell-u">5・10・15・30秒のどれか</div>
       </div>
     </div>
   </div>
@@ -694,6 +743,33 @@
   </div>
 </div>
 
+<!-- ══ CALENDAR (R622) — 朱印スタンプ: トレーニングした日には朱印が押される。タップでひとことメモ ══ -->
+<div id="s-calendar" class="screen">
+  <div class="hdr">
+    <button type="button" class="hdr-back" onclick="nav('s-home')" aria-label="ホームへ戻る">←</button>
+    <span class="hdr-title">カレンダー</span>
+    <div style="width:60px"></div>
+  </div>
+  <div class="body">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <button type="button" class="hdr-act" onclick="calShift(-1)" aria-label="前の月">◀</button>
+      <span id="cal-title" style="font-weight:800;letter-spacing:.08em">----年--月</span>
+      <button type="button" class="hdr-act" onclick="calShift(1)" aria-label="次の月">▶</button>
+    </div>
+    <div class="cal-grid" style="margin-bottom:4px" aria-hidden="true">
+      <div class="cal-dow">日</div><div class="cal-dow">月</div><div class="cal-dow">火</div><div class="cal-dow">水</div><div class="cal-dow">木</div><div class="cal-dow">金</div><div class="cal-dow">土</div>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <p class="set-note" id="cal-sum" style="margin-top:10px;text-align:center"></p>
+    <div id="cal-edit" class="set-section" style="display:none;margin-top:12px">
+      <div class="set-label" id="cal-edit-title">--月--日</div>
+      <input class="inp" id="cal-note" maxlength="60" placeholder="ひとことメモ（例：移動中に10本）" aria-label="この日のメモ" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();calSaveNote();}">
+      <button type="button" class="btn btn-black" style="width:auto;padding:10px 22px;font-size:13px;border-radius:10px" onclick="calSaveNote()">書き込む</button>
+    </div>
+    <p class="set-note" style="margin-top:10px;text-align:center">トレーニングした日には朱印が押されます</p>
+  </div>
+</div>
+
 <!-- ══ SETTINGS ══ -->
 <div id="s-settings" class="screen">
   <div class="hdr">
@@ -702,49 +778,39 @@
     <div style="width:60px"></div>
   </div>
   <div class="body">
-    <div class="set-section"><!-- R605: シンプルアカウント — IDだけのログイン。データをID単位の束(u§<id>)に分離し、同一ブラウザならURL(パス)が変わっても同じIDで引き継げる -->
+    <div class="set-section"><!-- R605/R608/R616: アカウント（要約版＋ログアウト） -->
       <div class="set-label">アカウント</div>
-      <p class="set-note" id="acct-note" style="margin-top:0;margin-bottom:8px">未ログイン：この端末の共用データを使用中</p>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><!-- R608: 名前＋4桁パスワード構成 -->
-        <input class="inp" id="acct-id" maxlength="12" placeholder="名前（例：taro01）" aria-label="アカウント名（3〜12文字の半角英数字）" autocomplete="off" autocapitalize="off" spellcheck="false" style="flex:1;min-width:130px;margin-bottom:0" onkeydown="if(event.key==='Enter'){event.preventDefault();acctLogin();}">
-        <input class="inp" type="password" id="acct-pin" maxlength="4" inputmode="numeric" placeholder="4桁" aria-label="4桁パスワード（数字4つ）" autocomplete="off" style="width:72px;margin-bottom:0;text-align:center;letter-spacing:.18em" onkeydown="if(event.key==='Enter'){event.preventDefault();acctLogin();}">
-        <button type="button" class="btn btn-black" style="width:auto;padding:10px 20px;font-size:13px;border-radius:10px" onclick="acctLogin()" aria-label="アカウントにログイン">ログイン</button>
+      <p class="set-note" id="acct-note" style="margin-top:0;margin-bottom:8px">未ログイン</p>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input class="inp" id="acct-id" maxlength="12" placeholder="NAME" aria-label="アカウント名（3〜12文字の半角英数字）" autocomplete="off" autocapitalize="off" spellcheck="false" style="flex:1;min-width:110px;margin-bottom:0;letter-spacing:.08em" onkeydown="if(event.key==='Enter'){event.preventDefault();acctLogin();}">
+        <input class="inp" type="password" id="acct-pin" maxlength="4" inputmode="numeric" placeholder="PASS" aria-label="4桁パスワード（数字4つ）" autocomplete="off" style="width:72px;margin-bottom:0;text-align:center;letter-spacing:.12em" onkeydown="if(event.key==='Enter'){event.preventDefault();acctLogin();}">
+        <button type="button" class="btn btn-black" style="width:auto;padding:10px 18px;font-size:13px;border-radius:10px" onclick="acctLogin()" aria-label="アカウントにログイン">ログイン</button>
+        <button type="button" class="btn btn-gray" style="width:auto;padding:10px 14px;font-size:13px;border-radius:10px" onclick="acctLogout()" aria-label="ログアウト">ログアウト</button><!-- R616 -->
       </div>
-      <p class="set-note" style="margin-top:8px">名前（3〜12文字の半角英数字、- _ 可）＋4桁パスワードのシンプル構成。<b>一度ログインすればこのブラウザに保存され、次回からログイン操作は不要です</b>（自動ログアウトはありません）。初めての名前ならその場で作成され、いまのデータがそのまま引き継がれます。2回目以降は登録した4桁が一致したときだけ切り替わります。URLが変わっても同じブラウザなら同じ名前＋パスワードで続きから使えます。端末をまたぐ場合は下の「書き出す／復元」を使ってください。</p>
+      <p class="set-note" style="margin-top:8px">名前＋4桁。初めての名前は新規作成。ログインは保存され次回から不要。</p>
     </div>
     <div class="set-section">
       <div class="set-label">Claude APIキー（任意）</div>
       <input type="password" class="inp" id="cfg-key" placeholder="sk-ant-..." aria-label="Claude APIキー" autocomplete="off"><!-- R416 -->
-      <div style="display:flex;gap:8px;margin-bottom:10px"><!-- R166: add clear button so saved API key can be removed -->
-        <button type="button" class="btn btn-black" style="width:auto;padding:10px 24px;font-size:13px;border-radius:10px" onclick="saveKey()" aria-label="APIキーを保存">保存</button><!-- R501: WCAG 2.4.6 — disambiguates from year-goal 保存 button -->
+      <div style="display:flex;gap:8px;margin-bottom:6px"><!-- R166: add clear button so saved API key can be removed -->
+        <button type="button" class="btn btn-black" style="width:auto;padding:10px 24px;font-size:13px;border-radius:10px" onclick="saveKey()" aria-label="APIキーを保存">保存</button><!-- R501 -->
         <button type="button" class="btn btn-gray" style="width:auto;padding:10px 16px;font-size:13px;border-radius:10px" onclick="clearKey()" aria-label="APIキーを削除">削除</button><!-- R501 -->
       </div>
-      <p class="set-note">設定すると録音後にClaudeが自動評価します。未設定でも「コピーして詳細評価」が使えます。</p>
+      <p class="set-note">設定すると録音後にClaudeが自動評価。</p><!-- R615: 要約 -->
     </div>
-    <div class="set-section">
-      <div class="set-label">Q&amp;A タイマー設定</div>
-      <div class="tog-row">
-        <span class="tog-label">ランダム（10秒 / 15秒 / 30秒）</span><!-- R590: 15秒追加 -->
-        <label class="tog-wrap"><input type="checkbox" role="switch" id="cfg-rnd" checked aria-label="ランダムタイマー（10秒 / 30秒）"><!-- R437: aria-label追加; R451: role=switch + visually-hidden --><span class="tog-track"></span></label>
-      </div>
-      <p class="set-note" style="margin-top:8px">OFFにすると常に30秒になります。</p>
-    </div>
-    <div class="set-section">
-      <div class="set-label" id="lv-filter-label">Q&amp;A レベルフィルター</div>
-      <div class="lv-filters" role="group" aria-labelledby="lv-filter-label"><!-- R469: WCAG 1.3.1 — group label helps AT users understand button context -->
-        <button type="button" class="lv-fb" id="lf-ALL" aria-pressed="true" onclick="setFilter('ALL')">全レベル</button><!-- R447 -->
-        <button type="button" class="lv-fb" id="lf-S" aria-pressed="false" onclick="setFilter('S')">S級</button>
-        <button type="button" class="lv-fb" id="lf-A" aria-pressed="false" onclick="setFilter('A')">A級</button>
-        <button type="button" class="lv-fb" id="lf-B" aria-pressed="false" onclick="setFilter('B')">B級</button>
-        <button type="button" class="lv-fb" id="lf-C" aria-pressed="false" onclick="setFilter('C')">C級</button>
-        <button type="button" class="lv-fb" id="lf-D" aria-pressed="false" onclick="setFilter('D')">D級</button>
+    <div class="set-section"><!-- R617: ランダムタイマー廃止 → 固定秒数の選択（Q&Aの秒数はランダムにしない） -->
+      <div class="set-label" id="qa-sec-label">Q&amp;A 秒数</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" role="group" aria-labelledby="qa-sec-label">
+        <button type="button" class="goal-btn" id="qsec-10" aria-pressed="false" onclick="setQaSec(10)">10秒</button>
+        <button type="button" class="goal-btn" id="qsec-15" aria-pressed="false" onclick="setQaSec(15)">15秒</button>
+        <button type="button" class="goal-btn" id="qsec-30" aria-pressed="true" onclick="setQaSec(30)">30秒</button>
       </div>
     </div>
     <div class="set-section">
       <div class="set-label">年間目標（回）</div>
-      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
-        <input type="number" class="inp" id="cfg-year-goal" placeholder="例：365" min="1" step="1" aria-label="年間目標回数" autocomplete="off" style="width:110px;padding:10px 12px;margin-bottom:0"><!-- R233: min/step; R416: aria-label; R583: margin-bottom:0 — .inp基底のmargin-bottom:10pxがalign-items:center flex行で入力欄を約5px上へずらし保存ボタンと不揃いになるのを打消し -->
-        <button type="button" class="btn btn-black" style="width:auto;padding:10px 20px;font-size:13px;border-radius:10px" onclick="saveYearGoal()" aria-label="年間目標を保存">保存</button><!-- R501: WCAG 2.4.6 -->
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+        <input type="number" class="inp" id="cfg-year-goal" placeholder="365" min="1" step="1" aria-label="年間目標回数" autocomplete="off" style="width:110px;padding:10px 12px;margin-bottom:0"><!-- R233/R416/R583 -->
+        <button type="button" class="btn btn-black" style="width:auto;padding:10px 20px;font-size:13px;border-radius:10px" onclick="saveYearGoal()" aria-label="年間目標を保存">保存</button><!-- R501 -->
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button type="button" class="goal-btn" onclick="setYearGoalQuick(365)">365回</button>
@@ -752,20 +818,19 @@
         <button type="button" class="goal-btn" onclick="setYearGoalQuick(1000)">1000回</button>
         <button type="button" class="goal-btn" onclick="setYearGoalQuick(2000)">2000回</button>
       </div>
-      <p class="set-note" style="margin-top:8px">設定すると記録画面に年間進捗バーが表示されます。</p>
     </div>
-    <div class="set-section"><!-- R586: データのバックアップ／復元 — 更新・URL変更・破損でも記録を失わない保険 -->
+    <div class="set-section"><!-- R586/R615: 要約 -->
       <div class="set-label">データのバックアップ</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button type="button" class="btn btn-black" style="width:auto;padding:10px 18px;font-size:13px;border-radius:10px" onclick="exportData()" aria-label="データをファイルに書き出す">書き出す（保存）</button>
-        <button type="button" class="btn btn-gray" style="width:auto;padding:10px 18px;font-size:13px;border-radius:10px" onclick="document.getElementById('import-file').click()" aria-label="バックアップファイルから復元する">復元（読み込み）</button>
+        <button type="button" class="btn btn-black" style="width:auto;padding:10px 18px;font-size:13px;border-radius:10px" onclick="exportData()" aria-label="データをファイルに書き出す">書き出す</button>
+        <button type="button" class="btn btn-gray" style="width:auto;padding:10px 18px;font-size:13px;border-radius:10px" onclick="document.getElementById('import-file').click()" aria-label="バックアップファイルから復元する">復元</button>
         <input type="file" id="import-file" accept="application/json,.json" style="display:none" aria-hidden="true" onchange="if(this.files&amp;&amp;this.files[0]){importData(this.files[0]);} this.value='';">
       </div>
-      <p class="set-note" style="margin-top:8px">統計・トレーニング履歴・録音をまとめて1つのファイルに保存できます。URLや端末が変わっても、万一消えても、このファイルから元に戻せます。<b>更新の前に「書き出す」がおすすめです。</b></p>
+      <p class="set-note" style="margin-top:8px">統計・履歴・録音を1ファイルに保存。<b>端末やURLの変更前に書き出しを。</b></p>
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v6.8<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R614 (v6.7→v6.8): リアル水墨ストローク — R611の点描DIV(26px間隔のradialグラデ)を全面刷新し、全画面Canvas(#ink-canvas, multiply, dpr≤2)に筆の連続線を描画。ストローク=点列{x,y,w,j}(jはフレーム間不変の乱数)で、毎フレーム全筆致を年齢αで再描画(rAFは筆致がある間のみ)。リアリティ要素: ①速度→太さ(遅い=MAXW30で墨溜まり/速い=MINW3.5へ細る、lerp0.3で滑らか、4px刻み補間で連続) ②3層描画=にじみ暈し(shadowBlur12+太線α.07)→本体(セグメント毎にlineWidth/α.40-.62のムラ)→穂先かすれ(直交オフセットの毛3本がj+位相で途切れる) ③起筆・タップに墨だまり(不規則楕円7枚重ね) ④描き終え1.4s保持→smoothstepで5.4sかけ紙に還る。同時8筆/360点上限。墨基調+藍朱緑青紫が時折混ざる巡回。reduced-motion/forced-colorsで消灯 / R612/R613 (v6.6→v6.7): ①R612 背景を富嶽三十六景風に — 北斎「神奈川沖浪裏」に倣った藍の大波(爪波2つ＋うねり帯)＋白い波頭しぶき11粒＋雪冠の富士＋朱の日輪をインラインSVG(浮世絵の平塗り・blurなし・低不透明度)で描画(R610の水墨山水を置換)。なぞり水墨(R611)と墨の霞(R604)は維持 ②R613 起動時ログイン画面 — s-login新設(名前+4桁+ログイン+「ログインせずに始める」)。acctLoginの認証/切替コアをacctAuthAndSwitch(id,pin)に抽出し設定画面と共用。起動分岐: acct_currentなし＆sessionStorage.login_skipなしの時だけnav('s-login')、ログイン済みは従来どおりホーム直行。スキップはセッション限り(次回起動時は再表示)。ログイン成功はreload→ログイン済み→ホーム / R610/R611 (v6.5→v6.6): 水彩→水墨へ刷新 ①R610 水墨山水画の背景 — 遠山(blur9/op.11)・中山(blur4.5/.15+.13)・近山(blur2/.19×2)の三層をインラインSVG(data URI・依存ゼロ)で描き、白い霞の帯(blur9)で山裾を抜く古典構図。body::before=cover/bottom固定。body::afterの彩雲は薄墨の霞2＋白靄1に置換(30sドリフト) ②R611 タップ＋なぞりの色墨 — pointerdown=大きめの滲み(64-110px/peak.8)、pointermoveで26px間隔の筆点(22-48px/peak.7)が連なる筆致。和顔料6色(墨/藍/朱/緑青/古代紫/黄土)巡回、芯濃く縁暈ける二層radial、multiply+blur6px、3.2〜6.1秒のsumiBloom(--dur/--peak CSS変数)でゆっくり紙に還る。同時36粒上限・doneフラグ・pointerup/cancelで描画終了。reduced-motion/forced-colors消灯は維持 / R609 (v6.4→v6.5): 録音画面のカウントダウン数字上に出ていた残り時間バー(.prog-wrap/#r-prog)を削除 — 数字のみのミニマル表示へ。setCnt()のバー更新は元から if(p) ガード済みのためJS変更なしで安全、残り時間のスクリーンリーダー通知は #r-cnt(role=timer) の aria-label が引き続き担う。CSS(.prog-wrap/.prog-bar)は他画面流用に備え残置 / R608 (v6.3→v6.4): アカウントを「名前＋4桁パスワード」構成に — 4桁はSHA-256(id:pin:salt)で acct_pins 登録簿(端末共通・束に含めない)へ保存し平文を残さない。登録済みの名前はハッシュ一致時のみ切替（不一致は「パスワードが違います」＋入力クリア）。未登録の名前は初回入力の4桁で作成、既存束あり×未登録(v6.2-6.3からの移行)は初回入力を「設定」として登録。acctLoginはasync化(crypto.subtle.digest)、subtle非対応の稀環境はbtoa難読化フォールバック。ログインの永続保存・切替時の束入替ロジック(R605)・常時IDチップ(R607)は不変。acctDataKeysの除外リストにacct_pinsを追加(束に混入しない) / R606/R607 (v6.2→v6.3): ①R606 白カード型ボタンの立体感増強 — 半透明2px底エッジでは黒CTAに比べ浮きが弱かったため、実体のある底エッジ4px(#d4d7dc)＋深い浮遊影(0 14px 26px .14)＋天面ハイライト強化へ。押下も黒と同じ3px沈下、ホバー浮上時はエッジ6px。色不変=コントラスト影響なし ②R607 アカウントの永続ログイン明確化 — ログインは元々localStorage永続(期限切れ/自動ログアウトなし)だが見えなかったため、(a)ホームヘッダーに常時IDチップ表示(歯車と右側グループ化) (b)設定の状態文に「ログインは保存されています」明記 (c)入力欄プレースホルダに現ID表示。挙動変更なし=切替ロジック不変 / R599-R605 (v6.1→v6.2): ①R599 練習→トレーニング(ログ画面/年間進捗/バックアップ説明/簡易評価アドバイス/評価プロンプト; 評価パーサーはSCORE/GOOD等の英語ラベル依存なので影響なし) ②R600 記録→ログ(Q&Aログ/フリートークログ/トレーニングログ/空メッセージ) ③R601 ヘッダータイトル立体化(墨グラデbackground-clip:text＋上=白光/下=落ち影のdrop-shadowで紙から浮く表現; forced-colorsでCanvasText) ④R602 カウントダウン数字刷新(900極太→200極細112px・tnum維持・色グラデ柔らか化) ⑤R603 選択画面の数字洗練(.ft-cell-n 38px/900→48px/200墨グラデ、単位は.3emトラッキングのマイクロタイポ) ⑥R604 水彩ドリフト(body::afterに彩雲3つ、26sでゆっくり漂う、reduced-motionで静止) ⑦R605 シンプルアカウント — IDだけのログイン。既存コードのキーは不変のまま、切替時に平キー一式⇄u§<id>束を入替。初回ログインは現データをIDが引継ぎ、未ログイン→既存IDは共用データをu§_backup_anonに退避(どちらも消えない)。録音IDBは時刻IDで衝突せず履歴経由参照のみのため入替不要。api_keyとu§*束は端末共通。R586バックアップに束ごと含まれ端末間移行も可 / R596-R598 (v6.0→v6.1): ①R596 録音の共有 — 履歴の各録音に「共有」ボタン。Web Share API(canShare files)対応ならOS共有シート(LINE/メール等)へ、非対応(PC等)やジェスチャ失効時はファイル保存にフォールバック。AbortError(シートを閉じただけ)は無音。toggleAudioのprevious/nextElementSibling依存を壊さぬよう audio→聴く→共有 の兄弟順を維持し聴くボタンをcalc(100%-86px)に縮小 ②R597 名称変更: 休憩タイマー→クールタイマー(ホームのサブリンク/画面ヘッダー) ③R598 水彩のあそび — body::before(z-index:-1,blur26px)で四隅に空色/藤/青磁/桜貝の淡いウォッシュ、pointerdownでインクがポワンと広がる演出(.ink-drop: multiply+blur10px, 1.15s bloom, 同時6滴上限, doneフラグで二重減算防止, reduced-motion/forced-colorsで消灯)。装飾のみpointer-events:none・カード/文字色不変=コントラスト影響なし / R594/R595 (v5.9→v6.0): ①R594 休憩タイマー刷新 — プリセットを2/3/4/5分に変更(旧1/3/5/10分)＋自由入力追加(1〜180分の整数, number入力+開始ボタン, Enter対応, 不正値はtoastで明示し黙って丸めない) ②R595 統計バーのラベルを英字マイクロタイポへ(今日/今月/累計/連続→TODAY/MONTH/TOTAL/STREAK, 9px/.22em広トラッキング, sr-onlyの日本語で読み上げ意味維持) ③R593追従: manifest descriptionの「即興Q&A」→「Q&A」 / R592 (v5.8→v5.9): 全ボタンの立体化 — 即興Q&A/黒ボタン(.main-btn-qa/.btn-black)は天面ハイライト＋黒い底エッジ4px＋浮遊影で物理キー風、押下でtranslateY(3px)沈下(基底opacity:.75を打消し)。白カード型(.main-btn-ft/.btn-gray/.ft-cell/.sub-link/.goal-btn)は白の天面ハイライト＋薄い底エッジ＋層化影で隆起、押下でtranslateY(2px)。マウス環境のみホバーで浮上(R575の.main-btn:hover/.ft-cell:hoverを後段上書き)。色/コントラストは不変・影とtransformのみ、prefers-reduced-motionでtransform無効化。R588ブロック直後に後段カスケード追加 / R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
+      <p class="set-note">SEIKA ロープレツール v7.0<br>400問（S〜D級）・録音はブラウザに保存されます</p><!-- R615-R624 (v6.8→v7.0): 大型アップデート ①R615 文言整理 — ホームCTAの秒数表記削除(400問・S〜D級/自由なテーマで話す)、「目標は設定から」短縮、空ログメッセージ非表示、ログインNAME/PASSWORD表記、設定の説明文を全面要約 ②R616 ログアウト追加(設定) — 現束保存→acct_currentクリア→reload→ログイン画面 ③R617 Q&A刷新 — 秒数ランダム廃止(qa_sec固定10/15/30, 既定30, 旧rnd_timer廃止)＋出題振り分け画面s-qa-select新設(ランダム=ALL/S/A/B/C/D級→setFilter→pickQ)。設定のレベルフィルターセクションは撤去(出題時選択に一本化、lv_filter機構は維持)。q-tbadgeが15秒を30秒と表示する旧バグも修正 ④R618 FTランダムセル — 5/10/15/30秒から抽選、toastで秒数表示 ⑤R619 背景スマホ修正 — cover→100% auto(縦長画面で富士・波が切れる問題) ⑥R620 共有のWAV変換 — webm/oggをdecodeAudioData→モノラル22.05kHz 16bit PCM WAVへ(60秒≈2.6MB)。iOS/Android/PCどこでも追加アプリなしで即再生。mp4/wavはそのまま、変換失敗時は元形式 ⑦R621 飛沫 — 着筆9-16粒(全方位)/速筆(d>16,50%)1-3粒(前方コーン)/筆離れ(速度>8)4-9粒。生成時に位置/径(0.5+rnd²*2.8)/濃さ確定しストロークと同齢フェード、上限90粒 ⑧R622 カレンダー＋朱印 — 月グリッド(day_YYYY-MM-DD集計)、トレーニング日に朱印スタンプ(回数入り朱円,-8deg)、日タップでひとことメモ(cal_note_*≤60字,束に同梱)、月合計表示。ホームにカレンダー入口 ⑨R623→R625 アイコン刷新(ユーザー画像指定で再変更) — 紙白の角丸に太い墨のS字ブラシストローク(Catmull-Romテーパー)＋かすれ筋(ラン&ギャップ)＋墨だまりスプラッシュ(22塊+12小滴)＋飛沫84粒。icon.svgとPNG(512/192/180)を_gen_icons.mjs(シードRNG・円スタンプラスタ・zlib PNG・依存ゼロ)で同一ジオメトリ生成 ⑩R624 設定画面の圧縮(セクション余白/文字密度) ⑪R626 デバッグキャンペーン(73エージェント・10視点finder→3票adversarial検証、所見21件→確定2件+追加採用3件)の修正 — (a)toShareableBlob: decodeAudioData失敗時にAudioContextがclose漏れ(連続失敗でiOSのコンテキスト上限到達→以後の音声再生不能) → acをtry外に出しfinallyで一括close(close拒否Promiseも握る)、正常経路の旧closeは二重close回避で削除 (b)水墨エンジンのマルチタッチ: pointerId未追跡で2本目の指がcurを上書きし、孤児ストロークがdone=falseのまま永久残留→rAFが60fpsで無限回転＋ジグザグ混線。start/move/endにpointerId追跡を導入、新指のdownで旧筆を確定 (c)move()の360点上限後は飛沫生成も停止(凍結線から離れた粒の浮遊防止) (d)acctLogoutでsessionStorage.login_skipも除去(スキップ歴タブでもログアウト後ちゃんとログイン画面へ) (e)forced-colorsで.cal-dot可視維持。棄却19件は3票反証で偽陽性確認(一部は検証者のセッション上限失敗により少数票判定) / R614 (v6.7→v6.8): リアル水墨ストローク — R611の点描DIV(26px間隔のradialグラデ)を全面刷新し、全画面Canvas(#ink-canvas, multiply, dpr≤2)に筆の連続線を描画。ストローク=点列{x,y,w,j}(jはフレーム間不変の乱数)で、毎フレーム全筆致を年齢αで再描画(rAFは筆致がある間のみ)。リアリティ要素: ①速度→太さ(遅い=MAXW30で墨溜まり/速い=MINW3.5へ細る、lerp0.3で滑らか、4px刻み補間で連続) ②3層描画=にじみ暈し(shadowBlur12+太線α.07)→本体(セグメント毎にlineWidth/α.40-.62のムラ)→穂先かすれ(直交オフセットの毛3本がj+位相で途切れる) ③起筆・タップに墨だまり(不規則楕円7枚重ね) ④描き終え1.4s保持→smoothstepで5.4sかけ紙に還る。同時8筆/360点上限。墨基調+藍朱緑青紫が時折混ざる巡回。reduced-motion/forced-colorsで消灯 / R612/R613 (v6.6→v6.7): ①R612 背景を富嶽三十六景風に — 北斎「神奈川沖浪裏」に倣った藍の大波(爪波2つ＋うねり帯)＋白い波頭しぶき11粒＋雪冠の富士＋朱の日輪をインラインSVG(浮世絵の平塗り・blurなし・低不透明度)で描画(R610の水墨山水を置換)。なぞり水墨(R611)と墨の霞(R604)は維持 ②R613 起動時ログイン画面 — s-login新設(名前+4桁+ログイン+「ログインせずに始める」)。acctLoginの認証/切替コアをacctAuthAndSwitch(id,pin)に抽出し設定画面と共用。起動分岐: acct_currentなし＆sessionStorage.login_skipなしの時だけnav('s-login')、ログイン済みは従来どおりホーム直行。スキップはセッション限り(次回起動時は再表示)。ログイン成功はreload→ログイン済み→ホーム / R610/R611 (v6.5→v6.6): 水彩→水墨へ刷新 ①R610 水墨山水画の背景 — 遠山(blur9/op.11)・中山(blur4.5/.15+.13)・近山(blur2/.19×2)の三層をインラインSVG(data URI・依存ゼロ)で描き、白い霞の帯(blur9)で山裾を抜く古典構図。body::before=cover/bottom固定。body::afterの彩雲は薄墨の霞2＋白靄1に置換(30sドリフト) ②R611 タップ＋なぞりの色墨 — pointerdown=大きめの滲み(64-110px/peak.8)、pointermoveで26px間隔の筆点(22-48px/peak.7)が連なる筆致。和顔料6色(墨/藍/朱/緑青/古代紫/黄土)巡回、芯濃く縁暈ける二層radial、multiply+blur6px、3.2〜6.1秒のsumiBloom(--dur/--peak CSS変数)でゆっくり紙に還る。同時36粒上限・doneフラグ・pointerup/cancelで描画終了。reduced-motion/forced-colors消灯は維持 / R609 (v6.4→v6.5): 録音画面のカウントダウン数字上に出ていた残り時間バー(.prog-wrap/#r-prog)を削除 — 数字のみのミニマル表示へ。setCnt()のバー更新は元から if(p) ガード済みのためJS変更なしで安全、残り時間のスクリーンリーダー通知は #r-cnt(role=timer) の aria-label が引き続き担う。CSS(.prog-wrap/.prog-bar)は他画面流用に備え残置 / R608 (v6.3→v6.4): アカウントを「名前＋4桁パスワード」構成に — 4桁はSHA-256(id:pin:salt)で acct_pins 登録簿(端末共通・束に含めない)へ保存し平文を残さない。登録済みの名前はハッシュ一致時のみ切替（不一致は「パスワードが違います」＋入力クリア）。未登録の名前は初回入力の4桁で作成、既存束あり×未登録(v6.2-6.3からの移行)は初回入力を「設定」として登録。acctLoginはasync化(crypto.subtle.digest)、subtle非対応の稀環境はbtoa難読化フォールバック。ログインの永続保存・切替時の束入替ロジック(R605)・常時IDチップ(R607)は不変。acctDataKeysの除外リストにacct_pinsを追加(束に混入しない) / R606/R607 (v6.2→v6.3): ①R606 白カード型ボタンの立体感増強 — 半透明2px底エッジでは黒CTAに比べ浮きが弱かったため、実体のある底エッジ4px(#d4d7dc)＋深い浮遊影(0 14px 26px .14)＋天面ハイライト強化へ。押下も黒と同じ3px沈下、ホバー浮上時はエッジ6px。色不変=コントラスト影響なし ②R607 アカウントの永続ログイン明確化 — ログインは元々localStorage永続(期限切れ/自動ログアウトなし)だが見えなかったため、(a)ホームヘッダーに常時IDチップ表示(歯車と右側グループ化) (b)設定の状態文に「ログインは保存されています」明記 (c)入力欄プレースホルダに現ID表示。挙動変更なし=切替ロジック不変 / R599-R605 (v6.1→v6.2): ①R599 練習→トレーニング(ログ画面/年間進捗/バックアップ説明/簡易評価アドバイス/評価プロンプト; 評価パーサーはSCORE/GOOD等の英語ラベル依存なので影響なし) ②R600 記録→ログ(Q&Aログ/フリートークログ/トレーニングログ/空メッセージ) ③R601 ヘッダータイトル立体化(墨グラデbackground-clip:text＋上=白光/下=落ち影のdrop-shadowで紙から浮く表現; forced-colorsでCanvasText) ④R602 カウントダウン数字刷新(900極太→200極細112px・tnum維持・色グラデ柔らか化) ⑤R603 選択画面の数字洗練(.ft-cell-n 38px/900→48px/200墨グラデ、単位は.3emトラッキングのマイクロタイポ) ⑥R604 水彩ドリフト(body::afterに彩雲3つ、26sでゆっくり漂う、reduced-motionで静止) ⑦R605 シンプルアカウント — IDだけのログイン。既存コードのキーは不変のまま、切替時に平キー一式⇄u§<id>束を入替。初回ログインは現データをIDが引継ぎ、未ログイン→既存IDは共用データをu§_backup_anonに退避(どちらも消えない)。録音IDBは時刻IDで衝突せず履歴経由参照のみのため入替不要。api_keyとu§*束は端末共通。R586バックアップに束ごと含まれ端末間移行も可 / R596-R598 (v6.0→v6.1): ①R596 録音の共有 — 履歴の各録音に「共有」ボタン。Web Share API(canShare files)対応ならOS共有シート(LINE/メール等)へ、非対応(PC等)やジェスチャ失効時はファイル保存にフォールバック。AbortError(シートを閉じただけ)は無音。toggleAudioのprevious/nextElementSibling依存を壊さぬよう audio→聴く→共有 の兄弟順を維持し聴くボタンをcalc(100%-86px)に縮小 ②R597 名称変更: 休憩タイマー→クールタイマー(ホームのサブリンク/画面ヘッダー) ③R598 水彩のあそび — body::before(z-index:-1,blur26px)で四隅に空色/藤/青磁/桜貝の淡いウォッシュ、pointerdownでインクがポワンと広がる演出(.ink-drop: multiply+blur10px, 1.15s bloom, 同時6滴上限, doneフラグで二重減算防止, reduced-motion/forced-colorsで消灯)。装飾のみpointer-events:none・カード/文字色不変=コントラスト影響なし / R594/R595 (v5.9→v6.0): ①R594 休憩タイマー刷新 — プリセットを2/3/4/5分に変更(旧1/3/5/10分)＋自由入力追加(1〜180分の整数, number入力+開始ボタン, Enter対応, 不正値はtoastで明示し黙って丸めない) ②R595 統計バーのラベルを英字マイクロタイポへ(今日/今月/累計/連続→TODAY/MONTH/TOTAL/STREAK, 9px/.22em広トラッキング, sr-onlyの日本語で読み上げ意味維持) ③R593追従: manifest descriptionの「即興Q&A」→「Q&A」 / R592 (v5.8→v5.9): 全ボタンの立体化 — 即興Q&A/黒ボタン(.main-btn-qa/.btn-black)は天面ハイライト＋黒い底エッジ4px＋浮遊影で物理キー風、押下でtranslateY(3px)沈下(基底opacity:.75を打消し)。白カード型(.main-btn-ft/.btn-gray/.ft-cell/.sub-link/.goal-btn)は白の天面ハイライト＋薄い底エッジ＋層化影で隆起、押下でtranslateY(2px)。マウス環境のみホバーで浮上(R575の.main-btn:hover/.ft-cell:hoverを後段上書き)。色/コントラストは不変・影とtransformのみ、prefers-reduced-motionでtransform無効化。R588ブロック直後に後段カスケード追加 / R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
     </div>
   </div>
 </div>
@@ -1442,10 +1507,9 @@ function pickQ() {
   const lbEl = document.getElementById('q-lv');
   lbEl.textContent = curLv;
   lbEl.className = 'badge badge-' + lc.toLowerCase();
-  const rnd = document.getElementById('cfg-rnd')?.checked ?? true;
-  curLimit = rnd ? [10, 15, 30][Math.floor(Math.random() * 3)] : 30;// R590: Q&Aのランダムに15秒を追加（10/15/30秒）
+  curLimit = qaSec(); // R617: 秒数はランダム廃止 — 設定の固定値(10/15/30、既定30)
   const tb = document.getElementById('q-tbadge');
-  tb.textContent = curLimit === 10 ? '10秒' : '30秒';// R571: 絵文字⚡⏱削除
+  tb.textContent = curLimit + '秒'; // R617: 実際の秒数を表示（旧コードは15秒が「30秒」と表示されるバグだった）
   return true;
 }
 // R563: pickQ() sets q-text while s-question is display:none (not announced) and nav() focuses the heading; re-set q-text after the screen is visible so SR users hear the question (clear-then-set forces a fresh polite live-region event). The in-place 別の問題 buttons call pickQ() directly and already work (screen visible), so they are unchanged.
@@ -1454,11 +1518,29 @@ function announceQuestion() {
   const t = el.textContent;
   requestAnimationFrame(() => { el.textContent = ''; requestAnimationFrame(() => { el.textContent = t; }); });
 }
-function startQA() { mode = 'qa'; if (pickQ()) { nav('s-question'); announceQuestion(); } }
+function startQA() { nav('s-qa-select'); } // R617: まず出題の振り分け選択へ
+function qaGo(lv) { /* R617: ランダム(ALL) or ランク指定で出題 */
+  setFilter(lv, true); mode = 'qa';
+  if (pickQ()) { nav('s-question'); announceQuestion(); }
+}
+function qaKey(e, lv) { if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); qaGo(lv); } }
 function nextQA()  { mode = 'qa'; if (pickQ()) { nav('s-question'); announceQuestion(); } }
+/* R617: Q&A秒数（固定・10/15/30） */
+function qaSec(){ const v = parseInt(localStorage.getItem('qa_sec') || '30', 10); return [10,15,30].includes(v) ? v : 30; }
+function setQaSec(n){
+  if (![10,15,30].includes(n)) n = 30;
+  try { localStorage.setItem('qa_sec', String(n)); } catch(e) {}
+  [10,15,30].forEach(s => { const b = document.getElementById('qsec-' + s); if (b) b.setAttribute('aria-pressed', s === n ? 'true' : 'false'); });
+  toast('Q&Aの秒数: ' + n + '秒');
+}
 
 /* ── フリートーク ── */
 function startFT(sec) { mode = 'ft'; curLimit = sec; beginRec(); } // R215: removed dead ftDur assignment
+function ftRandom(){ /* R618: ランダム秒数 — 選ばれた秒数をtoastで表示してから開始 */
+  const s = [5, 10, 15, 30][Math.floor(Math.random() * 4)];
+  toast('今回は ' + s + ' 秒！');
+  startFT(s);
+}
 // R411: keyboard activation (Enter/Space) for role=button ft-cells (WCAG 2.1.1)
 function ftKey(e, sec) {
   if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); startFT(sec); }
@@ -1517,26 +1599,46 @@ function stopBreak(){ stopBreakTimer(); document.getElementById('break-pick').st
   const MAXW = 30, MINW = 3.5;
   let strokes = [], cur = null, inkIdx = 0, rafId = null;
 
-  function start(x, y){
+  /* R621: 飛沫(スプラッター) — 速い筆・着筆・筆離れで細かいインク粒が散る。生成時に位置/径/濃さを確定し
+     ストロークと同じ年齢αでフェード（フレーム間で形が揺れない）。小粒中心・まれに大粒（r=Math.random()²配分） */
+  function addSpats(s, x, y, dirx, diry, base, n){
+    const hasDir = dirx || diry;
+    const dirAng = Math.atan2(diry, dirx);
+    for (let i = 0; i < n && s.spats.length < 90; i++) {
+      const ang = hasDir ? dirAng + (Math.random() - 0.5) * 1.8 : Math.random() * 6.283;
+      const dist = base * (0.9 + Math.random() * 3.2);
+      s.spats.push({
+        x: x + Math.cos(ang) * dist, y: y + Math.sin(ang) * dist,
+        r: 0.5 + Math.random() * Math.random() * 2.8,
+        am: 0.35 + Math.random() * 0.5
+      });
+    }
+  }
+  function start(x, y, pid){
     if (rm && rm.matches) return;
+    if (cur) { cur.done = true; cur.touch = performance.now(); } /* R626: 2本目の指が来たら旧筆を確定 — done=falseの孤児がrAFを永久回転させるバグ(デバッグ隊確定)を防止 */
     if (strokes.length >= 8) strokes.shift();          /* 古い筆致から消す（軽量維持） */
     cur = {
       col: INKS[inkIdx++ % INKS.length],
+      pid: pid, /* R626: このストロークを描いている指(pointerId) */
       touch: performance.now(), done: false,
       pts: [{ x, y, w: MAXW * (0.6 + Math.random() * 0.25), j: Math.random() }],
+      spats: [], /* R621 */
       /* 穂先(かすれ)を作る3本の毛 — オフセット/濃さ/途切れ位相はストローク毎に固定（フレーム間で安定） */
       bristles: [ { off: -1, am: .30 + Math.random() * .25, ph: Math.random() },
                   { off:  .45, am: .25 + Math.random() * .25, ph: Math.random() },
                   { off:  1, am: .30 + Math.random() * .25, ph: Math.random() } ]
     };
+    addSpats(cur, x, y, 0, 0, cur.pts[0].w * 0.9, 9 + Math.floor(Math.random() * 8)); /* R621: 着筆の飛沫（全方位） */
     strokes.push(cur);
     loop();
   }
-  function move(x, y){
-    if (!cur) return;
+  function move(x, y, pid){
+    if (!cur || cur.pid !== pid) return; /* R626: 描いている指以外のmoveは無視（2本指のジグザグ混入防止） */
     const pts = cur.pts, p = pts[pts.length - 1];
     const dx = x - p.x, dy = y - p.y, d = Math.hypot(dx, dy);
     if (d < 3) return;
+    if (pts.length >= 360) return; /* R626: 点数上限後は飛沫も止める — 凍結した線から離れた場所に粒だけ浮く退行を防止 */
     /* 速いほど細く（本物の筆の抜き）。前回値とlerpして太さ変化を滑らかに */
     const target = Math.max(MINW, MAXW * 0.95 - d * 0.5);
     const w = p.w + (target - p.w) * 0.3;
@@ -1544,9 +1646,19 @@ function stopBreak(){ stopBreakTimer(); document.getElementById('break-pick').st
     for (let i = 1; i <= steps && pts.length < 360; i++) {
       pts.push({ x: p.x + dx * i / steps, y: p.y + dy * i / steps, w, j: Math.random() });
     }
+    if (d > 16 && Math.random() < 0.5) addSpats(cur, x, y, dx, dy, w, 1 + Math.floor(Math.random() * 3)); /* R621: 速い筆ほど粒が飛ぶ */
     cur.touch = performance.now();                     /* 描いている間はフェードを始めない */
   }
-  function end(){ if (cur) { cur.done = true; cur.touch = performance.now(); cur = null; } }
+  function end(pid){
+    if (!cur || (pid !== undefined && cur.pid !== pid)) return; /* R626: 別の指のupでは現筆を終えない */
+    const pts = cur.pts, n = pts.length;
+    if (n >= 3) { /* R621: 筆離れの跳ね — 最後の方向へ前方に粒を散らす（速い抜きほど多く遠く） */
+      const p0 = pts[n - 3], p1 = pts[n - 1];
+      const dx = p1.x - p0.x, dy = p1.y - p0.y, sp = Math.hypot(dx, dy);
+      if (sp > 8) addSpats(cur, p1.x, p1.y, dx, dy, p1.w + sp * 0.8, 4 + Math.floor(Math.random() * 6));
+    }
+    cur.done = true; cur.touch = performance.now(); cur = null;
+  }
 
   function blot(p, col, a){ /* タップ=墨だまり: 位相の異なる楕円を重ねた不規則な滲み（p.jのみ使用=毎フレーム同形） */
     ctx.save();
@@ -1568,7 +1680,7 @@ function stopBreak(){ stopBreakTimer(); document.getElementById('break-pick').st
     if (a <= 0) return false;
     a = a * a * (3 - 2 * a);                            /* smoothstep — ふっと消えず徐々に紙へ */
     const pts = s.pts, n = pts.length, col = s.col;
-    if (n === 1) { blot(pts[0], col, a); return true; }
+    if (n === 1) { blot(pts[0], col, a); drawSpats(s, col, a); return true; } /* R621: タップにも飛沫 */
     let avgW = 0; for (let i = 0; i < n; i++) avgW += pts[i].w; avgW /= n;
     /* ① にじみ暈し層 — 輪郭の外へ柔らかく染みる */
     ctx.save();
@@ -1614,7 +1726,18 @@ function stopBreak(){ stopBreakTimer(); document.getElementById('break-pick').st
       ctx.stroke();
     }
     ctx.restore();
+    drawSpats(s, col, a); /* R621: 飛沫レイヤー */
     return true;
+  }
+  function drawSpats(s, col, a){ /* R621: 散ったインク粒（ぼかしなしの鋭い点 — 写真の飛沫の質感） */
+    const sp = s.spats;
+    if (!sp || !sp.length) return;
+    ctx.save();
+    for (let i = 0; i < sp.length; i++) {
+      ctx.fillStyle = 'rgba(' + col + ',' + (sp[i].am * a).toFixed(3) + ')';
+      ctx.beginPath(); ctx.arc(sp[i].x, sp[i].y, sp[i].r, 0, 6.283); ctx.fill();
+    }
+    ctx.restore();
   }
   function loop(){
     if (rafId) return;
@@ -1629,14 +1752,14 @@ function stopBreak(){ stopBreakTimer(); document.getElementById('break-pick').st
 
   document.addEventListener('pointerdown', e => {
     if (e.clientX == null || e.clientY == null) return;
-    start(e.clientX, e.clientY);
+    start(e.clientX, e.clientY, e.pointerId); /* R626: pointerId追跡 */
   }, { passive: true });
   document.addEventListener('pointermove', e => {
     if (e.clientX == null) return;
-    move(e.clientX, e.clientY);
+    move(e.clientX, e.clientY, e.pointerId);
   }, { passive: true });
-  document.addEventListener('pointerup', end, { passive: true });
-  document.addEventListener('pointercancel', end, { passive: true });
+  document.addEventListener('pointerup', e => end(e.pointerId), { passive: true });
+  document.addEventListener('pointercancel', e => end(e.pointerId), { passive: true });
 })();
 
 /* ── R605/R608: シンプルアカウント — 名前＋4桁パスワード（個人情報なし）。
@@ -1672,7 +1795,7 @@ function acctPins(){
 function acctRefresh(){ /* R607: 設定の表示に加えホームのチップも更新 — ログインは localStorage に永続保存され、期限切れ・自動ログアウトは一切ない */
   const cur = localStorage.getItem('acct_current');
   const el = document.getElementById('acct-note');
-  if (el) el.textContent = cur ? 'ログイン中：' + cur + '（ログインは保存されています。次回からそのまま使えます）' : '未ログイン：この端末の共用データを使用中';
+  if (el) el.textContent = cur ? 'ログイン中：' + cur : '未ログイン'; /* R615: 要約 */
   const chip = document.getElementById('acct-chip');
   if (chip) {
     if (cur) { chip.textContent = cur; chip.style.display = 'inline-block'; }
@@ -1740,6 +1863,72 @@ async function loginScreenGo(){ /* R613: 起動時ログイン画面のログイ
   await acctAuthAndSwitch(id, pin);
   if (pinEl) pinEl.value = '';
 }
+/* ── R622: カレンダー＋朱印スタンプ — day_YYYY-MM-DD の回数を月表示。やった日は朱印、タップでひとことメモ(cal_note_*) ── */
+let calY = 0, calM = 0, calSel = null;
+function openCal(){ const n = new Date(); calY = n.getFullYear(); calM = n.getMonth(); renderCal(); nav('s-calendar'); }
+function calShift(d){ calM += d; if (calM < 0) { calM = 11; calY--; } if (calM > 11) { calM = 0; calY++; } renderCal(); }
+function calDS(y, m, d){ return y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0'); }
+function renderCal(){
+  document.getElementById('cal-title').textContent = calY + '年' + (calM + 1) + '月';
+  const first = new Date(calY, calM, 1).getDay();
+  const days = new Date(calY, calM + 1, 0).getDate();
+  const today = localDateStr();
+  let html = '';
+  for (let i = 0; i < first; i++) html += '<div class="cal-cell cal-empty"></div>';
+  for (let d = 1; d <= days; d++) {
+    const ds = calDS(calY, calM, d); /* 数値のみで構成 — 注入安全 */
+    const cnt = safeInt(localStorage.getItem('day_' + ds));
+    const hasNote = !!localStorage.getItem('cal_note_' + ds);
+    html += '<div class="cal-cell' + (ds === today ? ' cal-today' : '') + '" role="button" tabindex="0"'
+      + ' aria-label="' + (calM + 1) + '月' + d + '日 ' + cnt + '回' + (hasNote ? ' メモあり' : '') + '"'
+      + ' onclick="calPick(\'' + ds + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();calPick(\'' + ds + '\');}">'
+      + '<div class="cal-d">' + d + '</div>'
+      + (cnt > 0 ? '<div class="cal-hanko" aria-hidden="true">' + (cnt > 99 ? '99+' : cnt) + '</div>' : '')
+      + (hasNote ? '<div class="cal-dot" aria-hidden="true"></div>' : '')
+      + '</div>';
+  }
+  document.getElementById('cal-grid').innerHTML = html;
+  document.getElementById('cal-edit').style.display = 'none';
+  calSel = null;
+  /* 月合計 */
+  const prefix = 'day_' + calY + '-' + String(calM + 1).padStart(2, '0') + '-';
+  let c = 0;
+  for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith(prefix)) c += safeInt(localStorage.getItem(k)); }
+  document.getElementById('cal-sum').textContent = 'この月のトレーニング ' + c + ' 回';
+}
+function calPick(ds){
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(ds)) return; /* 念のための形式ガード */
+  calSel = ds;
+  const p = ds.split('-');
+  document.getElementById('cal-edit').style.display = '';
+  document.getElementById('cal-edit-title').textContent = (+p[1]) + '月' + (+p[2]) + '日 — ' + safeInt(localStorage.getItem('day_' + ds)) + '回';
+  document.getElementById('cal-note').value = localStorage.getItem('cal_note_' + ds) || '';
+}
+function calSaveNote(){
+  if (!calSel) return;
+  const v = document.getElementById('cal-note').value.trim();
+  try {
+    if (v) localStorage.setItem('cal_note_' + calSel, v.slice(0, 60));
+    else localStorage.removeItem('cal_note_' + calSel);
+    toast(v ? 'メモを書き込みました' : 'メモを消しました');
+    const keep = calSel; renderCal(); calPick(keep); /* 再描画後も選択を維持 */
+  } catch(e) { toast('保存に失敗しました'); }
+}
+
+function acctLogout(){ /* R616: ログアウト — 現アカウントのデータを束に保存してから未ログイン状態へ（再起動でログイン画面） */
+  const cur = localStorage.getItem('acct_current');
+  if (!cur) { toast('ログインしていません'); return; }
+  try {
+    const keys = acctDataKeys();
+    const snap = {}; keys.forEach(k => { snap[k] = localStorage.getItem(k); });
+    localStorage.setItem('u§' + cur, JSON.stringify(snap));
+    keys.forEach(k => localStorage.removeItem(k));
+    localStorage.removeItem('acct_current');
+    try { sessionStorage.removeItem('login_skip'); } catch(e){} /* R626: スキップ歴タブでもreload後ちゃんとログイン画面へ */
+    toast('ログアウトしました');
+    setTimeout(() => location.reload(), 600);
+  } catch(e) { toast('ログアウトに失敗しました'); }
+}
 function loginSkip(){ /* R613: ログインせずに使う — このセッション(タブ)のみ有効。次回起動時はまたログイン画面 */
   try { sessionStorage.setItem('login_skip', '1'); } catch(e){}
   nav('s-home');
@@ -1750,15 +1939,53 @@ try {
   if (!localStorage.getItem('acct_current') && !sessionStorage.getItem('login_skip')) nav('s-login');
 } catch(e) {}
 
+/* ── R620: 共有用WAV変換 — webm/oggはiPhone等で開けないため、共有時にデコードして16bit PCM WAVへ変換。
+   WAVはiOS/Android/PC/Webすべてのプレイヤーが追加アプリなしで即再生できる唯一の依存ゼロ形式。
+   容量を抑えるためモノラル化＋22.05kHzへダウンサンプル（声用途では十分な音質、60秒≈2.6MB） ── */
+async function toShareableBlob(blob){
+  const type = blob.type || '';
+  if (type.includes('mp4') || type.includes('mpeg') || type.includes('wav')) return { blob, ext: type.includes('wav') ? 'wav' : 'm4a', type }; // 既にどこでも再生可
+  let ac = null; /* R626: catch経路でも必ずcloseできるようtryの外に保持（デバッグ隊確定: 失敗リトライでAudioContext上限到達→以後の再生不能） */
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return { blob, ext: type.includes('ogg') ? 'ogg' : 'webm', type: type || 'audio/webm' };
+    ac = new AC();
+    const buf = await ac.decodeAudioData(await blob.arrayBuffer());
+    const srcRate = buf.sampleRate, dstRate = 22050;
+    const ratio = srcRate / dstRate, outLen = Math.floor(buf.length / ratio);
+    /* モノラルmixdown＋最近傍ダウンサンプル */
+    const chs = []; for (let c = 0; c < buf.numberOfChannels; c++) chs.push(buf.getChannelData(c));
+    const pcm = new Int16Array(outLen);
+    for (let i = 0; i < outLen; i++) {
+      const si = Math.floor(i * ratio);
+      let v = 0; for (let c = 0; c < chs.length; c++) v += chs[c][si];
+      v /= chs.length;
+      pcm[i] = Math.max(-32768, Math.min(32767, Math.round(v * 32767)));
+    }
+    /* close は finally で一括(R626) — ここで閉じると二重closeのPromise拒否になる */
+    /* WAVヘッダ(44byte) + PCM */
+    const head = new ArrayBuffer(44), dv = new DataView(head);
+    const wstr = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+    wstr(0,'RIFF'); dv.setUint32(4, 36 + pcm.length * 2, true); wstr(8,'WAVE');
+    wstr(12,'fmt '); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+    dv.setUint32(24, dstRate, true); dv.setUint32(28, dstRate * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true);
+    wstr(36,'data'); dv.setUint32(40, pcm.length * 2, true);
+    return { blob: new Blob([head, pcm.buffer], { type: 'audio/wav' }), ext: 'wav', type: 'audio/wav' };
+  } catch(e) {
+    return { blob, ext: type.includes('ogg') ? 'ogg' : 'webm', type: type || 'audio/webm' }; /* 変換失敗時は元のまま（再生可否は端末次第） */
+  } finally {
+    if (ac) { try { const p = ac.close(); if (p && p.catch) p.catch(() => {}); } catch(e){} } /* R626: 正常/失敗の両経路で解放（close拒否も握る） */
+  }
+}
 /* ── R596: 録音の共有 — Web Share API(ファイル)対応ならOSの共有シートへ、非対応(PC等)はファイル保存にフォールバック ── */
 async function shareAudio(btn){
   if (btn.disabled) return;
   btn.disabled = true;
   try {
-    const blob = await loadAudio(btn.dataset.id);
-    if (!blob) { toast('この録音は見つかりませんでした'); return; }
-    const type = blob.type || 'audio/webm';
-    const ext  = type.includes('mp4') ? 'm4a' : type.includes('ogg') ? 'ogg' : 'webm';
+    const raw = await loadAudio(btn.dataset.id);
+    if (!raw) { toast('この録音は見つかりませんでした'); return; }
+    const conv = await toShareableBlob(raw); // R620: どの端末でも即再生できる形式へ
+    const blob = conv.blob, type = conv.type, ext = conv.ext;
     const file = new File([blob], 'seika-roleplay-' + btn.dataset.id + '.' + ext, { type });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
@@ -2504,7 +2731,7 @@ function renderHist() {
         '<div class="year-prog-title">' + year + '年のトレーニング</div>' + // R599: 練習→トレーニング
         '<div style="font-size:30px;font-weight:900;color:#111;margin:4px 0">' + fmtN(yearCount) + '<span style="font-size:14px;color:#595959;font-weight:400"> 回</span></div>' + // R499: #767676→#595959 on #f5f5f5 — WCAG 1.4.3 AA
         '<div style="font-size:12px;color:#595959;margin-top:4px">今月 ' + fmtN(monthCount) + '回　|　今日 ' + fmtN(todayCount) + '回</div>' + // R499: #767676→#595959
-        '<div style="font-size:11px;color:#595959;margin-top:6px">設定から年間目標を設定できます</div>' + // R499: #767676→#595959
+        '<div style="font-size:11px;color:#595959;margin-top:6px">目標は設定から</div>' + // R615: 文言短縮; R499: #767676→#595959
       '</div>';
   }
   // R397: revoke any loaded audio blob URLs before innerHTML rebuild destroys the elements (prevents leaks)
@@ -2516,13 +2743,13 @@ function renderHist() {
 function renderQAHist() {
   const body = document.getElementById('hist-qa-body');
   const hist = getQAHist();
-  if (!hist.length) { body.innerHTML = '<div class="empty">Q&Aログはまだありません</div>'; return; } // R599/R600
+  if (!hist.length) { body.innerHTML = ''; return; } // R615: 空メッセージ非表示（静かな余白に）
   body.innerHTML = buildHistHTML(hist, false);
 }
 function renderFTHist() {
   const body = document.getElementById('hist-ft-body');
   const hist = getFTHist();
-  if (!hist.length) { body.innerHTML = '<div class="empty">フリートークのログはまだありません</div>'; return; } // R599/R600
+  if (!hist.length) { body.innerHTML = ''; return; } // R615: 空メッセージ非表示
   body.innerHTML = buildHistHTML(hist, true);
 }
 function buildHistHTML(hist, isFT) {
@@ -2661,8 +2888,8 @@ function loadSettings() {
   try {
     const k = localStorage.getItem('api_key');
     if (k) document.getElementById('cfg-key').value = k;
-    const r = localStorage.getItem('rnd_timer');
-    if (r !== null) document.getElementById('cfg-rnd').checked = r === '1';
+    const sec = qaSec(); // R617: 秒数ボタンの選択状態を反映
+    [10,15,30].forEach(s => { const b = document.getElementById('qsec-' + s); if (b) b.setAttribute('aria-pressed', s === sec ? 'true' : 'false'); });
     const f = localStorage.getItem('lv_filter') || 'ALL';
     setFilter(f, true);
     const g = localStorage.getItem('year_goal');
@@ -2702,9 +2929,7 @@ function setYearGoalQuick(n) {
   catch(e) { toast('保存に失敗しました（ストレージ容量不足の可能性があります）'); }
   // R476: removed dead code — s-history and s-settings cannot both be active simultaneously
 }
-document.getElementById('cfg-rnd')?.addEventListener('change', e => {
-  try { localStorage.setItem('rnd_timer', e.target.checked ? '1' : '0'); } catch(ex) {} // R493: non-critical preference
-});
+/* R617: 旧ランダムタイマー(cfg-rnd/rnd_timer)は廃止 — 秒数はsetQaSec/qaSecの固定値 */
 const VALID_FILTERS = ['ALL','S','A','B','C','D'];
 function setFilter(lv, silent) {
   // R438: 破損/不正値を 'ALL' にフォールバック（safeInt・Array.isArray と同方針）
@@ -2773,12 +2998,7 @@ window.addEventListener('pagehide', finalizeOnHide);
     // R474: call setFilter() to avoid duplicating the button-update loop; also auto-corrects corrupted lv_filter
     const stored = localStorage.getItem('lv_filter');
     setFilter(VALID_FILTERS.includes(stored) ? stored : 'ALL', true);
-    // ランダムタイマーの復元
-    const r = localStorage.getItem('rnd_timer');
-    if (r !== null) {
-      const rndEl = document.getElementById('cfg-rnd');
-      if (rndEl) rndEl.checked = r === '1';
-    }
+    // R617: 旧ランダムタイマー(cfg-rnd/rnd_timer)の復元コードは廃止 — 秒数は qaSec() が読む固定値
   } catch(e) { console.warn('initAtBoot: localStorage unavailable', e); }
   // R427: mark each screen title as a level-1 heading so screen-reader users can jump by heading
   try {
