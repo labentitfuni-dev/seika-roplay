@@ -315,13 +315,23 @@
     .hist-focus{font-size:12px;color:#166534;margin-top:6px;font-weight:700;letter-spacing:.02em}
     /* R679: 連想トレーニング */
     .as-persona{font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a8c92;margin:0 0 10px}
-    .as-stage{min-height:34vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:8px 0 6px}
-    .as-ta{width:100%;font-size:17px;line-height:1.75;resize:vertical;margin-bottom:8px;min-height:150px}
+    .as-stage{min-height:18vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:8px 0 6px}
+    #s-as-play .as-ta{width:100%;font-size:20px;line-height:1.8;resize:vertical;margin-bottom:8px;min-height:42vh;padding:14px 16px} /* R688: 書く欄を大きく */
     .as-under{justify-content:space-between;margin-bottom:12px}
     .as-count{font-size:15px;font-weight:800;color:#17181c;font-variant-numeric:tabular-nums}
     .as-sec-free{max-width:280px;margin:-2px 0 12px}
     .as-sec-free .inp{width:130px;flex:none;margin-bottom:0}
     .as-sec-unit{font-size:13px;font-weight:700;color:#5f6168;white-space:nowrap}
+    .as-types{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 10px}
+    .as-type{font-size:11px;font-weight:800;letter-spacing:.03em;padding:4px 9px;border-radius:99px;border:1.5px solid #d4d4d0;color:#5f6168;background:#fff;transition:background .12s,color .12s,border-color .12s}
+    .as-type.on{background:#17181c;border-color:#17181c;color:#fff}
+    .as-ref{margin:0 0 12px;font-size:13px}
+    .as-ref summary{cursor:pointer;font-weight:700;color:#5f6168;padding:4px 0}
+    .as-ref-wrap{overflow-x:auto}
+    .as-ref table{border-collapse:collapse;min-width:520px;width:100%;margin-top:6px;background:#fff}
+    .as-ref th,.as-ref td{border:1px solid #e4e4e0;padding:6px 8px;text-align:left;vertical-align:top;line-height:1.5}
+    .as-ref th{background:#f4f4f2;font-weight:800;font-size:12px}
+    @media (forced-colors: active){ .as-type.on{forced-color-adjust:none} }
     .as-topic{font-size:34px;font-weight:800;line-height:1.35;color:#17181c;margin:6px 0 10px;letter-spacing:.01em}
     .as-topic.line{font-size:22px;font-weight:700}
     .as-topic.long{font-size:18px;font-weight:600;line-height:1.8;max-width:640px}
@@ -347,7 +357,7 @@
     .as-sum{font-size:15px;line-height:1.9;padding:16px;border-radius:14px;background:#fff;border:1.5px solid #d4d4d0}
     .as-sum .big{font-size:40px;font-weight:200;letter-spacing:.02em;display:block;font-variant-numeric:tabular-nums}
     .as-prev{font-size:12px;color:#5f6168;margin-top:8px;line-height:1.6}
-    @media (min-width:840px){ .as-topic{font-size:44px} .as-topic.line{font-size:30px} .as-topic.long{font-size:21px} .as-cnt{font-size:48px} .as-stage{min-height:36vh} }
+    @media (min-width:840px){ .as-topic{font-size:44px} .as-topic.line{font-size:30px} .as-topic.long{font-size:21px} .as-cnt{font-size:48px} .as-stage{min-height:18vh} #s-as-play .as-ta{font-size:21px;min-height:42vh} }
     /* R675: マイク診断の結果パネル */
     .mic-diag{margin-top:10px;padding:12px 14px;border:1.5px solid #d4d4d0;border-radius:12px;background:#fff;font-size:13px;line-height:1.7;color:#17181c;white-space:pre-line}
     .mic-diag.ok{border-color:#166534;color:#166534}
@@ -1212,7 +1222,7 @@
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v8.49<br>170問（S〜D級）・録音はブラウザに保存されます</p><!-- R686 (v8.48→v8.49): 連想の時間を自由に — プリセットに5/10/15秒を追加(5/10/15/20/30/45/60)＋自由入力欄(3〜300秒の整数, #as-sec-custom)。自由入力がプリセットと一致すればそのチップを点灯、チップを押すと自由欄はクリア。as_secに保存しプリセット外は次回自由欄に復元。開始時に自由欄が不正値ならtoastで止める(黙って丸めない)。asSecOk/asSetSec/asSecCustom。 / R685 (v8.47→v8.48): 声モードの遅延呼び出し(最初のお題2.5秒/聞き取り開始)を「同じセッション・同じお題・まだそのフェーズ中」の時だけ実行するよう修正(書き終えてフィードバック画面に移った後にマイクが立ち上がり、採点済みの回に言葉が追加され続けていた件も)(放棄した声セッションの遅延asNewTopicが次のセッションを乗っ取り、書いた連想が消えお題とタイマーが入れ替わっていた)。開始時に本番画面を入力状態へリセット(声モードで最初のお題まで前回のフィードバック/古いお題が見えていた)。連想をさらにシンプルに（真ん中にお題→その下に書く欄 or 声の聞き取り）。本番画面: 「連想を出す（…）」見出しを撤去、連想だけの時は相手役ラベルも非表示、マイクボタンは声モードの時だけ表示(文字モードは書く欄と個数だけ)、ボタンは「次へ」。設定: 説明を1行に、相手役は一番下へ移し「相手役（任意）」既定=なし(as_persona2で既定なしから開始)。 / R684 (v8.46→v8.47): 連想の単語お題を大幅増量（49→332語。Lv1具体=180語: 物/場所/地名(静岡・浜松ほか)/季節/食べ物/乗り物/IT・家電/人、Lv2抽象=152語: 数字/ビジネス/経営/社会/感情/抽象語）。ジャンル細分化で連続同ジャンル回避が効く。重複ゼロをパッチ時に検査。 / R683 (v8.45→v8.46): 連想画面をシンプルに（ユーザー要望: 「お題：○○」等の前置き不要、お題を画面中央に、その下にテキストを出して書いていく）。.as-stageでお題を中央に大きく表示(前置きなし、短文/長文は「」のみ)、タイマーは小さく下に。フェーズAは1行入力＋チップ列を廃止し<textarea id=as-ta>に1行1連想で書く方式(asTaSync: 行→連想、重複/空行除外、初動は最初の非空行時刻)。個数表示#as-count。声入力はテキスト欄へ1行追加。 / R682 (v8.44→v8.45): 相手役「なし（連想だけ）」を追加 — パッと出た単語への反射を鍛える。印付け/質問変換/相手の反応を飛ばし、量(個数)・初動(最初の1個までの秒数 cur.first)・ペース(10秒あたり個数)を断定表示(asFinishSolo)。まとめは平均個数/最多最少/平均初動/到達Lv/改善点(asFinishSessionSolo, assoc_histにsolo:true)。 / R681 (v8.43→v8.44): 連想の設定に「お題の形」= 混ぜる／単語だけ／短文だけ／長文だけ を追加(as_form記憶, AS.form, asPickFormで固定は早期return)。 / R680 (v8.42→v8.43): 連想のお題を「単語／短文／長文」の3形に拡張（ユーザー要望: 長文だったり短文だったり一単語だったり）。AS_WORDS(Lv1具体/Lv2抽象)・AS_SHORT(相手の一言20)・AS_LONG(相手の話2〜3文×12)。asPickFormがレベル別の重み(Lv1 6:3:1→Lv4 1:3:6)で形を選び、直前と同じ形は出さない(AS.lastForm)。表示=単語「お題：」大／短文「相手の一言：」／長文「相手の話：」小さめ(.as-topic.long)。声モードは長文9秒・短文4秒待ってから聞き取り開始。 / R679 (v8.41→v8.42): 連想トレーニング（話題の引き出し強化）モードを追加【AIなし】。ホーム3つ目のボタン→s-as-setup(相手役4種/ランダム・題数3/5/10・文字/声)→s-as-play(お題→連想30秒[文字Enter/音声認識で「、」区切り]→相手側に印10秒→1つ選び質問に変換20秒→相手役のルール反応(good/mid/poor×4人格, Lv4は薄い)→断定フィードバック(量/選択/変換/代案、閉じた質問はルール判定＋言い換え))→s-as-result(平均連想数/自分本位回数/閉じた質問/到達Lv/改善点)。レベルは直近3題平均で1→2(≥5)→3(≥7)→4(≥8)、Lv3+はお題が相手の一言。お題はジャンル連続回避＋重複なし。assoc_hist(アカウント別,100件)保存＋完走でsavePractice()。声モードはspeakQで読み上げ＋専用SpeechRecognition(asRecog)。nav()離脱でasStop()。 / R678 (v8.40→v8.41): 厳格デバッグ10視点(PC/Edge環境＋R672〜R677相互作用)。確定2件修正: ①ログ画面を離れても再生中の録音が鳴り続ける(ゴースト再生)。R674の録音前suspendで一旦無音になり、次の再生でctxがresumeすると古い音が突然鳴り出す事故にも発展→nav()でs-history以外へ遷移時に#s-history内のaudioを全pause。②成功後も設定の#mic-diagに古い失敗診断が残る→getMic成功時にng表示を非表示。パス: Edgeのニューラル音声(Nanami Online Natural)優先/webm;opus対応/SpeechRecognition有/スライダーのキーボード入力(inputイベント)/Edg UA判定＋PC案内/録音前suspend→タップ内primeでresume/finalizeOnHideはマイク解放のみで再生ctx非干渉/micTestは連打不可(disabled)/track labelはtextContentでXSS安全。 / R677 (v8.39→v8.40): PC(Windows)の実例で確定した案内修正 — ユーザーPCのレジストリ実測でHKLM ConsentStoremicrophone=Deny(Windows本体の一番上「マイクへのアクセス」がオフ)。この状態ではサイト許可に関係なく全アプリでマイク不可。PC向け案内(granted分岐＋汎用分岐)で最初に「マイクへのアクセス」スイッチを示し「デスクトップ アプリ…」も併記、ブラウザ再起動を追記。 / R676 (v8.38→v8.39): 「許可したのに未許可扱い」が続く2原因を診断に追加。①サイト権限がgranted(許可)なのにNotAllowedError ＝ ブラウザアプリ自体のOS権限(Android: 設定→アプリ→Chrome→権限→マイク / iOS: 設定→Chrome/Safari→マイク / Win/Mac: プライバシー→マイク)が拒否 → ブラウザ名(Chrome/Safari/Samsung Internet/Edge/Firefox)を検出して具体案内。②アプリ内ブラウザ(LINE/Instagram/Facebook/X/Android WebView)はマイク非対応or自動拒否 → UA検出して「ブラウザで開く」を案内。状態行にブラウザ名/アプリ内を併記。Android通常ブラウザ案内にも②としてOS権限の手順を追加。 / R675 (v8.37→v8.38): 厳格デバッグ10件（マイク／録音経路中心）。確定修正5件: ①「許可したのに未許可扱い」対策=マイク診断(micEnv/micPerm/micGuide/showMicHelp/micTest)。ホーム画面アプリ(standalone)はブラウザと権限が別管理(Android=OSのアプリ権限, iOS=設定のアプリ項目)なのに案内が無かった→端末(Android/iOS/PC)×表示モード(アプリ/ブラウザ)×Permissions API状態(granted/denied/prompt/unknown)から「どこを直すか」を具体表示。②トースト3.2秒では手順を読めない→録音失敗時は設定画面の#mic-diagに固定表示しスクロール。③設定に「マイクをテスト」ボタン=タップ起点getUserMediaで即診断(成功時はトラック停止、持続マイクは不変)。④ftStartSessionの打ちかけ救済が上限8のまま(R668で20)→20に。⑤iOS: AudioContextは通話/背面化後に'interrupted'になり'suspended'判定では復帰しない→ampAudioはrunning以外を全てresume(+reject握り)。⑥iOS: 増幅接続がIDB読込後のoncanplay(非ジェスチャー)で走りctxがsuspendedのまま無音→toggleAudioのタップ内でplayCtx()生成/resume。検証済み=タップ→ftStartSession→startFT→beginRec→getUserMediaは全同期(ジェスチャー保持)/レビュー離脱(save/discard/back)はrv-audioをpause済(R473)/goHomeでreleaseStream。 / R674 (v8.36→v8.37): マイクが繋がらない不具合の診断＋対策。①失敗トーストに実エラー名を併記［NotAllowedError/NotReadableError/NotFoundError/SecurityError/OverconstrainedError］し原因を即特定できるように＋各文言を具体的な対処に改善(許可の変え方/他アプリ使用中/HTTPS)。②R672の再生用AudioContextがスピーカーを掴んだままだと一部Androidで次の録音のgetUserMediaがNotReadableError等で失敗しうるため、beginRecの録音開始前に_playCtxをsuspend()して音声デバイスを解放(次の再生でampAudioがresume)。 / R673 (v8.35→v8.36): 厳格デバッグ10視点（ブラウザ実負荷・例外ゼロ・退行なし）の確定1件を修正 — ampAudioの無音固定トラップ: createMediaElementSource成功後にゲイン/コンプ接続が万一失敗すると要素が「グラフ接続済みだが出力先なし＝無音」かつ_ampedがfalseのまま→次回createMediaElementSourceが例外で永久無音になり得た。生成成功で即_amped=true(二度と生成しない)＋増幅チェーン失敗時はsrc→destination素通し接続で必ず音を出すよう是正。検証=clamp境界/ampのidempotency・単一AudioContext(増殖なし)・フォールバック/スライダー100連打3ms/両スライダー・ラベル同期/nav100往復でactive画面常に1/履歴200件描画/実WAV再生でplaybackRate+増幅+実発音+コンソールエラー0/play_rate束隔離/意識ポイント振り返り＋スライダー共存=全パス。 / R672 (v8.34→v8.35): 録音の再生音量を底上げ。再生する<audio>だけをWeb Audioのゲイン増幅(PLAY_GAIN=2.4)＋DynamicsCompressor(クリップ防止)経由に(ampAudio)。録音経路(MediaRecorder)は不変。AudioContext不可環境は素の再生にフォールバック。createMediaElementSourceは要素毎1回のみ→el._ampedでキャッシュ、再生はタップ起点なのでresume()可。openReviewのrvAudio.onplay＋toggleAudioの両play経路で適用。 / R671 (v8.34→v8.35): 再生速度を3段階チップ→スライダー化(0.5〜3.0倍・0.1刻み)で細かく調整可能に。振り返り/ログのprate-rowを<input type=range class=prate-range>＋現在値ラベル(.prate-val, タップで等倍リセット)へ。clampRate/fmtRate、reflectPlayRateはスライダーvalueとラベルを更新、setPlayRateはoninputで即反映(トーストはドラッグ連発回避のため撤去)。play_rate(アカウント別)は従来どおり全audioに適用。 / R670 (v8.33→v8.34): 録音の再生速度(倍速)追加。振り返り画面とログに「等倍/1.5倍/2倍」チップ(.prate-btn, setPlayRate/playRate/reflectPlayRate/applyPlayRate)。play_rate(アカウント別)を全audioに適用=openReviewのrv-audio.onplay＋toggleAudioのoncanplay/elseでplaybackRate設定、速度変更は再生中にも即反映。 / R669 (v8.32→v8.33): 画面切替/タブ破棄/PWA再読込/アプリ切替で毎回ホーム(最初の選択画面)に戻る不満を解消。nav()で直前の"閲覧系"画面(s-home/s-goal/s-history/s-calendar/s-settings)をsessionStorage.last_screenに保存(s-historyはlast_histtabも)、起動時ログイン済み/スキップなら直前画面へ復帰(s-goal/s-settings=nav, s-calendar=openCal, s-history=showHistory)。録音/振り返り/設定選択など一時状態画面は保存せずホーム。 / R668 (v8.31→v8.32): 意識ポイントの追加上限を8→20に引き上げ(parseFocus/getFtFocusStoredのslice(0,20)、addFtFocusの上限チェック)。 / R667 (v8.30→v8.31): PC向けに全体拡大＋成長グラフ刷新。①デスクトップ(≥840px)を広く(body 900→1160)＋右パネル大きく(home-side 340→460, gap48)＋パネル内要素をPCで拡大(hg-big 48px/hk-title 16px/meter太く/main-btn大きく)。②グラフ刷新(renderGrowthChart)=大きく(viewBox360x192, height:auto+preserveAspectRatioでアスペクト保持し伸び防止)＋薄いグリッド3本＋週ごとの点＋到達点を白リング大ドット＋累計値ラベル(N本)。スクショで反復確認。 / R666 (v8.29→v8.30): ホーム右パネル(目標＋グラフ)の見た目調整。①各見出しの「→」矢印が点のように浮いて雑然→非表示(.hg-arrow display:none)。②進捗バーの青/紺/灰混在をやめ墨一色に統一(.home-side .meter>span)。③KGI達成率を大きな数字で主役に(.hg-figure/.hg-big 32px＋現在→目標のhg-goalnote)。スクショで確認しながら調整。 / R665 (v8.28→v8.29): 厳格デバッグ5視点(意識ポイント/目標/秒数本数/共有/ログ)。広域ストレス全パス・例外ゼロ。確定修正=①録音画面の制限時間(r-timer-lbl)がcurLimit>=60で全部「60秒」表示→3分(180)が「60秒」と誤表示していたバグ(R658のfmtDur統一の漏れ)→fmtDur化。②Claude評価プロンプトの制限時間/種類もfmtDur化(180秒→3分, 一貫性)。beginRecはnav(s-record)→getMic順でpre-start中s-record active=R663ガード正しい。XSS(KGI/KFS)・アカウント隔離(kgi/kfs/qa_voice/qa_rate/ft_focus)・fmtDur・共有・ログ3件は健全。 / R664 (v8.27→v8.28): 振り返り画面に「この録音を共有」ボタン追加(rv-share-btn/shareCurrentRec)。保存前のメモリ上audioBlobをtoShareableBlobでWAV化しnavigator.share(files)、非対応はDLフォールバック。ログのshareAudioと同挙動だが録音直後に即共有できる。 / R663 (v8.26→v8.27): 画面切替(背面化)で振り返りのチェック中の内容が消えるバグ修正。finalizeOnHideのelse if(micAlive())が画面に関係なく発火し、振り返り画面(s-review)を背面化した際も設定画面へ強制遷移＝意識ポイントのチェック等を破棄していた→「s-record が active の時だけ」中断＆遷移するようガード。他画面ではマイク解放のみで振り返りのDOM/状態は残す。 / R662 (v8.25→v8.26): 意識ポイントのマークを記号(✓/×)→文字ラベル「できた/できなかった」に変更。✓/×は端末フォントで表示されないことがあり「マークがない」と見える問題を解消。レビューは各ポイントの下にフル幅の「できた」(緑)/「できなかった」(朱)ボタン(.focus-row2縦積み/.fbtn flex)、ログも「できた/できなかった/未」の文字表示に。 / R661 (v8.24→v8.25): 意識ポイントの最終集計。目標画面に「意識ポイントの実績」セクション追加(computeFocusStats/renderFocusStats)=FT履歴のit.focusをポイント別に できた/できなかった で集計、通算のできた/できなかった数＋ポイント毎の達成率バー(.fs-row)。 / R660 (v8.23→v8.24): 意識ポイントのチェックリストに×ボタン追加 — ✓できた/×できなかった/未の3状態(setFocus, .focus-row2/.fbtn, 同ボタン再押下で未に戻る)。it.focus.ok=true/false/null、ログは✓緑/×朱/－灰、達成数はok===trueのみ。 / R659 (v8.22→v8.23): Q&A質問をBtoB営業の実戦質問に全面刷新（旧400問はテレアポ/アポ代行前提の文脈ゼロな一言ブラシオフの羅列で「現実と乖離」→撤去）。170問(S26/A40/B40/C35/D29)。品質基準=①文脈がある(予算/稟議/競合/過去の経緯)②一言で返せない(結論→根拠→次アクションを迫る)③相手の生の声(本音/迷い/駆け引き)。難度=S:失注寸前/決裁者/値下げ・競合で追い込まれる巻き返し, A:手強い定番反論(価格/競合/タイミング/稟議/現状維持), B:中立的な懸念・確認(効果裏付け/事例/導入負荷/サポート), C:ヒアリング・関係構築(課題曖昧/警戒/ニーズ喚起), D:基礎動作(初回接触/要件整理/次アクション)。ホームCTA/フッターの「400問」→「170問」。 / R658 (v8.21→v8.22): 秒数・本数の選択肢を拡張＋FTランダムを真の乱数に。秒数=3秒/1分/3分を追加(QA_SECS=[3,10,15,30,60,180]/FT_SECS=[3,5,10,15,30,60,180]、Q&A設定チップqsec-*も追加、qaSec/setQaSec検証拡張)。本数=20/30/100本を追加(REPS_OPTS=[1,3,5,10,20,30,100]、startQA/ftSetupOpenの検証)。FTランダムは固定候補[5,10,15,30]→5〜60秒の真の整数乱数(12/13/47秒などバラつく)。表示はfmtDur(60→1分/180→3分)に統一(q-tbadge/rv-tbadge/rv-ft-dur※60以上を全部「60秒」と誤表示していたバグ修正/ログlim/updateGoLabels/setQaSecトースト)。 / R657 (v8.20→v8.21): 意識ポイントを「1つずつ追加」方式に変更（旧: 改行テキストのまとまり）。FT設定に入力＋「追加」ボタン(#ft-focus-input/addFtFocus)＋追加済みリスト(#ft-focus-list, .ffx-item, ×で削除removeFtFocus)。ft_focusはJSON配列で保存(getFtFocusStoredが旧改行テキストも移行)。ftFocusList→ftStartSessionでftFocusPointsへ、打ちかけ1件は救済取り込み。録音後のチェックは従来どおり1個ずつ。 / R656 (v8.19→v8.20): ホーム右パネル(目標＋成長グラフ)のバランス改善 — 白カード2枚がバラバラに浮いて「ダサい/微妙」だったため、.home-sideを1枚の統一パネル(border/shadow/radius18/overflow:hidden)にし、内部の目標(.home-goal)と成長(.home-graph)は区切り線(border-top)で分割。各区画は個別カード装飾を撤去しpaddingのみ、押下は淡い背景で表現。 / R655 (v8.18→v8.19): フリートークに「意識ポイントモード」追加。FT設定に意識ポイント欄(#ft-focus,1行1つ・最大8・ft_focusに保存)。書くと録音のたびに振り返り画面にチェックリスト(#rv-focus, .focus-row/.focus-box, toggleFocus)が出て「できたか」を自分でチェック。意識ポイント時は一括保存でも必ず振り返りを表示(openReviewのbatch bypassにftFocusActive除外)＋自動進行しない(reviewAutoStart早期return)。結果はit.focus=[{p,ok}]で履歴保存、ログにFTの達成状況(◯/×)表示(.hist-focus)。ftFocusPoints/ftFocusChecks・parseFocus・ftFocusActive、goHomeで解除。 / R654 (v8.17→v8.18): ホームを2カラム化。目標を上の縦積みから横パネルへ移動 — 左=操作(Q&A/FT/ログ等)、右=目標パネル(#home-side: 目標カード#home-goal＋成長グラフ#home-graph)。PC(≥840px)はbody幅900で横並び(home-side sticky 340px)、他画面は560px中央カラムに固定(伸びすぎ防止)。スマホは操作→目標の縦積み。renderGrowthChart(targetId)化しホームは'home-graph-inner'に描画、データ無しはグラフカード非表示。 / R653 (v8.16→v8.17): ログは量が増えると全部見るのが面倒 → 既定でランダム3件だけ表示。「別の3件」で引き直し、「すべて表示」で全件、「ランダム3件に戻す」。renderHistBody(tab,isFT)がsampleHist(3件・新しい順維持)＋操作バー(.hist-ctl)を描画。histSample/histAllで状態管理、nav('s-history')でリセット(開くたび新3件)。histReshuffle/histSetAll。選択削除は表示中の件に作用。 / R652 (v8.15→v8.16): ホームの目標カードに進行中の課題(KFS)も直接表示。クリックせず中身が見えるよう、上位3件を課題名＋進捗メーター(m-lo/m-ac/m-ok)付きで表示、超過は「ほかN件」。renderHomeGoalを目標＋課題の両方描画に拡張(.hk-head/.hk-item/.hk-title/.hk-pct)。 / R651 (v8.14→v8.15): 目標を初期画面(ホーム)に常時表示。統計バー撤去で空いた上部にタップ可能な目標カード(#home-goal, .home-goal)を追加、KGIタイトル＋達成%メーター＋克服/課題数を表示、タップで目標画面へ。renderHomeGoal()をrefreshHomeから呼ぶ。KGI未設定時は「目標を決めて、成長を見える化しよう」。 / R650 (v8.13→v8.14): 目標画面に成長グラフ追加＋デザイン洗練(水墨トーン)。①成長グラフ: 直近10週の累積トレーニングを面グラフ(水墨の山のように積み上がる)でrenderGrowthChart()が描画(day_集計・依存ゼロSVG・墨グラデ塗り)。②デザイン: KGI見出しを墨グラデbackground-clip:text、メーターを淡墨→藍墨→朱の階調(m-lo/m-ac/m-ok)、KPI/KFSを浮遊白カード(--shadow-card)＋tnum数字、克服ボタン/殿堂を朱印トーン(緑→朱)に統一。 / R649 (v8.12→v8.13): ホーム上部の統計バー(TODAY/MONTH/TOTAL/STREAKの英字＋回数)を撤去 — 数字＋英語で頭に残らず動機づけにならない虚栄メトリクス。回数データ自体は保持(カレンダー朱印/目標KPIで意味のある形でのみ表示)。refreshHomeのh-today/h-month/h-total/h-streak代入を削除(要素不在)、reconcileStreak/緑チップ(R642)/acctRefreshは維持。.stat-*CSSは無害なため残置。 / R648 (v8.11→v8.12): 目標管理画面(KGI/KPI/KFS・課題表)を追加【フェーズ1・既存の保存フローには非干渉の追加画面】。ホーム→「目標」。KGI=最終目標(タイトル＋現在→目標＋単位, 達成%バー, localStorage.kgi)。KPI=記録から自動計算(克服課題数/取り組み中/S級クリア率/記録数, computeKPI)。KFS=課題表(localStorage.kfs配列, 追加/◎前進(prog+20)/克服(満タンで)/削除, 進捗メーター＋状態＋出所バッジ)。克服した課題は「克服の殿堂」に朱印表示。kgi/kfsはacctDataKeysに含まれアカウント別。renderGoalはnav('s-goal')で描画。escHtml/onclick id sanitizeでXSS/注入防止。次フェーズ: 練習/記録の分離＋手応え評価(信憑性)→旧回数バー格下げ＋手応え成長ライン配線。 / R647 (v8.10→v8.11): 厳格デバッグ10視点（あらゆる視点・本体実行）— 広域ストレス(画面遷移120/セッション状態機械/履歴210件描画/音声速度20連打/共有変換12連続/アカウント切替20往復/カレンダー24ヶ月/クールタイマー)は全パス・例外ゼロ・不変条件維持(active画面常に1つ・セッション0リセット・アカウントデータ無傷)。確定1件を修正: 発話の世代競合 — speechSynthesis.cancel()で止めた旧発話のonendが新発話の最中に発火しqSpeakingを誤って解除し、連続自動録音の待機(R644)が読み上げ中に早期にカウント開始しうる（「もう一度聞く」連打時）。_speakGen世代トークンで最新発話のonend/onerrorだけがqSpeakingを下ろすようにし、stopSpeakはgenを進めて保留中のonendを無効化。 / R646 (v8.9→v8.10): 相手に送った録音が聞こえないバグを修正 — toShareableBlobがiOS等のMediaRecorder出力mp4を「どこでも再生可」と誤ってパススルーしていたが、これはfragmented mp4(fMP4)で共有先(LINE/メール/他プレイヤー)ではmoov断片化のため再生不可・無音になることが多い。修正: 共有はWAVのみパススルー、mp4/webm/oggはすべてWAV(PCM)へ変換(decodeAudioDataはiOSのAAC/mp4も復号可)。WAVエンコーダ自体はラウンドトリップ実測で出力RMS>0(非無音)・ヘッダ完全を確認済み=真因はmp4パススルー。変換失敗フォールバックも元形式を正しいext/type(mp4→m4a)で返すよう是正(誤ラベル防止)。 / R645 (v8.8→v8.9): 出題音声を自然な声に＋速度可変 — ①声: 端末内蔵の日本語音声からGoogle/Online(Natural)/Enhanced/Premium等の高品質音声を優先選択(pickJaVoice, espeak系のロボット声を減点)、voiceschangedで非同期ロード対応(_jaVoiceキャッシュ)。②速度: 設定に「読み上げ速度」4段(ゆっくり0.9/標準1.1/速い1.35/最速1.6, qa_rate, アカウント別)、変更時にその場で試し読み。speakQのrateをqaRate()に、pitch1.02。※Web Speechは端末内蔵音声しか使えず、真に自然な声は端末の音声品質に依存(iOSは設定→アクセシビリティ→読み上げcoコンテンツで拡張音声DL推奨、Androidは Google TTS)。 / R644 (v8.7→v8.8): 厳格デバッグ10視点の確定2件を修正（R643音声の実効性向上）— ①F2(中): 連続セッションの自動録音は固定5秒開始のため長い質問だと読み上げが途中で切れていた→音声モード中はqaAutoArmが「読み上げ終了(qSpeaking=false)」を待ってから5秒カウント開始（onstart/onend/onerrorでqSpeaking管理、onend非対応環境向けに約15秒で安全打ち切り、待機中は「読み上げ中…」表示）。②F1(低): 背面化/画面ロック(finalizeOnHide)でTTSが残る経路→stopSpeak()追加。他8視点(録音ライフサイクル/音声認識/アカウント隔離/IDB削除/スクロールR641/状態遷移/localStorage堅牢性/XSS・a11y)はブラウザ実測で例外ゼロ・退行なしを確認。 / R643 (v8.6→v8.7): 出題の音声化 — 設定「Q&A 出題の音声」で オフ/読み上げ/音声のみ を選択(qa_voice, アカウント別)。依存ゼロのWeb Speech(speechSynthesis, ja-JP)でpickQ時に質問を発声(applyQVoice)。読み上げ=文字+声、音声のみ=q-textをblur(.q-veiled、DOMは残しSR可、タップ/「文字を見る」で表示qaReveal)＋録音画面のr-q-miniも空に=耳だけで答える実践。問題画面に「もう一度聞く」(q-replay, speakQ)追加。TTSは録音開始(beginRec)・戻る(qaBack)・ホーム(goHome)でstopSpeak()=マイク/音声認識への混入防止。既定オフで後方互換。iOSは開始タップ起点でTTS解錠、マナーモードでは鳴らない旨は設定に注記。 / R642 (v8.5→v8.6): 今日やったら右上を緑に — ホーム右上のアカウントチップ(acct-chip)を、今日1回以上トレーニングしたら緑(#166534, 白文字6.9:1 AA)に。refreshHomeで今日カウント(dayKey)>0なら.done-todayを付与、翌日はカウント0で自動的に通常表示へ。未ログインでもやった日は緑の「✓ 今日」チップを表示(acctRefreshのelse分岐)＝ログイン有無に関わらず右上が緑に。nav('s-home')経路はrefreshHomeのみ呼ぶためrefreshHome末尾でacctRefreshも呼び未ログインチップ表示を更新。切替は.3sトランジション。 / R641 (v8.4→v8.5): スクロール不能バグ修正(主にAndroid) — .body{overflow-y:auto→visible}。本アプリは.screen{min-height:100vh}で内容に応じ伸び、スクロールはドキュメント(html)側で発生(.bodyはscrollH==clientHで内部スクロールしていないと実測)。autoのままだとAndroid Chromeで「実際にはスクロールできないoverflow:auto要素」がタッチのパンを飲み込み、ドキュメントへスクロール伝播せず画面が動かなくなる(iOS/PCはジェスチャが親へバブリングするので無症状＝「主にAndroid」と一致)。visibleでドキュメントスクロールに一本化。stickyヘッダーはドキュメントスクロール基準で従来どおり固定。 / R640 (v8.3→v8.4): 録音の選択削除 — トレーニングログのヘッダー「削除」を「選択」トグルへ変更し、選択モード中は各録音の左にチェックボックス(.hist-cb)＋操作バー(.sel-bar)を表示。バーは「全選択」「選択削除（N件）」「すべて削除」の3つ。選択削除=deleteSelected()がチェックしたidのlocalStorage履歴(qa_hist/ft_hist)とIndexedDB音声(deleteAudio、生のit.id)の両方を削除。すべて削除=従来のclearCurrentHistory()(現タブ全消し)をバーへ移設。buildHistHTMLは中身を.hist-bodyで包みチェックボックスを外側に追加=audio→聴く→共有の兄弟連鎖(toggleAudio/shareAudioのprev/nextElementSibling依存)は不変。selMode/applySelMode/toggleSelMode/selectAllHist/updateSelCount/curHistBody追加。renderHistの先頭でselMode=falseにリセット(タブ切替=switchHistTabはrenderHistを通らないので選択維持、末尾でupdateSelCount)。data-idは聴く/共有/チェックで共通のsid(英数のみ)。チェックボックスはdisplay:none、.sel-modeクラス時のみ表示。 / R639 (v8.2→v8.3): 非公開運用への布石 — ①検索除け: meta robots=noindex,nofollow ＋ referrer=no-referrer ＋ robots.txt(Disallow:/) ＋ _headers(X-Robots-Tag, Cloudflare Pages用)。②移行ポータビリティ確認: github.ioのハードコード無し・start_url/scope/アイコンは全相対・外部URLはClaude APIのみ＝別オリジンへそのまま移設可。本命のアクセス制御はCloudflare Pages＋Cloudflare Access(許可メールのみ)で別途構成。移行時の注意=ストレージはオリジン単位のため新ドメインへは設定の「書き出す/復元」でデータ移行が必要。 / R638 (v8.1→v8.2): フィードバック宛先メールの平文露出を除去 — R637はFB_TO定数とこのコメントに開発者アドレスを平文で置いていた(公開リポジトリ/ソース閲覧/メール収集botから丸見え)。fbTo()でatob(base64)から実行時組み立てに変更し、ソース内の平文アドレスを全廃(このコメントの平文も削除)。※base64は難読化であって完全秘匿ではない(コードを実行/デコードすれば復元可)＝完全に隠すならフォームサービス経由が必要。 / R637 (v8.0→v8.1): ご意見フィードバック — 設定に記入欄＋「メールで送る」。sendFeedback()がmailto(開発者宛・難読化)を組み立てlocation.hrefで開く。空欄はtoastで促す。依存ゼロ・サーバー不要。 / R636 (v7.9→v8.0): 連続/セットの各本のあいだにNEXTゲート — 「毎回保存する」×連続/セット(sessActiveBatch)では、1本終わるごとに自動で次へ飛ばず s-interval 画面(「n/N 完了」or「n本完了」＋大きなNEXTボタン)を表示し、NEXTを押すまで次に進まない＝ペースを自分で決められる。sessionAfterRepでbatchならshowInterval()→NEXT(sessionNext)でdoNextRep()。通算本数sessReps追加(Infinity表示用,各出口でリセット)。intervalの戻る←はendBatchToReview(停止→保存あればログ)。最終本完了は従来どおりendSession→ログ(NEXTは挟まない)。保存しない/手動は振り返り画面が間のゲートを兼ねるため変更なし。 / R635 (v7.8→v7.9): 高負荷デバッグ10視点(本体実行)で確定した2件を修正 — ①マイク解放漏れ: endSession/endBatchToReview(保存あり分岐)がreleaseStream()せずログ/ホーム画面でもOSのマイク表示が点灯し続けた(R585の解放はgoHome/page-hideのみでR627/R633の新出口が漏れ)→両関数で解放(許可は残るので次回は無音再取得) ②一括保存の文字起こし尻切れ: batchSaveAdvanceは停止直後のtranscriptを即保存するが認識最終結果は〜1.2s遅延(通常経路の1200ms待ち相当が無い、特にFTは次startRecogが即リセット)→trPatch機構: 保存直後に予約し、次のstartRecogのリセット直前 or 1.3s後の早い方で、transcriptが伸びていれば保存済みアイテムのtrを差し替え。ブラウザ実負荷テスト(開始10連打/戻る5連打/nav200往復1.26s/チップ100連打40ms/休憩タイマー30回転/qaAuto 50回転リーク0/インク300イベント6ms/一括20本22ms/履歴200件上限確認)は全パス。サブエージェント版はプラン上限(23時JSTリセット)で実行不可だったため本体で10視点を実施。 / R634 (v7.7→v7.8): クールタイマー終了音 — 依存ゼロのWeb Audio(playChime)で柔らかいベル風チャイム(E5/A5/C#6上行アルペジオ×2、サイン+倍音、ふわっと減衰)を終了時に再生。モバイル自動再生制限対策として開始タップ(startBreak/startBreakCustom経由)でchimeUnlock()によりAudioContextを解錠。既存のvibrate/トーストは維持。 / R633 (v7.6→v7.7): 一括保存セットは振り返りスキップ→終了/停止時にまとめて振り返り — 「毎回保存する」×連続/セット(sessActiveBatch)では各本の振り返り画面を一切出さず、openReviewからbatchSaveAdvance()でストレージへ即保存しsessionAfterRepで次へ(QA=次問題＋5s自動録音/FT=即次録音)。0.9秒の一拍すら無し。セット完走(endSession)または途中停止(cancelRec/qaBack=新規)時に、保存があればトレーニングログ(s-history)を開いてまとめて振り返り。sessSavedAnyで保存有無を追跡、goHome/開始でリセット。保存しない連続は従来どおりR632の即時自動破棄レビュー。Claude評価は一括時はスキップ(API節約)。 / R632 (v7.5→v7.6): 自動進行の待ち時間短縮 — R630の3秒カウントダウンが「だるい」ため、setInterval(3×1000)を撤廃しsetTimeout(900ms)の一拍に。バナーはカウント数字なしで「自動で保存して次へ/記録せず次へ」表示。clearIntervalもclearTimeoutへ。一拍残す理由は「止めて確認」の最小猶予と画面瞬間遷移の違和感回避。単発1本は従来どおり手動。 / R631 (v7.4→v7.5): 一括保存方針をカウント開始前に選択 — Q&A/FT設定画面に「記録（このセット全体）: 毎回保存する/保存しない」チップを追加。開始時にsessSaveへ格納し、R630の自動進行が方針どおりに saveAndNext()(保存) or discardAndNext()(非保存) を自動実行。バナー文言も「自動で保存して次へ/自動で記録せず次へ」に分岐。qa_save/ft_saveを永続化し次回反映(既定=保存)。開始ボタンには保存しない時のみ「・保存なし」を明示。goHomeでsessSave=trueにリセット。「止めて確認」での手動上書きは従来どおり。 / R630 (v7.3→v7.4): 連続/セット中の自動保存・自動進行 — 1本ごとに保存/保存しないを選ぶ手間を解消。複数本セッション(sessTarget>1 or Infinity)では振り返り画面に入ると3秒カウントダウンで自動 saveAndNext()。「止めて確認」ボタンでいつでも停止し手動操作(保存/保存しない)に戻れる。単発1本では従来どおり手動。reviewAutoStart/Stop、saveAndNext/discardAndNext/reviewBack/goHomeでタイマー確実停止、s-review離脱でも自動停止。最終本はラベル「自動で保存して完了」。rv-autoバナー＋rv-save-box切替。 / R629 (v7.2→v7.3): 画面切替のラグ解消 — 水墨インクが「開始」ボタンや秒数チップ等の操作部タップでも発火し、全画面blur(shadowBlur)のrAF描画ループが画面遷移(録音開始等)と同時に立ち上がってメインスレッド/コンポジタを奪い、切替がカクついていた。pointerdownで e.target.closest('button,input,textarea,select,a,label,[role=button],[onclick]') に当たる場合は start()しないようガード。墨は背景・余白のなぞり描き専用になり、機能ボタンのタップは即応に。なぞり/タップの演出自体は背景上で従来どおり。 / R628 (v7.1→v7.2): 選択〜実行のスムーズ化 — ①前回構成の完全復元: qa_rank/ft_secも保存し、Q&A/FTの設定画面を開くと前回の出題・秒数・回数がそのまま選択済み(=開いて「開始」1タップ) ②開始ボタンに選択内容をライブ表示(updateGoLabels:「ランダム・30秒 × 3本 ─ 開始」) ③チップ選択のポップアニメ(chipPop .18s, reduced-motion対応, void offsetWidthで連打でも再発火) ④連続セッション中のQ&A自動録音: 問題表示から5秒カウントダウン(qa-auto, role=status)→自動beginRec。「録音開始」で即時/「別の問題」で再カウント/画面離脱・goHomeで停止(qaAutoArm/Cancel)。1本のみは従来どおり手動。FTは元々全自動。 / R627 (v7.0→v7.1): まとめ選択＋連続セッション — Q&A/フリートークの選択画面を「秒数×回数（＋Q&Aは出題ランク）」を1画面でチップ選択し1タップ開始する形に刷新。選んだ回数ぶん「録音→振り返り→保存/破棄→次」を休憩なしで自動継続(sessTarget/sessDone、Infinity=続ける)。進捗を問題画面バッジ(qa-set-badge)と録音画面(r-set)に n/N 表示、最終本は保存ボタンを「保存して完了」に切替、完了でホームへ達成トースト。saveAndNext/discardAndNextの末尾分岐をsessionAfterRepに統一、reviewBack(FT)/goHomeでセッション解除。qa_reps/ft_reps/qa_secを保存し次回反映。旧qaGo/qaKey/ftRandom/ftKey撤去。selChip/markGroupでチップ選択UI。 / R615-R624 (v6.8→v7.0): 大型アップデート ①R615 文言整理 — ホームCTAの秒数表記削除(400問・S〜D級/自由なテーマで話す)、「目標は設定から」短縮、空ログメッセージ非表示、ログインNAME/PASSWORD表記、設定の説明文を全面要約 ②R616 ログアウト追加(設定) — 現束保存→acct_currentクリア→reload→ログイン画面 ③R617 Q&A刷新 — 秒数ランダム廃止(qa_sec固定10/15/30, 既定30, 旧rnd_timer廃止)＋出題振り分け画面s-qa-select新設(ランダム=ALL/S/A/B/C/D級→setFilter→pickQ)。設定のレベルフィルターセクションは撤去(出題時選択に一本化、lv_filter機構は維持)。q-tbadgeが15秒を30秒と表示する旧バグも修正 ④R618 FTランダムセル — 5/10/15/30秒から抽選、toastで秒数表示 ⑤R619 背景スマホ修正 — cover→100% auto(縦長画面で富士・波が切れる問題) ⑥R620 共有のWAV変換 — webm/oggをdecodeAudioData→モノラル22.05kHz 16bit PCM WAVへ(60秒≈2.6MB)。iOS/Android/PCどこでも追加アプリなしで即再生。mp4/wavはそのまま、変換失敗時は元形式 ⑦R621 飛沫 — 着筆9-16粒(全方位)/速筆(d>16,50%)1-3粒(前方コーン)/筆離れ(速度>8)4-9粒。生成時に位置/径(0.5+rnd²*2.8)/濃さ確定しストロークと同齢フェード、上限90粒 ⑧R622 カレンダー＋朱印 — 月グリッド(day_YYYY-MM-DD集計)、トレーニング日に朱印スタンプ(回数入り朱円,-8deg)、日タップでひとことメモ(cal_note_*≤60字,束に同梱)、月合計表示。ホームにカレンダー入口 ⑨R623→R625 アイコン刷新(ユーザー画像指定で再変更) — 紙白の角丸に太い墨のS字ブラシストローク(Catmull-Romテーパー)＋かすれ筋(ラン&ギャップ)＋墨だまりスプラッシュ(22塊+12小滴)＋飛沫84粒。icon.svgとPNG(512/192/180)を_gen_icons.mjs(シードRNG・円スタンプラスタ・zlib PNG・依存ゼロ)で同一ジオメトリ生成 ⑩R624 設定画面の圧縮(セクション余白/文字密度) ⑪R626 デバッグキャンペーン(73エージェント・10視点finder→3票adversarial検証、所見21件→確定2件+追加採用3件)の修正 — (a)toShareableBlob: decodeAudioData失敗時にAudioContextがclose漏れ(連続失敗でiOSのコンテキスト上限到達→以後の音声再生不能) → acをtry外に出しfinallyで一括close(close拒否Promiseも握る)、正常経路の旧closeは二重close回避で削除 (b)水墨エンジンのマルチタッチ: pointerId未追跡で2本目の指がcurを上書きし、孤児ストロークがdone=falseのまま永久残留→rAFが60fpsで無限回転＋ジグザグ混線。start/move/endにpointerId追跡を導入、新指のdownで旧筆を確定 (c)move()の360点上限後は飛沫生成も停止(凍結線から離れた粒の浮遊防止) (d)acctLogoutでsessionStorage.login_skipも除去(スキップ歴タブでもログアウト後ちゃんとログイン画面へ) (e)forced-colorsで.cal-dot可視維持。棄却19件は3票反証で偽陽性確認(一部は検証者のセッション上限失敗により少数票判定) / R614 (v6.7→v6.8): リアル水墨ストローク — R611の点描DIV(26px間隔のradialグラデ)を全面刷新し、全画面Canvas(#ink-canvas, multiply, dpr≤2)に筆の連続線を描画。ストローク=点列{x,y,w,j}(jはフレーム間不変の乱数)で、毎フレーム全筆致を年齢αで再描画(rAFは筆致がある間のみ)。リアリティ要素: ①速度→太さ(遅い=MAXW30で墨溜まり/速い=MINW3.5へ細る、lerp0.3で滑らか、4px刻み補間で連続) ②3層描画=にじみ暈し(shadowBlur12+太線α.07)→本体(セグメント毎にlineWidth/α.40-.62のムラ)→穂先かすれ(直交オフセットの毛3本がj+位相で途切れる) ③起筆・タップに墨だまり(不規則楕円7枚重ね) ④描き終え1.4s保持→smoothstepで5.4sかけ紙に還る。同時8筆/360点上限。墨基調+藍朱緑青紫が時折混ざる巡回。reduced-motion/forced-colorsで消灯 / R612/R613 (v6.6→v6.7): ①R612 背景を富嶽三十六景風に — 北斎「神奈川沖浪裏」に倣った藍の大波(爪波2つ＋うねり帯)＋白い波頭しぶき11粒＋雪冠の富士＋朱の日輪をインラインSVG(浮世絵の平塗り・blurなし・低不透明度)で描画(R610の水墨山水を置換)。なぞり水墨(R611)と墨の霞(R604)は維持 ②R613 起動時ログイン画面 — s-login新設(名前+4桁+ログイン+「ログインせずに始める」)。acctLoginの認証/切替コアをacctAuthAndSwitch(id,pin)に抽出し設定画面と共用。起動分岐: acct_currentなし＆sessionStorage.login_skipなしの時だけnav('s-login')、ログイン済みは従来どおりホーム直行。スキップはセッション限り(次回起動時は再表示)。ログイン成功はreload→ログイン済み→ホーム / R610/R611 (v6.5→v6.6): 水彩→水墨へ刷新 ①R610 水墨山水画の背景 — 遠山(blur9/op.11)・中山(blur4.5/.15+.13)・近山(blur2/.19×2)の三層をインラインSVG(data URI・依存ゼロ)で描き、白い霞の帯(blur9)で山裾を抜く古典構図。body::before=cover/bottom固定。body::afterの彩雲は薄墨の霞2＋白靄1に置換(30sドリフト) ②R611 タップ＋なぞりの色墨 — pointerdown=大きめの滲み(64-110px/peak.8)、pointermoveで26px間隔の筆点(22-48px/peak.7)が連なる筆致。和顔料6色(墨/藍/朱/緑青/古代紫/黄土)巡回、芯濃く縁暈ける二層radial、multiply+blur6px、3.2〜6.1秒のsumiBloom(--dur/--peak CSS変数)でゆっくり紙に還る。同時36粒上限・doneフラグ・pointerup/cancelで描画終了。reduced-motion/forced-colors消灯は維持 / R609 (v6.4→v6.5): 録音画面のカウントダウン数字上に出ていた残り時間バー(.prog-wrap/#r-prog)を削除 — 数字のみのミニマル表示へ。setCnt()のバー更新は元から if(p) ガード済みのためJS変更なしで安全、残り時間のスクリーンリーダー通知は #r-cnt(role=timer) の aria-label が引き続き担う。CSS(.prog-wrap/.prog-bar)は他画面流用に備え残置 / R608 (v6.3→v6.4): アカウントを「名前＋4桁パスワード」構成に — 4桁はSHA-256(id:pin:salt)で acct_pins 登録簿(端末共通・束に含めない)へ保存し平文を残さない。登録済みの名前はハッシュ一致時のみ切替（不一致は「パスワードが違います」＋入力クリア）。未登録の名前は初回入力の4桁で作成、既存束あり×未登録(v6.2-6.3からの移行)は初回入力を「設定」として登録。acctLoginはasync化(crypto.subtle.digest)、subtle非対応の稀環境はbtoa難読化フォールバック。ログインの永続保存・切替時の束入替ロジック(R605)・常時IDチップ(R607)は不変。acctDataKeysの除外リストにacct_pinsを追加(束に混入しない) / R606/R607 (v6.2→v6.3): ①R606 白カード型ボタンの立体感増強 — 半透明2px底エッジでは黒CTAに比べ浮きが弱かったため、実体のある底エッジ4px(#d4d7dc)＋深い浮遊影(0 14px 26px .14)＋天面ハイライト強化へ。押下も黒と同じ3px沈下、ホバー浮上時はエッジ6px。色不変=コントラスト影響なし ②R607 アカウントの永続ログイン明確化 — ログインは元々localStorage永続(期限切れ/自動ログアウトなし)だが見えなかったため、(a)ホームヘッダーに常時IDチップ表示(歯車と右側グループ化) (b)設定の状態文に「ログインは保存されています」明記 (c)入力欄プレースホルダに現ID表示。挙動変更なし=切替ロジック不変 / R599-R605 (v6.1→v6.2): ①R599 練習→トレーニング(ログ画面/年間進捗/バックアップ説明/簡易評価アドバイス/評価プロンプト; 評価パーサーはSCORE/GOOD等の英語ラベル依存なので影響なし) ②R600 記録→ログ(Q&Aログ/フリートークログ/トレーニングログ/空メッセージ) ③R601 ヘッダータイトル立体化(墨グラデbackground-clip:text＋上=白光/下=落ち影のdrop-shadowで紙から浮く表現; forced-colorsでCanvasText) ④R602 カウントダウン数字刷新(900極太→200極細112px・tnum維持・色グラデ柔らか化) ⑤R603 選択画面の数字洗練(.ft-cell-n 38px/900→48px/200墨グラデ、単位は.3emトラッキングのマイクロタイポ) ⑥R604 水彩ドリフト(body::afterに彩雲3つ、26sでゆっくり漂う、reduced-motionで静止) ⑦R605 シンプルアカウント — IDだけのログイン。既存コードのキーは不変のまま、切替時に平キー一式⇄u§<id>束を入替。初回ログインは現データをIDが引継ぎ、未ログイン→既存IDは共用データをu§_backup_anonに退避(どちらも消えない)。録音IDBは時刻IDで衝突せず履歴経由参照のみのため入替不要。api_keyとu§*束は端末共通。R586バックアップに束ごと含まれ端末間移行も可 / R596-R598 (v6.0→v6.1): ①R596 録音の共有 — 履歴の各録音に「共有」ボタン。Web Share API(canShare files)対応ならOS共有シート(LINE/メール等)へ、非対応(PC等)やジェスチャ失効時はファイル保存にフォールバック。AbortError(シートを閉じただけ)は無音。toggleAudioのprevious/nextElementSibling依存を壊さぬよう audio→聴く→共有 の兄弟順を維持し聴くボタンをcalc(100%-86px)に縮小 ②R597 名称変更: 休憩タイマー→クールタイマー(ホームのサブリンク/画面ヘッダー) ③R598 水彩のあそび — body::before(z-index:-1,blur26px)で四隅に空色/藤/青磁/桜貝の淡いウォッシュ、pointerdownでインクがポワンと広がる演出(.ink-drop: multiply+blur10px, 1.15s bloom, 同時6滴上限, doneフラグで二重減算防止, reduced-motion/forced-colorsで消灯)。装飾のみpointer-events:none・カード/文字色不変=コントラスト影響なし / R594/R595 (v5.9→v6.0): ①R594 休憩タイマー刷新 — プリセットを2/3/4/5分に変更(旧1/3/5/10分)＋自由入力追加(1〜180分の整数, number入力+開始ボタン, Enter対応, 不正値はtoastで明示し黙って丸めない) ②R595 統計バーのラベルを英字マイクロタイポへ(今日/今月/累計/連続→TODAY/MONTH/TOTAL/STREAK, 9px/.22em広トラッキング, sr-onlyの日本語で読み上げ意味維持) ③R593追従: manifest descriptionの「即興Q&A」→「Q&A」 / R592 (v5.8→v5.9): 全ボタンの立体化 — 即興Q&A/黒ボタン(.main-btn-qa/.btn-black)は天面ハイライト＋黒い底エッジ4px＋浮遊影で物理キー風、押下でtranslateY(3px)沈下(基底opacity:.75を打消し)。白カード型(.main-btn-ft/.btn-gray/.ft-cell/.sub-link/.goal-btn)は白の天面ハイライト＋薄い底エッジ＋層化影で隆起、押下でtranslateY(2px)。マウス環境のみホバーで浮上(R575の.main-btn:hover/.ft-cell:hoverを後段上書き)。色/コントラストは不変・影とtransformのみ、prefers-reduced-motionでtransform無効化。R588ブロック直後に後段カスケード追加 / R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
+      <p class="set-note">SEIKA ロープレツール v8.53<br>170問（S〜D級）・録音はブラウザに保存されます</p><!-- R690 (v8.52→v8.53): 連想の題数を自由に — プリセット3/5/10/20/30＋自由入力(1〜100題, #as-total-custom, asTotalOk/asSetTotal/asTotalCustom)。時間(R686)と同じ挙動: プリセット一致でチップ点灯、チップで自由欄クリア、as_totalに保存しプリセット外は自由欄に復元、不正値は開始時toastで停止。書く欄はrows10→8(「次へ」が1px折り返し下に出ていた)。 / R687 (v8.51→v8.52): 連想のお題を1108本追加（単語 Lv1+280=460 / Lv2+278=430、短文+330=350、長文+220=232、合計1472）。Lv1に仕事道具/体・健康/趣味・娯楽/自然、Lv2にお金/人事/法律・制度のジャンルを新設。既存・ファイル間の重複と、文字種(引用符等)・長さ(短文8〜26字/長文45〜95字・句点2〜3)の不適合を除外してマージ。 / R689 (v8.50→v8.51): 連想に「問いの型（11型）」モード。設定「書き方」=問いの型で書く(既定)/自由に連想＋11の型の一覧(details表)。各行を疑問語で1型に分類(asQType: Why→How long→How many→How much→Whom→Who→When→Where→Which→How→What の順)、書く欄の下で使った型を点灯(#as-types)、個数表示に「型 n/11」。フィードバック(asTypeFeedback)=型の数/偏り/型に当てはまらない行/次に使う型3つ(お題入りの例, asQExample)。まとめ=型の平均種数とよく抜ける型(asTypeLine)、平均4種未満なら改善点を型の幅に(asTypeFocus)。声入力は問いの型モードでは「、」で切らない。1行40字まで。相手役の質問欄の薄い案内文も撤去し、選んだ問いをそのまま入れる。 / R688 (v8.49→v8.50): 連想の書く欄を大きく(後段の.inp{font-size}に負けないよう#s-as-playで詳細度を上げる。文字20px/高さ42vh、PCは21px/46vh、10行)＋欄内の薄い案内文(プレースホルダ)を撤去(文字/声とも)。お題エリアの上下余白を34→24vhに詰めて一画面に収める。 / R686 (v8.48→v8.49): 連想の時間を自由に — プリセットに5/10/15秒を追加(5/10/15/20/30/45/60)＋自由入力欄(3〜300秒の整数, #as-sec-custom)。自由入力がプリセットと一致すればそのチップを点灯、チップを押すと自由欄はクリア。as_secに保存しプリセット外は次回自由欄に復元。開始時に自由欄が不正値ならtoastで止める(黙って丸めない)。asSecOk/asSetSec/asSecCustom。 / R685 (v8.47→v8.48): 声モードの遅延呼び出し(最初のお題2.5秒/聞き取り開始)を「同じセッション・同じお題・まだそのフェーズ中」の時だけ実行するよう修正(書き終えてフィードバック画面に移った後にマイクが立ち上がり、採点済みの回に言葉が追加され続けていた件も)(放棄した声セッションの遅延asNewTopicが次のセッションを乗っ取り、書いた連想が消えお題とタイマーが入れ替わっていた)。開始時に本番画面を入力状態へリセット(声モードで最初のお題まで前回のフィードバック/古いお題が見えていた)。連想をさらにシンプルに（真ん中にお題→その下に書く欄 or 声の聞き取り）。本番画面: 「連想を出す（…）」見出しを撤去、連想だけの時は相手役ラベルも非表示、マイクボタンは声モードの時だけ表示(文字モードは書く欄と個数だけ)、ボタンは「次へ」。設定: 説明を1行に、相手役は一番下へ移し「相手役（任意）」既定=なし(as_persona2で既定なしから開始)。 / R684 (v8.46→v8.47): 連想の単語お題を大幅増量（49→332語。Lv1具体=180語: 物/場所/地名(静岡・浜松ほか)/季節/食べ物/乗り物/IT・家電/人、Lv2抽象=152語: 数字/ビジネス/経営/社会/感情/抽象語）。ジャンル細分化で連続同ジャンル回避が効く。重複ゼロをパッチ時に検査。 / R683 (v8.45→v8.46): 連想画面をシンプルに（ユーザー要望: 「お題：○○」等の前置き不要、お題を画面中央に、その下にテキストを出して書いていく）。.as-stageでお題を中央に大きく表示(前置きなし、短文/長文は「」のみ)、タイマーは小さく下に。フェーズAは1行入力＋チップ列を廃止し<textarea id=as-ta>に1行1連想で書く方式(asTaSync: 行→連想、重複/空行除外、初動は最初の非空行時刻)。個数表示#as-count。声入力はテキスト欄へ1行追加。 / R682 (v8.44→v8.45): 相手役「なし（連想だけ）」を追加 — パッと出た単語への反射を鍛える。印付け/質問変換/相手の反応を飛ばし、量(個数)・初動(最初の1個までの秒数 cur.first)・ペース(10秒あたり個数)を断定表示(asFinishSolo)。まとめは平均個数/最多最少/平均初動/到達Lv/改善点(asFinishSessionSolo, assoc_histにsolo:true)。 / R681 (v8.43→v8.44): 連想の設定に「お題の形」= 混ぜる／単語だけ／短文だけ／長文だけ を追加(as_form記憶, AS.form, asPickFormで固定は早期return)。 / R680 (v8.42→v8.43): 連想のお題を「単語／短文／長文」の3形に拡張（ユーザー要望: 長文だったり短文だったり一単語だったり）。AS_WORDS(Lv1具体/Lv2抽象)・AS_SHORT(相手の一言20)・AS_LONG(相手の話2〜3文×12)。asPickFormがレベル別の重み(Lv1 6:3:1→Lv4 1:3:6)で形を選び、直前と同じ形は出さない(AS.lastForm)。表示=単語「お題：」大／短文「相手の一言：」／長文「相手の話：」小さめ(.as-topic.long)。声モードは長文9秒・短文4秒待ってから聞き取り開始。 / R679 (v8.41→v8.42): 連想トレーニング（話題の引き出し強化）モードを追加【AIなし】。ホーム3つ目のボタン→s-as-setup(相手役4種/ランダム・題数3/5/10・文字/声)→s-as-play(お題→連想30秒[文字Enter/音声認識で「、」区切り]→相手側に印10秒→1つ選び質問に変換20秒→相手役のルール反応(good/mid/poor×4人格, Lv4は薄い)→断定フィードバック(量/選択/変換/代案、閉じた質問はルール判定＋言い換え))→s-as-result(平均連想数/自分本位回数/閉じた質問/到達Lv/改善点)。レベルは直近3題平均で1→2(≥5)→3(≥7)→4(≥8)、Lv3+はお題が相手の一言。お題はジャンル連続回避＋重複なし。assoc_hist(アカウント別,100件)保存＋完走でsavePractice()。声モードはspeakQで読み上げ＋専用SpeechRecognition(asRecog)。nav()離脱でasStop()。 / R678 (v8.40→v8.41): 厳格デバッグ10視点(PC/Edge環境＋R672〜R677相互作用)。確定2件修正: ①ログ画面を離れても再生中の録音が鳴り続ける(ゴースト再生)。R674の録音前suspendで一旦無音になり、次の再生でctxがresumeすると古い音が突然鳴り出す事故にも発展→nav()でs-history以外へ遷移時に#s-history内のaudioを全pause。②成功後も設定の#mic-diagに古い失敗診断が残る→getMic成功時にng表示を非表示。パス: Edgeのニューラル音声(Nanami Online Natural)優先/webm;opus対応/SpeechRecognition有/スライダーのキーボード入力(inputイベント)/Edg UA判定＋PC案内/録音前suspend→タップ内primeでresume/finalizeOnHideはマイク解放のみで再生ctx非干渉/micTestは連打不可(disabled)/track labelはtextContentでXSS安全。 / R677 (v8.39→v8.40): PC(Windows)の実例で確定した案内修正 — ユーザーPCのレジストリ実測でHKLM ConsentStoremicrophone=Deny(Windows本体の一番上「マイクへのアクセス」がオフ)。この状態ではサイト許可に関係なく全アプリでマイク不可。PC向け案内(granted分岐＋汎用分岐)で最初に「マイクへのアクセス」スイッチを示し「デスクトップ アプリ…」も併記、ブラウザ再起動を追記。 / R676 (v8.38→v8.39): 「許可したのに未許可扱い」が続く2原因を診断に追加。①サイト権限がgranted(許可)なのにNotAllowedError ＝ ブラウザアプリ自体のOS権限(Android: 設定→アプリ→Chrome→権限→マイク / iOS: 設定→Chrome/Safari→マイク / Win/Mac: プライバシー→マイク)が拒否 → ブラウザ名(Chrome/Safari/Samsung Internet/Edge/Firefox)を検出して具体案内。②アプリ内ブラウザ(LINE/Instagram/Facebook/X/Android WebView)はマイク非対応or自動拒否 → UA検出して「ブラウザで開く」を案内。状態行にブラウザ名/アプリ内を併記。Android通常ブラウザ案内にも②としてOS権限の手順を追加。 / R675 (v8.37→v8.38): 厳格デバッグ10件（マイク／録音経路中心）。確定修正5件: ①「許可したのに未許可扱い」対策=マイク診断(micEnv/micPerm/micGuide/showMicHelp/micTest)。ホーム画面アプリ(standalone)はブラウザと権限が別管理(Android=OSのアプリ権限, iOS=設定のアプリ項目)なのに案内が無かった→端末(Android/iOS/PC)×表示モード(アプリ/ブラウザ)×Permissions API状態(granted/denied/prompt/unknown)から「どこを直すか」を具体表示。②トースト3.2秒では手順を読めない→録音失敗時は設定画面の#mic-diagに固定表示しスクロール。③設定に「マイクをテスト」ボタン=タップ起点getUserMediaで即診断(成功時はトラック停止、持続マイクは不変)。④ftStartSessionの打ちかけ救済が上限8のまま(R668で20)→20に。⑤iOS: AudioContextは通話/背面化後に'interrupted'になり'suspended'判定では復帰しない→ampAudioはrunning以外を全てresume(+reject握り)。⑥iOS: 増幅接続がIDB読込後のoncanplay(非ジェスチャー)で走りctxがsuspendedのまま無音→toggleAudioのタップ内でplayCtx()生成/resume。検証済み=タップ→ftStartSession→startFT→beginRec→getUserMediaは全同期(ジェスチャー保持)/レビュー離脱(save/discard/back)はrv-audioをpause済(R473)/goHomeでreleaseStream。 / R674 (v8.36→v8.37): マイクが繋がらない不具合の診断＋対策。①失敗トーストに実エラー名を併記［NotAllowedError/NotReadableError/NotFoundError/SecurityError/OverconstrainedError］し原因を即特定できるように＋各文言を具体的な対処に改善(許可の変え方/他アプリ使用中/HTTPS)。②R672の再生用AudioContextがスピーカーを掴んだままだと一部Androidで次の録音のgetUserMediaがNotReadableError等で失敗しうるため、beginRecの録音開始前に_playCtxをsuspend()して音声デバイスを解放(次の再生でampAudioがresume)。 / R673 (v8.35→v8.36): 厳格デバッグ10視点（ブラウザ実負荷・例外ゼロ・退行なし）の確定1件を修正 — ampAudioの無音固定トラップ: createMediaElementSource成功後にゲイン/コンプ接続が万一失敗すると要素が「グラフ接続済みだが出力先なし＝無音」かつ_ampedがfalseのまま→次回createMediaElementSourceが例外で永久無音になり得た。生成成功で即_amped=true(二度と生成しない)＋増幅チェーン失敗時はsrc→destination素通し接続で必ず音を出すよう是正。検証=clamp境界/ampのidempotency・単一AudioContext(増殖なし)・フォールバック/スライダー100連打3ms/両スライダー・ラベル同期/nav100往復でactive画面常に1/履歴200件描画/実WAV再生でplaybackRate+増幅+実発音+コンソールエラー0/play_rate束隔離/意識ポイント振り返り＋スライダー共存=全パス。 / R672 (v8.34→v8.35): 録音の再生音量を底上げ。再生する<audio>だけをWeb Audioのゲイン増幅(PLAY_GAIN=2.4)＋DynamicsCompressor(クリップ防止)経由に(ampAudio)。録音経路(MediaRecorder)は不変。AudioContext不可環境は素の再生にフォールバック。createMediaElementSourceは要素毎1回のみ→el._ampedでキャッシュ、再生はタップ起点なのでresume()可。openReviewのrvAudio.onplay＋toggleAudioの両play経路で適用。 / R671 (v8.34→v8.35): 再生速度を3段階チップ→スライダー化(0.5〜3.0倍・0.1刻み)で細かく調整可能に。振り返り/ログのprate-rowを<input type=range class=prate-range>＋現在値ラベル(.prate-val, タップで等倍リセット)へ。clampRate/fmtRate、reflectPlayRateはスライダーvalueとラベルを更新、setPlayRateはoninputで即反映(トーストはドラッグ連発回避のため撤去)。play_rate(アカウント別)は従来どおり全audioに適用。 / R670 (v8.33→v8.34): 録音の再生速度(倍速)追加。振り返り画面とログに「等倍/1.5倍/2倍」チップ(.prate-btn, setPlayRate/playRate/reflectPlayRate/applyPlayRate)。play_rate(アカウント別)を全audioに適用=openReviewのrv-audio.onplay＋toggleAudioのoncanplay/elseでplaybackRate設定、速度変更は再生中にも即反映。 / R669 (v8.32→v8.33): 画面切替/タブ破棄/PWA再読込/アプリ切替で毎回ホーム(最初の選択画面)に戻る不満を解消。nav()で直前の"閲覧系"画面(s-home/s-goal/s-history/s-calendar/s-settings)をsessionStorage.last_screenに保存(s-historyはlast_histtabも)、起動時ログイン済み/スキップなら直前画面へ復帰(s-goal/s-settings=nav, s-calendar=openCal, s-history=showHistory)。録音/振り返り/設定選択など一時状態画面は保存せずホーム。 / R668 (v8.31→v8.32): 意識ポイントの追加上限を8→20に引き上げ(parseFocus/getFtFocusStoredのslice(0,20)、addFtFocusの上限チェック)。 / R667 (v8.30→v8.31): PC向けに全体拡大＋成長グラフ刷新。①デスクトップ(≥840px)を広く(body 900→1160)＋右パネル大きく(home-side 340→460, gap48)＋パネル内要素をPCで拡大(hg-big 48px/hk-title 16px/meter太く/main-btn大きく)。②グラフ刷新(renderGrowthChart)=大きく(viewBox360x192, height:auto+preserveAspectRatioでアスペクト保持し伸び防止)＋薄いグリッド3本＋週ごとの点＋到達点を白リング大ドット＋累計値ラベル(N本)。スクショで反復確認。 / R666 (v8.29→v8.30): ホーム右パネル(目標＋グラフ)の見た目調整。①各見出しの「→」矢印が点のように浮いて雑然→非表示(.hg-arrow display:none)。②進捗バーの青/紺/灰混在をやめ墨一色に統一(.home-side .meter>span)。③KGI達成率を大きな数字で主役に(.hg-figure/.hg-big 32px＋現在→目標のhg-goalnote)。スクショで確認しながら調整。 / R665 (v8.28→v8.29): 厳格デバッグ5視点(意識ポイント/目標/秒数本数/共有/ログ)。広域ストレス全パス・例外ゼロ。確定修正=①録音画面の制限時間(r-timer-lbl)がcurLimit>=60で全部「60秒」表示→3分(180)が「60秒」と誤表示していたバグ(R658のfmtDur統一の漏れ)→fmtDur化。②Claude評価プロンプトの制限時間/種類もfmtDur化(180秒→3分, 一貫性)。beginRecはnav(s-record)→getMic順でpre-start中s-record active=R663ガード正しい。XSS(KGI/KFS)・アカウント隔離(kgi/kfs/qa_voice/qa_rate/ft_focus)・fmtDur・共有・ログ3件は健全。 / R664 (v8.27→v8.28): 振り返り画面に「この録音を共有」ボタン追加(rv-share-btn/shareCurrentRec)。保存前のメモリ上audioBlobをtoShareableBlobでWAV化しnavigator.share(files)、非対応はDLフォールバック。ログのshareAudioと同挙動だが録音直後に即共有できる。 / R663 (v8.26→v8.27): 画面切替(背面化)で振り返りのチェック中の内容が消えるバグ修正。finalizeOnHideのelse if(micAlive())が画面に関係なく発火し、振り返り画面(s-review)を背面化した際も設定画面へ強制遷移＝意識ポイントのチェック等を破棄していた→「s-record が active の時だけ」中断＆遷移するようガード。他画面ではマイク解放のみで振り返りのDOM/状態は残す。 / R662 (v8.25→v8.26): 意識ポイントのマークを記号(✓/×)→文字ラベル「できた/できなかった」に変更。✓/×は端末フォントで表示されないことがあり「マークがない」と見える問題を解消。レビューは各ポイントの下にフル幅の「できた」(緑)/「できなかった」(朱)ボタン(.focus-row2縦積み/.fbtn flex)、ログも「できた/できなかった/未」の文字表示に。 / R661 (v8.24→v8.25): 意識ポイントの最終集計。目標画面に「意識ポイントの実績」セクション追加(computeFocusStats/renderFocusStats)=FT履歴のit.focusをポイント別に できた/できなかった で集計、通算のできた/できなかった数＋ポイント毎の達成率バー(.fs-row)。 / R660 (v8.23→v8.24): 意識ポイントのチェックリストに×ボタン追加 — ✓できた/×できなかった/未の3状態(setFocus, .focus-row2/.fbtn, 同ボタン再押下で未に戻る)。it.focus.ok=true/false/null、ログは✓緑/×朱/－灰、達成数はok===trueのみ。 / R659 (v8.22→v8.23): Q&A質問をBtoB営業の実戦質問に全面刷新（旧400問はテレアポ/アポ代行前提の文脈ゼロな一言ブラシオフの羅列で「現実と乖離」→撤去）。170問(S26/A40/B40/C35/D29)。品質基準=①文脈がある(予算/稟議/競合/過去の経緯)②一言で返せない(結論→根拠→次アクションを迫る)③相手の生の声(本音/迷い/駆け引き)。難度=S:失注寸前/決裁者/値下げ・競合で追い込まれる巻き返し, A:手強い定番反論(価格/競合/タイミング/稟議/現状維持), B:中立的な懸念・確認(効果裏付け/事例/導入負荷/サポート), C:ヒアリング・関係構築(課題曖昧/警戒/ニーズ喚起), D:基礎動作(初回接触/要件整理/次アクション)。ホームCTA/フッターの「400問」→「170問」。 / R658 (v8.21→v8.22): 秒数・本数の選択肢を拡張＋FTランダムを真の乱数に。秒数=3秒/1分/3分を追加(QA_SECS=[3,10,15,30,60,180]/FT_SECS=[3,5,10,15,30,60,180]、Q&A設定チップqsec-*も追加、qaSec/setQaSec検証拡張)。本数=20/30/100本を追加(REPS_OPTS=[1,3,5,10,20,30,100]、startQA/ftSetupOpenの検証)。FTランダムは固定候補[5,10,15,30]→5〜60秒の真の整数乱数(12/13/47秒などバラつく)。表示はfmtDur(60→1分/180→3分)に統一(q-tbadge/rv-tbadge/rv-ft-dur※60以上を全部「60秒」と誤表示していたバグ修正/ログlim/updateGoLabels/setQaSecトースト)。 / R657 (v8.20→v8.21): 意識ポイントを「1つずつ追加」方式に変更（旧: 改行テキストのまとまり）。FT設定に入力＋「追加」ボタン(#ft-focus-input/addFtFocus)＋追加済みリスト(#ft-focus-list, .ffx-item, ×で削除removeFtFocus)。ft_focusはJSON配列で保存(getFtFocusStoredが旧改行テキストも移行)。ftFocusList→ftStartSessionでftFocusPointsへ、打ちかけ1件は救済取り込み。録音後のチェックは従来どおり1個ずつ。 / R656 (v8.19→v8.20): ホーム右パネル(目標＋成長グラフ)のバランス改善 — 白カード2枚がバラバラに浮いて「ダサい/微妙」だったため、.home-sideを1枚の統一パネル(border/shadow/radius18/overflow:hidden)にし、内部の目標(.home-goal)と成長(.home-graph)は区切り線(border-top)で分割。各区画は個別カード装飾を撤去しpaddingのみ、押下は淡い背景で表現。 / R655 (v8.18→v8.19): フリートークに「意識ポイントモード」追加。FT設定に意識ポイント欄(#ft-focus,1行1つ・最大8・ft_focusに保存)。書くと録音のたびに振り返り画面にチェックリスト(#rv-focus, .focus-row/.focus-box, toggleFocus)が出て「できたか」を自分でチェック。意識ポイント時は一括保存でも必ず振り返りを表示(openReviewのbatch bypassにftFocusActive除外)＋自動進行しない(reviewAutoStart早期return)。結果はit.focus=[{p,ok}]で履歴保存、ログにFTの達成状況(◯/×)表示(.hist-focus)。ftFocusPoints/ftFocusChecks・parseFocus・ftFocusActive、goHomeで解除。 / R654 (v8.17→v8.18): ホームを2カラム化。目標を上の縦積みから横パネルへ移動 — 左=操作(Q&A/FT/ログ等)、右=目標パネル(#home-side: 目標カード#home-goal＋成長グラフ#home-graph)。PC(≥840px)はbody幅900で横並び(home-side sticky 340px)、他画面は560px中央カラムに固定(伸びすぎ防止)。スマホは操作→目標の縦積み。renderGrowthChart(targetId)化しホームは'home-graph-inner'に描画、データ無しはグラフカード非表示。 / R653 (v8.16→v8.17): ログは量が増えると全部見るのが面倒 → 既定でランダム3件だけ表示。「別の3件」で引き直し、「すべて表示」で全件、「ランダム3件に戻す」。renderHistBody(tab,isFT)がsampleHist(3件・新しい順維持)＋操作バー(.hist-ctl)を描画。histSample/histAllで状態管理、nav('s-history')でリセット(開くたび新3件)。histReshuffle/histSetAll。選択削除は表示中の件に作用。 / R652 (v8.15→v8.16): ホームの目標カードに進行中の課題(KFS)も直接表示。クリックせず中身が見えるよう、上位3件を課題名＋進捗メーター(m-lo/m-ac/m-ok)付きで表示、超過は「ほかN件」。renderHomeGoalを目標＋課題の両方描画に拡張(.hk-head/.hk-item/.hk-title/.hk-pct)。 / R651 (v8.14→v8.15): 目標を初期画面(ホーム)に常時表示。統計バー撤去で空いた上部にタップ可能な目標カード(#home-goal, .home-goal)を追加、KGIタイトル＋達成%メーター＋克服/課題数を表示、タップで目標画面へ。renderHomeGoal()をrefreshHomeから呼ぶ。KGI未設定時は「目標を決めて、成長を見える化しよう」。 / R650 (v8.13→v8.14): 目標画面に成長グラフ追加＋デザイン洗練(水墨トーン)。①成長グラフ: 直近10週の累積トレーニングを面グラフ(水墨の山のように積み上がる)でrenderGrowthChart()が描画(day_集計・依存ゼロSVG・墨グラデ塗り)。②デザイン: KGI見出しを墨グラデbackground-clip:text、メーターを淡墨→藍墨→朱の階調(m-lo/m-ac/m-ok)、KPI/KFSを浮遊白カード(--shadow-card)＋tnum数字、克服ボタン/殿堂を朱印トーン(緑→朱)に統一。 / R649 (v8.12→v8.13): ホーム上部の統計バー(TODAY/MONTH/TOTAL/STREAKの英字＋回数)を撤去 — 数字＋英語で頭に残らず動機づけにならない虚栄メトリクス。回数データ自体は保持(カレンダー朱印/目標KPIで意味のある形でのみ表示)。refreshHomeのh-today/h-month/h-total/h-streak代入を削除(要素不在)、reconcileStreak/緑チップ(R642)/acctRefreshは維持。.stat-*CSSは無害なため残置。 / R648 (v8.11→v8.12): 目標管理画面(KGI/KPI/KFS・課題表)を追加【フェーズ1・既存の保存フローには非干渉の追加画面】。ホーム→「目標」。KGI=最終目標(タイトル＋現在→目標＋単位, 達成%バー, localStorage.kgi)。KPI=記録から自動計算(克服課題数/取り組み中/S級クリア率/記録数, computeKPI)。KFS=課題表(localStorage.kfs配列, 追加/◎前進(prog+20)/克服(満タンで)/削除, 進捗メーター＋状態＋出所バッジ)。克服した課題は「克服の殿堂」に朱印表示。kgi/kfsはacctDataKeysに含まれアカウント別。renderGoalはnav('s-goal')で描画。escHtml/onclick id sanitizeでXSS/注入防止。次フェーズ: 練習/記録の分離＋手応え評価(信憑性)→旧回数バー格下げ＋手応え成長ライン配線。 / R647 (v8.10→v8.11): 厳格デバッグ10視点（あらゆる視点・本体実行）— 広域ストレス(画面遷移120/セッション状態機械/履歴210件描画/音声速度20連打/共有変換12連続/アカウント切替20往復/カレンダー24ヶ月/クールタイマー)は全パス・例外ゼロ・不変条件維持(active画面常に1つ・セッション0リセット・アカウントデータ無傷)。確定1件を修正: 発話の世代競合 — speechSynthesis.cancel()で止めた旧発話のonendが新発話の最中に発火しqSpeakingを誤って解除し、連続自動録音の待機(R644)が読み上げ中に早期にカウント開始しうる（「もう一度聞く」連打時）。_speakGen世代トークンで最新発話のonend/onerrorだけがqSpeakingを下ろすようにし、stopSpeakはgenを進めて保留中のonendを無効化。 / R646 (v8.9→v8.10): 相手に送った録音が聞こえないバグを修正 — toShareableBlobがiOS等のMediaRecorder出力mp4を「どこでも再生可」と誤ってパススルーしていたが、これはfragmented mp4(fMP4)で共有先(LINE/メール/他プレイヤー)ではmoov断片化のため再生不可・無音になることが多い。修正: 共有はWAVのみパススルー、mp4/webm/oggはすべてWAV(PCM)へ変換(decodeAudioDataはiOSのAAC/mp4も復号可)。WAVエンコーダ自体はラウンドトリップ実測で出力RMS>0(非無音)・ヘッダ完全を確認済み=真因はmp4パススルー。変換失敗フォールバックも元形式を正しいext/type(mp4→m4a)で返すよう是正(誤ラベル防止)。 / R645 (v8.8→v8.9): 出題音声を自然な声に＋速度可変 — ①声: 端末内蔵の日本語音声からGoogle/Online(Natural)/Enhanced/Premium等の高品質音声を優先選択(pickJaVoice, espeak系のロボット声を減点)、voiceschangedで非同期ロード対応(_jaVoiceキャッシュ)。②速度: 設定に「読み上げ速度」4段(ゆっくり0.9/標準1.1/速い1.35/最速1.6, qa_rate, アカウント別)、変更時にその場で試し読み。speakQのrateをqaRate()に、pitch1.02。※Web Speechは端末内蔵音声しか使えず、真に自然な声は端末の音声品質に依存(iOSは設定→アクセシビリティ→読み上げcoコンテンツで拡張音声DL推奨、Androidは Google TTS)。 / R644 (v8.7→v8.8): 厳格デバッグ10視点の確定2件を修正（R643音声の実効性向上）— ①F2(中): 連続セッションの自動録音は固定5秒開始のため長い質問だと読み上げが途中で切れていた→音声モード中はqaAutoArmが「読み上げ終了(qSpeaking=false)」を待ってから5秒カウント開始（onstart/onend/onerrorでqSpeaking管理、onend非対応環境向けに約15秒で安全打ち切り、待機中は「読み上げ中…」表示）。②F1(低): 背面化/画面ロック(finalizeOnHide)でTTSが残る経路→stopSpeak()追加。他8視点(録音ライフサイクル/音声認識/アカウント隔離/IDB削除/スクロールR641/状態遷移/localStorage堅牢性/XSS・a11y)はブラウザ実測で例外ゼロ・退行なしを確認。 / R643 (v8.6→v8.7): 出題の音声化 — 設定「Q&A 出題の音声」で オフ/読み上げ/音声のみ を選択(qa_voice, アカウント別)。依存ゼロのWeb Speech(speechSynthesis, ja-JP)でpickQ時に質問を発声(applyQVoice)。読み上げ=文字+声、音声のみ=q-textをblur(.q-veiled、DOMは残しSR可、タップ/「文字を見る」で表示qaReveal)＋録音画面のr-q-miniも空に=耳だけで答える実践。問題画面に「もう一度聞く」(q-replay, speakQ)追加。TTSは録音開始(beginRec)・戻る(qaBack)・ホーム(goHome)でstopSpeak()=マイク/音声認識への混入防止。既定オフで後方互換。iOSは開始タップ起点でTTS解錠、マナーモードでは鳴らない旨は設定に注記。 / R642 (v8.5→v8.6): 今日やったら右上を緑に — ホーム右上のアカウントチップ(acct-chip)を、今日1回以上トレーニングしたら緑(#166534, 白文字6.9:1 AA)に。refreshHomeで今日カウント(dayKey)>0なら.done-todayを付与、翌日はカウント0で自動的に通常表示へ。未ログインでもやった日は緑の「✓ 今日」チップを表示(acctRefreshのelse分岐)＝ログイン有無に関わらず右上が緑に。nav('s-home')経路はrefreshHomeのみ呼ぶためrefreshHome末尾でacctRefreshも呼び未ログインチップ表示を更新。切替は.3sトランジション。 / R641 (v8.4→v8.5): スクロール不能バグ修正(主にAndroid) — .body{overflow-y:auto→visible}。本アプリは.screen{min-height:100vh}で内容に応じ伸び、スクロールはドキュメント(html)側で発生(.bodyはscrollH==clientHで内部スクロールしていないと実測)。autoのままだとAndroid Chromeで「実際にはスクロールできないoverflow:auto要素」がタッチのパンを飲み込み、ドキュメントへスクロール伝播せず画面が動かなくなる(iOS/PCはジェスチャが親へバブリングするので無症状＝「主にAndroid」と一致)。visibleでドキュメントスクロールに一本化。stickyヘッダーはドキュメントスクロール基準で従来どおり固定。 / R640 (v8.3→v8.4): 録音の選択削除 — トレーニングログのヘッダー「削除」を「選択」トグルへ変更し、選択モード中は各録音の左にチェックボックス(.hist-cb)＋操作バー(.sel-bar)を表示。バーは「全選択」「選択削除（N件）」「すべて削除」の3つ。選択削除=deleteSelected()がチェックしたidのlocalStorage履歴(qa_hist/ft_hist)とIndexedDB音声(deleteAudio、生のit.id)の両方を削除。すべて削除=従来のclearCurrentHistory()(現タブ全消し)をバーへ移設。buildHistHTMLは中身を.hist-bodyで包みチェックボックスを外側に追加=audio→聴く→共有の兄弟連鎖(toggleAudio/shareAudioのprev/nextElementSibling依存)は不変。selMode/applySelMode/toggleSelMode/selectAllHist/updateSelCount/curHistBody追加。renderHistの先頭でselMode=falseにリセット(タブ切替=switchHistTabはrenderHistを通らないので選択維持、末尾でupdateSelCount)。data-idは聴く/共有/チェックで共通のsid(英数のみ)。チェックボックスはdisplay:none、.sel-modeクラス時のみ表示。 / R639 (v8.2→v8.3): 非公開運用への布石 — ①検索除け: meta robots=noindex,nofollow ＋ referrer=no-referrer ＋ robots.txt(Disallow:/) ＋ _headers(X-Robots-Tag, Cloudflare Pages用)。②移行ポータビリティ確認: github.ioのハードコード無し・start_url/scope/アイコンは全相対・外部URLはClaude APIのみ＝別オリジンへそのまま移設可。本命のアクセス制御はCloudflare Pages＋Cloudflare Access(許可メールのみ)で別途構成。移行時の注意=ストレージはオリジン単位のため新ドメインへは設定の「書き出す/復元」でデータ移行が必要。 / R638 (v8.1→v8.2): フィードバック宛先メールの平文露出を除去 — R637はFB_TO定数とこのコメントに開発者アドレスを平文で置いていた(公開リポジトリ/ソース閲覧/メール収集botから丸見え)。fbTo()でatob(base64)から実行時組み立てに変更し、ソース内の平文アドレスを全廃(このコメントの平文も削除)。※base64は難読化であって完全秘匿ではない(コードを実行/デコードすれば復元可)＝完全に隠すならフォームサービス経由が必要。 / R637 (v8.0→v8.1): ご意見フィードバック — 設定に記入欄＋「メールで送る」。sendFeedback()がmailto(開発者宛・難読化)を組み立てlocation.hrefで開く。空欄はtoastで促す。依存ゼロ・サーバー不要。 / R636 (v7.9→v8.0): 連続/セットの各本のあいだにNEXTゲート — 「毎回保存する」×連続/セット(sessActiveBatch)では、1本終わるごとに自動で次へ飛ばず s-interval 画面(「n/N 完了」or「n本完了」＋大きなNEXTボタン)を表示し、NEXTを押すまで次に進まない＝ペースを自分で決められる。sessionAfterRepでbatchならshowInterval()→NEXT(sessionNext)でdoNextRep()。通算本数sessReps追加(Infinity表示用,各出口でリセット)。intervalの戻る←はendBatchToReview(停止→保存あればログ)。最終本完了は従来どおりendSession→ログ(NEXTは挟まない)。保存しない/手動は振り返り画面が間のゲートを兼ねるため変更なし。 / R635 (v7.8→v7.9): 高負荷デバッグ10視点(本体実行)で確定した2件を修正 — ①マイク解放漏れ: endSession/endBatchToReview(保存あり分岐)がreleaseStream()せずログ/ホーム画面でもOSのマイク表示が点灯し続けた(R585の解放はgoHome/page-hideのみでR627/R633の新出口が漏れ)→両関数で解放(許可は残るので次回は無音再取得) ②一括保存の文字起こし尻切れ: batchSaveAdvanceは停止直後のtranscriptを即保存するが認識最終結果は〜1.2s遅延(通常経路の1200ms待ち相当が無い、特にFTは次startRecogが即リセット)→trPatch機構: 保存直後に予約し、次のstartRecogのリセット直前 or 1.3s後の早い方で、transcriptが伸びていれば保存済みアイテムのtrを差し替え。ブラウザ実負荷テスト(開始10連打/戻る5連打/nav200往復1.26s/チップ100連打40ms/休憩タイマー30回転/qaAuto 50回転リーク0/インク300イベント6ms/一括20本22ms/履歴200件上限確認)は全パス。サブエージェント版はプラン上限(23時JSTリセット)で実行不可だったため本体で10視点を実施。 / R634 (v7.7→v7.8): クールタイマー終了音 — 依存ゼロのWeb Audio(playChime)で柔らかいベル風チャイム(E5/A5/C#6上行アルペジオ×2、サイン+倍音、ふわっと減衰)を終了時に再生。モバイル自動再生制限対策として開始タップ(startBreak/startBreakCustom経由)でchimeUnlock()によりAudioContextを解錠。既存のvibrate/トーストは維持。 / R633 (v7.6→v7.7): 一括保存セットは振り返りスキップ→終了/停止時にまとめて振り返り — 「毎回保存する」×連続/セット(sessActiveBatch)では各本の振り返り画面を一切出さず、openReviewからbatchSaveAdvance()でストレージへ即保存しsessionAfterRepで次へ(QA=次問題＋5s自動録音/FT=即次録音)。0.9秒の一拍すら無し。セット完走(endSession)または途中停止(cancelRec/qaBack=新規)時に、保存があればトレーニングログ(s-history)を開いてまとめて振り返り。sessSavedAnyで保存有無を追跡、goHome/開始でリセット。保存しない連続は従来どおりR632の即時自動破棄レビュー。Claude評価は一括時はスキップ(API節約)。 / R632 (v7.5→v7.6): 自動進行の待ち時間短縮 — R630の3秒カウントダウンが「だるい」ため、setInterval(3×1000)を撤廃しsetTimeout(900ms)の一拍に。バナーはカウント数字なしで「自動で保存して次へ/記録せず次へ」表示。clearIntervalもclearTimeoutへ。一拍残す理由は「止めて確認」の最小猶予と画面瞬間遷移の違和感回避。単発1本は従来どおり手動。 / R631 (v7.4→v7.5): 一括保存方針をカウント開始前に選択 — Q&A/FT設定画面に「記録（このセット全体）: 毎回保存する/保存しない」チップを追加。開始時にsessSaveへ格納し、R630の自動進行が方針どおりに saveAndNext()(保存) or discardAndNext()(非保存) を自動実行。バナー文言も「自動で保存して次へ/自動で記録せず次へ」に分岐。qa_save/ft_saveを永続化し次回反映(既定=保存)。開始ボタンには保存しない時のみ「・保存なし」を明示。goHomeでsessSave=trueにリセット。「止めて確認」での手動上書きは従来どおり。 / R630 (v7.3→v7.4): 連続/セット中の自動保存・自動進行 — 1本ごとに保存/保存しないを選ぶ手間を解消。複数本セッション(sessTarget>1 or Infinity)では振り返り画面に入ると3秒カウントダウンで自動 saveAndNext()。「止めて確認」ボタンでいつでも停止し手動操作(保存/保存しない)に戻れる。単発1本では従来どおり手動。reviewAutoStart/Stop、saveAndNext/discardAndNext/reviewBack/goHomeでタイマー確実停止、s-review離脱でも自動停止。最終本はラベル「自動で保存して完了」。rv-autoバナー＋rv-save-box切替。 / R629 (v7.2→v7.3): 画面切替のラグ解消 — 水墨インクが「開始」ボタンや秒数チップ等の操作部タップでも発火し、全画面blur(shadowBlur)のrAF描画ループが画面遷移(録音開始等)と同時に立ち上がってメインスレッド/コンポジタを奪い、切替がカクついていた。pointerdownで e.target.closest('button,input,textarea,select,a,label,[role=button],[onclick]') に当たる場合は start()しないようガード。墨は背景・余白のなぞり描き専用になり、機能ボタンのタップは即応に。なぞり/タップの演出自体は背景上で従来どおり。 / R628 (v7.1→v7.2): 選択〜実行のスムーズ化 — ①前回構成の完全復元: qa_rank/ft_secも保存し、Q&A/FTの設定画面を開くと前回の出題・秒数・回数がそのまま選択済み(=開いて「開始」1タップ) ②開始ボタンに選択内容をライブ表示(updateGoLabels:「ランダム・30秒 × 3本 ─ 開始」) ③チップ選択のポップアニメ(chipPop .18s, reduced-motion対応, void offsetWidthで連打でも再発火) ④連続セッション中のQ&A自動録音: 問題表示から5秒カウントダウン(qa-auto, role=status)→自動beginRec。「録音開始」で即時/「別の問題」で再カウント/画面離脱・goHomeで停止(qaAutoArm/Cancel)。1本のみは従来どおり手動。FTは元々全自動。 / R627 (v7.0→v7.1): まとめ選択＋連続セッション — Q&A/フリートークの選択画面を「秒数×回数（＋Q&Aは出題ランク）」を1画面でチップ選択し1タップ開始する形に刷新。選んだ回数ぶん「録音→振り返り→保存/破棄→次」を休憩なしで自動継続(sessTarget/sessDone、Infinity=続ける)。進捗を問題画面バッジ(qa-set-badge)と録音画面(r-set)に n/N 表示、最終本は保存ボタンを「保存して完了」に切替、完了でホームへ達成トースト。saveAndNext/discardAndNextの末尾分岐をsessionAfterRepに統一、reviewBack(FT)/goHomeでセッション解除。qa_reps/ft_reps/qa_secを保存し次回反映。旧qaGo/qaKey/ftRandom/ftKey撤去。selChip/markGroupでチップ選択UI。 / R615-R624 (v6.8→v7.0): 大型アップデート ①R615 文言整理 — ホームCTAの秒数表記削除(400問・S〜D級/自由なテーマで話す)、「目標は設定から」短縮、空ログメッセージ非表示、ログインNAME/PASSWORD表記、設定の説明文を全面要約 ②R616 ログアウト追加(設定) — 現束保存→acct_currentクリア→reload→ログイン画面 ③R617 Q&A刷新 — 秒数ランダム廃止(qa_sec固定10/15/30, 既定30, 旧rnd_timer廃止)＋出題振り分け画面s-qa-select新設(ランダム=ALL/S/A/B/C/D級→setFilter→pickQ)。設定のレベルフィルターセクションは撤去(出題時選択に一本化、lv_filter機構は維持)。q-tbadgeが15秒を30秒と表示する旧バグも修正 ④R618 FTランダムセル — 5/10/15/30秒から抽選、toastで秒数表示 ⑤R619 背景スマホ修正 — cover→100% auto(縦長画面で富士・波が切れる問題) ⑥R620 共有のWAV変換 — webm/oggをdecodeAudioData→モノラル22.05kHz 16bit PCM WAVへ(60秒≈2.6MB)。iOS/Android/PCどこでも追加アプリなしで即再生。mp4/wavはそのまま、変換失敗時は元形式 ⑦R621 飛沫 — 着筆9-16粒(全方位)/速筆(d>16,50%)1-3粒(前方コーン)/筆離れ(速度>8)4-9粒。生成時に位置/径(0.5+rnd²*2.8)/濃さ確定しストロークと同齢フェード、上限90粒 ⑧R622 カレンダー＋朱印 — 月グリッド(day_YYYY-MM-DD集計)、トレーニング日に朱印スタンプ(回数入り朱円,-8deg)、日タップでひとことメモ(cal_note_*≤60字,束に同梱)、月合計表示。ホームにカレンダー入口 ⑨R623→R625 アイコン刷新(ユーザー画像指定で再変更) — 紙白の角丸に太い墨のS字ブラシストローク(Catmull-Romテーパー)＋かすれ筋(ラン&ギャップ)＋墨だまりスプラッシュ(22塊+12小滴)＋飛沫84粒。icon.svgとPNG(512/192/180)を_gen_icons.mjs(シードRNG・円スタンプラスタ・zlib PNG・依存ゼロ)で同一ジオメトリ生成 ⑩R624 設定画面の圧縮(セクション余白/文字密度) ⑪R626 デバッグキャンペーン(73エージェント・10視点finder→3票adversarial検証、所見21件→確定2件+追加採用3件)の修正 — (a)toShareableBlob: decodeAudioData失敗時にAudioContextがclose漏れ(連続失敗でiOSのコンテキスト上限到達→以後の音声再生不能) → acをtry外に出しfinallyで一括close(close拒否Promiseも握る)、正常経路の旧closeは二重close回避で削除 (b)水墨エンジンのマルチタッチ: pointerId未追跡で2本目の指がcurを上書きし、孤児ストロークがdone=falseのまま永久残留→rAFが60fpsで無限回転＋ジグザグ混線。start/move/endにpointerId追跡を導入、新指のdownで旧筆を確定 (c)move()の360点上限後は飛沫生成も停止(凍結線から離れた粒の浮遊防止) (d)acctLogoutでsessionStorage.login_skipも除去(スキップ歴タブでもログアウト後ちゃんとログイン画面へ) (e)forced-colorsで.cal-dot可視維持。棄却19件は3票反証で偽陽性確認(一部は検証者のセッション上限失敗により少数票判定) / R614 (v6.7→v6.8): リアル水墨ストローク — R611の点描DIV(26px間隔のradialグラデ)を全面刷新し、全画面Canvas(#ink-canvas, multiply, dpr≤2)に筆の連続線を描画。ストローク=点列{x,y,w,j}(jはフレーム間不変の乱数)で、毎フレーム全筆致を年齢αで再描画(rAFは筆致がある間のみ)。リアリティ要素: ①速度→太さ(遅い=MAXW30で墨溜まり/速い=MINW3.5へ細る、lerp0.3で滑らか、4px刻み補間で連続) ②3層描画=にじみ暈し(shadowBlur12+太線α.07)→本体(セグメント毎にlineWidth/α.40-.62のムラ)→穂先かすれ(直交オフセットの毛3本がj+位相で途切れる) ③起筆・タップに墨だまり(不規則楕円7枚重ね) ④描き終え1.4s保持→smoothstepで5.4sかけ紙に還る。同時8筆/360点上限。墨基調+藍朱緑青紫が時折混ざる巡回。reduced-motion/forced-colorsで消灯 / R612/R613 (v6.6→v6.7): ①R612 背景を富嶽三十六景風に — 北斎「神奈川沖浪裏」に倣った藍の大波(爪波2つ＋うねり帯)＋白い波頭しぶき11粒＋雪冠の富士＋朱の日輪をインラインSVG(浮世絵の平塗り・blurなし・低不透明度)で描画(R610の水墨山水を置換)。なぞり水墨(R611)と墨の霞(R604)は維持 ②R613 起動時ログイン画面 — s-login新設(名前+4桁+ログイン+「ログインせずに始める」)。acctLoginの認証/切替コアをacctAuthAndSwitch(id,pin)に抽出し設定画面と共用。起動分岐: acct_currentなし＆sessionStorage.login_skipなしの時だけnav('s-login')、ログイン済みは従来どおりホーム直行。スキップはセッション限り(次回起動時は再表示)。ログイン成功はreload→ログイン済み→ホーム / R610/R611 (v6.5→v6.6): 水彩→水墨へ刷新 ①R610 水墨山水画の背景 — 遠山(blur9/op.11)・中山(blur4.5/.15+.13)・近山(blur2/.19×2)の三層をインラインSVG(data URI・依存ゼロ)で描き、白い霞の帯(blur9)で山裾を抜く古典構図。body::before=cover/bottom固定。body::afterの彩雲は薄墨の霞2＋白靄1に置換(30sドリフト) ②R611 タップ＋なぞりの色墨 — pointerdown=大きめの滲み(64-110px/peak.8)、pointermoveで26px間隔の筆点(22-48px/peak.7)が連なる筆致。和顔料6色(墨/藍/朱/緑青/古代紫/黄土)巡回、芯濃く縁暈ける二層radial、multiply+blur6px、3.2〜6.1秒のsumiBloom(--dur/--peak CSS変数)でゆっくり紙に還る。同時36粒上限・doneフラグ・pointerup/cancelで描画終了。reduced-motion/forced-colors消灯は維持 / R609 (v6.4→v6.5): 録音画面のカウントダウン数字上に出ていた残り時間バー(.prog-wrap/#r-prog)を削除 — 数字のみのミニマル表示へ。setCnt()のバー更新は元から if(p) ガード済みのためJS変更なしで安全、残り時間のスクリーンリーダー通知は #r-cnt(role=timer) の aria-label が引き続き担う。CSS(.prog-wrap/.prog-bar)は他画面流用に備え残置 / R608 (v6.3→v6.4): アカウントを「名前＋4桁パスワード」構成に — 4桁はSHA-256(id:pin:salt)で acct_pins 登録簿(端末共通・束に含めない)へ保存し平文を残さない。登録済みの名前はハッシュ一致時のみ切替（不一致は「パスワードが違います」＋入力クリア）。未登録の名前は初回入力の4桁で作成、既存束あり×未登録(v6.2-6.3からの移行)は初回入力を「設定」として登録。acctLoginはasync化(crypto.subtle.digest)、subtle非対応の稀環境はbtoa難読化フォールバック。ログインの永続保存・切替時の束入替ロジック(R605)・常時IDチップ(R607)は不変。acctDataKeysの除外リストにacct_pinsを追加(束に混入しない) / R606/R607 (v6.2→v6.3): ①R606 白カード型ボタンの立体感増強 — 半透明2px底エッジでは黒CTAに比べ浮きが弱かったため、実体のある底エッジ4px(#d4d7dc)＋深い浮遊影(0 14px 26px .14)＋天面ハイライト強化へ。押下も黒と同じ3px沈下、ホバー浮上時はエッジ6px。色不変=コントラスト影響なし ②R607 アカウントの永続ログイン明確化 — ログインは元々localStorage永続(期限切れ/自動ログアウトなし)だが見えなかったため、(a)ホームヘッダーに常時IDチップ表示(歯車と右側グループ化) (b)設定の状態文に「ログインは保存されています」明記 (c)入力欄プレースホルダに現ID表示。挙動変更なし=切替ロジック不変 / R599-R605 (v6.1→v6.2): ①R599 練習→トレーニング(ログ画面/年間進捗/バックアップ説明/簡易評価アドバイス/評価プロンプト; 評価パーサーはSCORE/GOOD等の英語ラベル依存なので影響なし) ②R600 記録→ログ(Q&Aログ/フリートークログ/トレーニングログ/空メッセージ) ③R601 ヘッダータイトル立体化(墨グラデbackground-clip:text＋上=白光/下=落ち影のdrop-shadowで紙から浮く表現; forced-colorsでCanvasText) ④R602 カウントダウン数字刷新(900極太→200極細112px・tnum維持・色グラデ柔らか化) ⑤R603 選択画面の数字洗練(.ft-cell-n 38px/900→48px/200墨グラデ、単位は.3emトラッキングのマイクロタイポ) ⑥R604 水彩ドリフト(body::afterに彩雲3つ、26sでゆっくり漂う、reduced-motionで静止) ⑦R605 シンプルアカウント — IDだけのログイン。既存コードのキーは不変のまま、切替時に平キー一式⇄u§<id>束を入替。初回ログインは現データをIDが引継ぎ、未ログイン→既存IDは共用データをu§_backup_anonに退避(どちらも消えない)。録音IDBは時刻IDで衝突せず履歴経由参照のみのため入替不要。api_keyとu§*束は端末共通。R586バックアップに束ごと含まれ端末間移行も可 / R596-R598 (v6.0→v6.1): ①R596 録音の共有 — 履歴の各録音に「共有」ボタン。Web Share API(canShare files)対応ならOS共有シート(LINE/メール等)へ、非対応(PC等)やジェスチャ失効時はファイル保存にフォールバック。AbortError(シートを閉じただけ)は無音。toggleAudioのprevious/nextElementSibling依存を壊さぬよう audio→聴く→共有 の兄弟順を維持し聴くボタンをcalc(100%-86px)に縮小 ②R597 名称変更: 休憩タイマー→クールタイマー(ホームのサブリンク/画面ヘッダー) ③R598 水彩のあそび — body::before(z-index:-1,blur26px)で四隅に空色/藤/青磁/桜貝の淡いウォッシュ、pointerdownでインクがポワンと広がる演出(.ink-drop: multiply+blur10px, 1.15s bloom, 同時6滴上限, doneフラグで二重減算防止, reduced-motion/forced-colorsで消灯)。装飾のみpointer-events:none・カード/文字色不変=コントラスト影響なし / R594/R595 (v5.9→v6.0): ①R594 休憩タイマー刷新 — プリセットを2/3/4/5分に変更(旧1/3/5/10分)＋自由入力追加(1〜180分の整数, number入力+開始ボタン, Enter対応, 不正値はtoastで明示し黙って丸めない) ②R595 統計バーのラベルを英字マイクロタイポへ(今日/今月/累計/連続→TODAY/MONTH/TOTAL/STREAK, 9px/.22em広トラッキング, sr-onlyの日本語で読み上げ意味維持) ③R593追従: manifest descriptionの「即興Q&A」→「Q&A」 / R592 (v5.8→v5.9): 全ボタンの立体化 — 即興Q&A/黒ボタン(.main-btn-qa/.btn-black)は天面ハイライト＋黒い底エッジ4px＋浮遊影で物理キー風、押下でtranslateY(3px)沈下(基底opacity:.75を打消し)。白カード型(.main-btn-ft/.btn-gray/.ft-cell/.sub-link/.goal-btn)は白の天面ハイライト＋薄い底エッジ＋層化影で隆起、押下でtranslateY(2px)。マウス環境のみホバーで浮上(R575の.main-btn:hover/.ft-cell:hoverを後段上書き)。色/コントラストは不変・影とtransformのみ、prefers-reduced-motionでtransform無効化。R588ブロック直後に後段カスケード追加 / R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
     </div>
   </div>
 </div>
@@ -1259,7 +1269,31 @@
     <div style="width:60px"></div>
   </div>
   <div class="body">
-    <p class="as-hint">真ん中にお題が出ます。思いついた言葉を<b>1行ずつ書く</b>（または<b>声で言う</b>）。</p>
+    <p class="as-hint">真ん中にお題が出ます。お題への<b>疑問を1行ずつ</b>書く（または<b>声で言う</b>）。</p>
+    <div class="setup-label">書き方</div><!-- R689: 問いの型（11型）で書く／自由に連想 -->
+    <div class="chip-row" id="as-mode">
+      <button type="button" class="goal-btn on" data-v="q" aria-pressed="true" onclick="asSetup.mode='q';selChip('as-mode',this)">問いの型で書く</button>
+      <button type="button" class="goal-btn" data-v="free" aria-pressed="false" onclick="asSetup.mode='free';selChip('as-mode',this)">自由に連想</button>
+    </div>
+    <details class="as-ref">
+      <summary>11の型を見る</summary>
+      <div class="as-ref-wrap">
+        <table>
+          <tr><th>#</th><th>型</th><th>日本語の疑問の形</th><th>例</th></tr>
+          <tr><td>1</td><td>Why</td><td>なんで／なぜ／何のために</td><td>なんで今日その言葉が出た？</td></tr>
+          <tr><td>2</td><td>What</td><td>何を／何が</td><td>何を基準に高いと判断した？</td></tr>
+          <tr><td>3</td><td>Who</td><td>誰が</td><td>誰が最終的に決める？</td></tr>
+          <tr><td>4</td><td>Whom</td><td>誰に／誰に向けて</td><td>その言葉は私に向けたもの？上司に説明する前提？</td></tr>
+          <tr><td>5</td><td>Which</td><td>どれ／どちら</td><td>他社案とうちの案、どちらに傾いている？</td></tr>
+          <tr><td>6</td><td>When</td><td>いつ／いつから／いつまでに</td><td>いつまでに決めなければならない？</td></tr>
+          <tr><td>7</td><td>Where</td><td>どこで／どこに</td><td>予算はどこの部門から出る？</td></tr>
+          <tr><td>8</td><td>How</td><td>どのように／どうやって</td><td>どうやって社内で稟議を通す？</td></tr>
+          <tr><td>9</td><td>How much</td><td>いくら／どのくらい（程度・金額）</td><td>いくらなら通る？どのくらい本気で言っている？</td></tr>
+          <tr><td>10</td><td>How many</td><td>いくつ／何件・何人</td><td>比較している会社は何社？</td></tr>
+          <tr><td>11</td><td>How long</td><td>どのくらいの期間</td><td>検討はどのくらい続いている？</td></tr>
+        </table>
+      </div>
+    </details>
     <div class="setup-label">お題の形</div><!-- R681: 混ぜる／単語だけ／短文だけ／長文だけ -->
     <div class="chip-row" id="as-form">
       <button type="button" class="goal-btn on" data-v="mix" aria-pressed="true" onclick="asSetup.form='mix';selChip('as-form',this)">混ぜる</button>
@@ -1282,10 +1316,16 @@
       <span class="as-sec-unit">秒（3〜300）</span>
     </div>
     <div class="setup-label">題数</div>
-    <div class="chip-row" id="as-total">
-      <button type="button" class="goal-btn" data-v="3" aria-pressed="false" onclick="asSetup.total=3;selChip('as-total',this)">3題</button>
-      <button type="button" class="goal-btn" data-v="5" aria-pressed="false" onclick="asSetup.total=5;selChip('as-total',this)">5題</button>
-      <button type="button" class="goal-btn on" data-v="10" aria-pressed="true" onclick="asSetup.total=10;selChip('as-total',this)">10題</button>
+    <div class="chip-row" id="as-total"><!-- R690: 20/30題を追加＋自由入力(1〜100題) -->
+      <button type="button" class="goal-btn" data-v="3" aria-pressed="false" onclick="asSetTotal(3,this)">3題</button>
+      <button type="button" class="goal-btn" data-v="5" aria-pressed="false" onclick="asSetTotal(5,this)">5題</button>
+      <button type="button" class="goal-btn on" data-v="10" aria-pressed="true" onclick="asSetTotal(10,this)">10題</button>
+      <button type="button" class="goal-btn" data-v="20" aria-pressed="false" onclick="asSetTotal(20,this)">20題</button>
+      <button type="button" class="goal-btn" data-v="30" aria-pressed="false" onclick="asSetTotal(30,this)">30題</button>
+    </div>
+    <div class="as-row as-sec-free">
+      <input class="inp" id="as-total-custom" type="number" inputmode="numeric" min="1" max="100" step="1" aria-label="題数を自由入力（1〜100題）" oninput="asTotalCustom(this)">
+      <span class="as-sec-unit">題（1〜100）</span>
     </div>
     <div class="setup-label">連想の入れ方</div>
     <div class="chip-row" id="as-input">
@@ -1319,7 +1359,8 @@
       <div class="as-cnt" id="as-cnt" role="timer" aria-live="off"></div>
     </div>
     <div id="as-phase-a"><!-- R685: 真ん中のお題の下は「書く欄」だけ。声モードの時だけ聞き取りボタン -->
-      <textarea class="inp as-ta" id="as-ta" rows="6" placeholder="思いついた言葉を1行ずつ" aria-label="連想を1行ずつ入力" autocomplete="off" oninput="asTaSync()"></textarea>
+      <textarea class="inp as-ta" id="as-ta" rows="8" aria-label="連想を1行ずつ入力" autocomplete="off" oninput="asTaSync()"></textarea>
+      <div class="as-types" id="as-types" aria-label="使った問いの型" style="display:none"></div>
       <div class="as-row as-under">
         <div class="as-count" id="as-count">0個</div>
         <button type="button" class="btn btn-gray as-mic" id="as-mic" onclick="asMicToggle()" aria-pressed="false" style="display:none">マイク</button>
@@ -1336,7 +1377,7 @@
       <div class="as-phase">1つ選んで、相手への質問に変える（20秒）</div>
       <div class="as-list" id="as-list-c"></div>
       <div class="as-row">
-        <input class="inp" id="as-q" maxlength="80" placeholder="相手役への質問（例：〇〇は、御社ではどうされていますか？）" aria-label="質問を入力" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();asEndC();}">
+        <input class="inp" id="as-q" maxlength="80" aria-label="質問を入力" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();asEndC();}">
         <button type="button" class="btn btn-gray as-mic" id="as-mic-q" onclick="asMicToggle('q')" aria-pressed="false">マイク</button>
       </div>
       <button type="button" class="btn btn-black" onclick="asEndC()">決定</button>
@@ -2736,7 +2777,7 @@ function sendFeedback(){
   let who = '';
   try { who = localStorage.getItem('acct_current') || '未ログイン'; } catch(e) { who = '不明'; }
   const subject = 'SEIKAロープレ ご意見・ご要望';
-  const body = msg + '\n\n----------------\n（自動付記）アカウント: ' + who + ' / アプリ: SEIKA ロープレツール v8.49';
+  const body = msg + '\n\n----------------\n（自動付記）アカウント: ' + who + ' / アプリ: SEIKA ロープレツール v8.53';
   const href = 'mailto:' + fbTo() + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   try { window.location.href = href; toast('メールアプリを開きます'); }
   catch(e) { toast('メールアプリを開けませんでした'); }
@@ -4151,7 +4192,7 @@ const AS_PERSONA = {
   chat:  { name: '雑談好きだが本題に入りたがらない経営者', good: 'そうそう、それでね、うちの親父の代はもっと大変で…って、話すと長いんですよ。', mid: 'ああ、ありますね。', poor: 'うん。' }
 };
 /* R680: お題の形を 単語(word)/短文(short)/長文(long) の3種にし、連続で同じ形にしない。レベルが上がるほど文が長い側へ寄せる。 */
-const AS_WORDS = { /* R684: 単語を大幅増量（Lv1=180語 / Lv2=152語） */
+const AS_WORDS = { /* R684/R687: Lv1=460語 / Lv2=430語 */
   1: [
        ['物','コーヒー'],['物','名刺'],['物','電卓'],['物','ハンコ'],['物','請求書'],['物','作業着'],['物','段ボール'],['物','腕時計'],
        ['物','手帳'],['物','ボールペン'],['物','領収書'],['物','封筒'],['物','傘'],['物','眼鏡'],['物','財布'],['物','鍵'],
@@ -4175,7 +4216,42 @@ const AS_WORDS = { /* R684: 単語を大幅増量（Lv1=180語 / Lv2=152語） *
        ['IT・家電','ウェブ会議'],['IT・家電','電話'],['IT・家電','留守電'],['IT・家電','タブレット'],['IT・家電','ホームページ'],['IT・家電','SNS'],['IT・家電','ネット通販'],['IT・家電','クラウド'],
        ['人','社長'],['人','部長'],['人','新入社員'],['人','職人'],['人','事務員'],['人','パート'],['人','息子'],['人','娘'],
        ['人','税理士'],['人','銀行員'],['人','取引先'],['人','常連客'],['人','同級生'],['人','先輩'],['人','孫'],['人','営業マン'],
-       ['人','奥さん'],['人','会長'],['人','工場長'],['人','外国人スタッフ'] ],
+       ['人','奥さん'],['人','会長'],['人','工場長'],['人','外国人スタッフ'],['物','座布団'],['物','置き時計'],['物','観葉植物'],['物','花瓶'],
+       ['物','掛け軸'],['物','熊手'],['物','だるま'],['物','額縁'],['物','記念写真'],['物','年賀状'],['物','お中元'],['物','お歳暮'],
+       ['物','手ぬぐい'],['物','水筒'],['物','懐中電灯'],['物','ハンカチ'],['物','老眼鏡'],['物','暖簾'],['物','表札'],['物','トロフィー'],
+       ['物','植木鉢'],['物','防災リュック'],['物','救急箱'],['物','灰皿'],['物','爪切り'],['場所','作業場'],['場所','更衣室'],['場所','社員食堂'],
+       ['場所','応接室'],['場所','社長室'],['場所','道の駅'],['場所','市場'],['場所','直売所'],['場所','資材置き場'],['場所','物流センター'],['場所','図書館'],
+       ['場所','公園'],['場所','河川敷'],['場所','銭湯'],['場所','蕎麦屋'],['場所','定食屋'],['場所','スナック'],['場所','母校'],['場所','体育館'],
+       ['場所','保育園'],['場所','整備工場'],['場所','喫煙所'],['場所','玄関'],['場所','屋台'],['場所','釣り堀'],['地名','天竜川'],['地名','浜名湖'],
+       ['地名','舘山寺'],['地名','中田島砂丘'],['地名','浜松城'],['地名','遠州灘'],['地名','御前崎'],['地名','焼津'],['地名','清水港'],['地名','富士宮'],
+       ['地名','三島'],['地名','熱海'],['地名','伊豆'],['地名','下田'],['地名','島田'],['地名','藤枝'],['地名','袋井'],['地名','湖西'],
+       ['地名','大井川'],['地名','日本平'],['地名','三保の松原'],['地名','修善寺'],['地名','牧之原'],['地名','寸又峡'],['地名','蒲郡'],['地名','岡崎'],
+       ['地名','箱根'],['地名','金沢'],['地名','伊勢'],['地名','軽井沢'],['季節','夕立'],['季節','初詣'],['季節','節分'],['季節','雛祭り'],
+       ['季節','七夕'],['季節','花火大会'],['季節','盆踊り'],['季節','秋祭り'],['季節','大晦日'],['季節','仕事始め'],['季節','春一番'],['季節','木枯らし'],
+       ['季節','残暑'],['季節','新緑'],['季節','浜松まつり'],['季節','運動会'],['季節','卒業式'],['季節','大掃除'],['季節','冬至'],['季節','彼岸'],
+       ['季節','梅雨明け'],['季節','夏至'],['食べ物','桜えび'],['食べ物','しらす'],['食べ物','静岡おでん'],['食べ物','黒はんぺん'],['食べ物','富士宮やきそば'],['食べ物','抹茶'],
+       ['食べ物','牛丼'],['食べ物','天ぷら'],['食べ物','牡蠣'],['食べ物','うどん'],['食べ物','とんかつ'],['食べ物','唐揚げ'],['食べ物','焼き鳥'],['食べ物','刺身'],
+       ['食べ物','干物'],['食べ物','漬物'],['食べ物','納豆'],['食べ物','卵焼き'],['食べ物','軽食'],['食べ物','饅頭'],['食べ物','羊羹'],['食べ物','煎餅'],
+       ['食べ物','メロン'],['食べ物','いちご'],['食べ物','鰹節'],['食べ物','わさび'],['食べ物','焼酎'],['食べ物','ハンバーグ'],['乗り物','軽自動車'],['乗り物','ワゴン車'],
+       ['乗り物','ダンプカー'],['乗り物','クレーン車'],['乗り物','トレーラー'],['乗り物','高速バス'],['乗り物','観光バス'],['乗り物','フェリー'],['乗り物','漁船'],['乗り物','原付'],
+       ['乗り物','電動自転車'],['乗り物','キッチンカー'],['乗り物','救急車'],['乗り物','消防車'],['乗り物','ロープウェイ'],['乗り物','在来線'],['乗り物','路面電車'],['乗り物','天浜線'],
+       ['乗り物','トラクター'],['乗り物','耕運機'],['IT・家電','冷蔵庫'],['IT・家電','電子レンジ'],['IT・家電','洗濯機'],['IT・家電','ロボット掃除機'],['IT・家電','テレビ'],['IT・家電','ラジオ'],
+       ['IT・家電','加湿器'],['IT・家電','空気清浄機'],['IT・家電','電気ポット'],['IT・家電','炊飯器'],['IT・家電','電気ストーブ'],['IT・家電','除湿機'],['IT・家電','デジカメ'],['IT・家電','イヤホン'],
+       ['IT・家電','モバイルバッテリー'],['IT・家電','ルーター'],['IT・家電','USBメモリ'],['IT・家電','スキャナー'],['IT・家電','キーボード'],['IT・家電','モニター'],['IT・家電','ドライブレコーダー'],['IT・家電','カーナビ'],
+       ['人','専務'],['人','課長'],['人','若手社員'],['人','ベテラン社員'],['人','技能実習生'],['人','経理担当'],['人','社労士'],['人','司法書士'],
+       ['人','弁護士'],['人','大家さん'],['人','幼なじみ'],['人','恩師'],['人','父親'],['人','母親'],['人','親戚'],['人','後輩'],
+       ['人','同期'],['人','顧問'],['人','配達員'],['人','警備員'],['人','板前'],['人','番頭'],['仕事道具','作業台'],['仕事道具','工具箱'],
+       ['仕事道具','ペンチ'],['仕事道具','スパナ'],['仕事道具','巻尺'],['仕事道具','脚立'],['仕事道具','台車'],['仕事道具','安全靴'],['仕事道具','保護メガネ'],['仕事道具','耳栓'],
+       ['仕事道具','防塵マスク'],['仕事道具','電動ドリル'],['仕事道具','グラインダー'],['仕事道具','はんだごて'],['仕事道具','ノギス'],['仕事道具','旋盤'],['仕事道具','溶接機'],['仕事道具','コンプレッサー'],
+       ['仕事道具','パレット'],['仕事道具','結束バンド'],['仕事道具','ガムテープ'],['仕事道具','カッター'],['仕事道具','クリップボード'],['仕事道具','タイムカード'],['仕事道具','朱肉'],['仕事道具','そろばん'],
+       ['体・健康','腰痛'],['体・健康','肩こり'],['体・健康','睡眠'],['体・健康','寝不足'],['体・健康','二日酔い'],['体・健康','熱中症'],['体・健康','風邪'],['体・健康','血圧'],
+       ['体・健康','体重'],['体・健康','視力'],['体・健康','虫歯'],['体・健康','人間ドック'],['体・健康','整体'],['体・健康','ストレッチ'],['体・健康','散歩'],['体・健康','膝'],
+       ['体・健康','疲れ目'],['体・健康','ぎっくり腰'],['体・健康','禁煙'],['体・健康','サプリ'],['趣味・娯楽','釣り'],['趣味・娯楽','ゴルフ'],['趣味・娯楽','将棋'],['趣味・娯楽','囲碁'],
+       ['趣味・娯楽','ギター'],['趣味・娯楽','草野球'],['趣味・娯楽','高校野球'],['趣味・娯楽','サッカー'],['趣味・娯楽','マラソン'],['趣味・娯楽','キャンプ'],['趣味・娯楽','登山'],['趣味・娯楽','家庭菜園'],
+       ['趣味・娯楽','盆栽'],['趣味・娯楽','カラオケ'],['趣味・娯楽','映画'],['趣味・娯楽','読書'],['趣味・娯楽','写真'],['趣味・娯楽','書道'],['趣味・娯楽','日曜大工'],['趣味・娯楽','食べ歩き'],
+       ['趣味・娯楽','筋トレ'],['趣味・娯楽','ドライブ'],['自然','霜'],['自然','虹'],['自然','夕焼け'],['自然','星空'],['自然','満月'],['自然','砂浜'],
+       ['自然','竹林'],['自然','茶畑'],['自然','松林'],['自然','紫陽花'],['自然','蝉'],['自然','蛍'],['自然','雷'],['自然','霧'],
+       ['自然','積乱雲'],['自然','滝'],['自然','稲穂'],['自然','からっ風'] ],
   2: [
        ['数字','3年'],['数字','10%'],['数字','5人'],['数字','1週間'],['数字','100万円'],['数字','30年'],['数字','半年'],['数字','2代目'],
        ['数字','1億円'],['数字','50歳'],['数字','3社'],['数字','60日'],['数字','7割'],['数字','24時間'],['数字','100年企業'],['数字','5年後'],
@@ -4195,11 +4271,115 @@ const AS_WORDS = { /* R684: 単語を大幅増量（Lv1=180語 / Lv2=152語） *
        ['感情','本音'],['感情','嫉妬'],['感情','感謝'],['感情','プレッシャー'],['抽象語','信頼'],['抽象語','効率'],['抽象語','習慣'],['抽象語','挑戦'],
        ['抽象語','継続'],['抽象語','常識'],['抽象語','伝統'],['抽象語','変化'],['抽象語','責任'],['抽象語','評判'],['抽象語','相性'],['抽象語','縁'],
        ['抽象語','覚悟'],['抽象語','余裕'],['抽象語','成長'],['抽象語','理想'],['抽象語','現実'],['抽象語','付き合い'],['抽象語','義理'],['抽象語','看板'],
-       ['抽象語','地元'],['抽象語','時代'],['抽象語','価値'],['抽象語','品質'],['抽象語','スピード'],['抽象語','こだわり'],['抽象語','恩返し'],['抽象語','ブランド'] ]
+       ['抽象語','地元'],['抽象語','時代'],['抽象語','価値'],['抽象語','品質'],['抽象語','スピード'],['抽象語','こだわり'],['抽象語','恩返し'],['抽象語','ブランド'],
+       ['数字','3期連続'],['数字','年商5億'],['数字','従業員30人'],['数字','10年後'],['数字','創業50年'],['数字','築40年'],['数字','70歳'],['数字','平均年齢55歳'],
+       ['数字','月商1000万'],['数字','前年比120%'],['数字','粗利率30%'],['数字','5期ぶり黒字'],['数字','借入3億'],['数字','取引先10社'],['数字','売上の半分'],['数字','上位3社'],
+       ['数字','週休2日'],['数字','年間休日105日'],['数字','離職率20%'],['数字','20年ぶり'],['数字','残り5年'],['数字','3か月分'],['数字','1割減'],['数字','売上2倍'],
+       ['数字','定年65歳'],['数字','勤続15年'],['数字','初任給22万'],['数字','創業100年'],['数字','納期2週間'],['数字','3人に1人'],['数字','10社に1社'],['数字','2割増'],
+       ['ビジネス','受注残'],['ビジネス','客単価'],['ビジネス','取引先の偏り'],['ビジネス','価格転嫁'],['ビジネス','仕入先'],['ビジネス','歩留まり'],['ビジネス','不良率'],['ビジネス','稼働率'],
+       ['ビジネス','段取り替え'],['ビジネス','多品種少量'],['ビジネス','量産'],['ビジネス','試作'],['ビジネス','特注品'],['ビジネス','営業利益'],['ビジネス','商談'],['ビジネス','見込み客'],
+       ['ビジネス','既存顧客'],['ビジネス','失注'],['ビジネス','値決め'],['ビジネス','繁忙期'],['ビジネス','閑散期'],['ビジネス','業務委託'],['ビジネス','共同開発'],['ビジネス','販路拡大'],
+       ['ビジネス','自社製品'],['ビジネス','OEM'],['ビジネス','属人化'],['ビジネス','業務改善'],['ビジネス','納期遅れ'],['ビジネス','口約束'],['ビジネス','定期訪問'],['ビジネス','納入実績'],
+       ['経営','事業計画'],['経営','経営理念'],['経営','中期計画'],['経営','第二創業'],['経営','会社売却'],['経営','事業譲渡'],['経営','親族内承継'],['経営','社内承継'],
+       ['経営','経営権'],['経営','自社株'],['経営','持株比率'],['経営','相談役'],['経営','創業者'],['経営','右腕'],['経営','経営判断'],['経営','選択と集中'],
+       ['経営','新規事業'],['経営','黒字化'],['経営','増収増益'],['経営','減収減益'],['経営','主力商品'],['経営','競合他社'],['経営','差別化'],['経営','強み'],
+       ['経営','参入障壁'],['経営','業務提携'],['経営','資本提携'],['経営','引退時期'],['経営','事業の柱'],['経営','企業価値'],['経営','経営会議'],['社会','地域経済'],
+       ['社会','若者の流出'],['社会','空き家'],['社会','地方創生'],['社会','外国人労働者'],['社会','自動運転'],['社会','EV化'],['社会','南海トラフ'],['社会','防災'],
+       ['社会','2024年問題'],['社会','介護離職'],['社会','共働き'],['社会','人生100年'],['社会','大廃業時代'],['社会','SDGs'],['社会','多様性'],['社会','半導体'],
+       ['社会','サプライチェーン'],['社会','地産地消'],['社会','インバウンド'],['社会','資源高'],['社会','産業の空洞化'],['社会','ものづくり'],['社会','地域の祭り'],['社会','地銀再編'],
+       ['社会','格差'],['社会','団塊世代'],['社会','生成AI'],['社会','原材料高'],['社会','人手の奪い合い'],['感情','焦燥感'],['感情','使命感'],['感情','達成感'],
+       ['感情','孤独感'],['感情','虚しさ'],['感情','危機感'],['感情','罪悪感'],['感情','劣等感'],['感情','満足感'],['感情','充実感'],['感情','無力感'],
+       ['感情','喪失感'],['感情','解放感'],['感情','安堵'],['感情','戸惑い'],['感情','悔しさ'],['感情','諦め'],['感情','情熱'],['感情','愛着'],
+       ['感情','未練'],['感情','義務感'],['感情','警戒心'],['感情','好奇心'],['感情','反発'],['感情','遠慮'],['感情','心細さ'],['感情','胸騒ぎ'],
+       ['感情','高揚感'],['感情','もどかしさ'],['感情','気負い'],['感情','引け目'],['感情','やりがい'],['抽象語','信用'],['抽象語','誠実さ'],['抽象語','本質'],
+       ['抽象語','優先順位'],['抽象語','仕組み'],['抽象語','社風'],['抽象語','一体感'],['抽象語','絆'],['抽象語','約束'],['抽象語','筋'],['抽象語','志'],
+       ['抽象語','使命'],['抽象語','役割'],['抽象語','限界'],['抽象語','基準'],['抽象語','決断'],['抽象語','転機'],['抽象語','節目'],['抽象語','岐路'],
+       ['抽象語','将来性'],['抽象語','持続性'],['抽象語','独自性'],['抽象語','再現性'],['抽象語','透明性'],['抽象語','柔軟性'],['抽象語','主体性'],['抽象語','共存'],
+       ['抽象語','恩'],['抽象語','自由'],['抽象語','安定'],['抽象語','積み重ね'],['お金','内部留保'],['お金','役員報酬'],['お金','退職金'],['お金','運転資金'],
+       ['お金','借入金'],['お金','返済'],['お金','利息'],['お金','売掛金'],['お金','買掛金'],['お金','手元資金'],['お金','自己資本比率'],['お金','純資産'],
+       ['お金','債務超過'],['お金','減価償却'],['お金','節税'],['お金','法人税'],['お金','相続税'],['お金','贈与税'],['お金','株価評価'],['お金','譲渡価格'],
+       ['お金','売却益'],['お金','配当'],['お金','月次試算表'],['お金','資金調達'],['お金','返済猶予'],['お金','経費'],['お金','交際費'],['お金','設備資金'],
+       ['お金','繰越欠損金'],['お金','固定資産税'],['お金','支払サイト'],['お金','未回収'],['人事','人材定着'],['人事','労務'],['人事','評価制度'],['人事','給与体系'],
+       ['人事','昇給'],['人事','賞与'],['人事','中途採用'],['人事','新卒採用'],['人事','定年延長'],['人事','再雇用'],['人事','技能継承'],['人事','多能工化'],
+       ['人事','若手育成'],['人事','管理職'],['人事','幹部候補'],['人事','ベテラン'],['人事','世代間ギャップ'],['人事','退職代行'],['人事','有給休暇'],['人事','資格手当'],
+       ['人事','個人面談'],['人事','配置転換'],['人事','求人広告'],['人事','応募ゼロ'],['人事','育休'],['人事','時短勤務'],['人事','福利厚生'],['人事','引き抜き'],
+       ['人事','社員の家族'],['人事','人件費'],['法律・制度','就業規則'],['法律・制度','株式譲渡'],['法律・制度','連帯保証'],['法律・制度','経営者保証'],['法律・制度','事業承継税制'],['法律・制度','労働基準法'],
+       ['法律・制度','36協定'],['法律・制度','雇用契約'],['法律・制度','秘密保持契約'],['法律・制度','基本合意'],['法律・制度','表明保証'],['法律・制度','株主総会'],['法律・制度','取締役会'],['法律・制度','定款'],
+       ['法律・制度','登記'],['法律・制度','遺言'],['法律・制度','遺留分'],['法律・制度','下請法'],['法律・制度','電子帳簿保存法'],['法律・制度','社会保険'],['法律・制度','労災'],['法律・制度','雇用保険'],
+       ['法律・制度','助成金'],['法律・制度','税務調査'],['法律・制度','特許'],['法律・制度','商標'],['法律・制度','同一労働同一賃金'],['法律・制度','契約更新'] ]
 };
-const AS_SHORT = [ '最近、忙しくてね','うちは今のままで困ってないから','息子が会社を継ぐか、まだわからなくて','電気代、去年からだいぶ上がったよね','前にも似た営業が来たよ','浜松は今日も暑いね','今年は採用がうまくいかなくて','見積は3社から取ってるんだ','担当が変わったばかりでね','正直、営業の電話は多くて',
-  '値上げの連絡が来た','新しい担当者','工場の稼働率','雨の日の配送','月末の資金繰り','補助金の締切','取引先の倒産','朝一番の電話','展示会の帰り','機械の入れ替え時期' ];
-const AS_LONG = [
+const AS_SHORT = [ /* R687: 350本 */
+       '最近、忙しくてね','うちは今のままで困ってないから','息子が会社を継ぐか、まだわからなくて','電気代、去年からだいぶ上がったよね','前にも似た営業が来たよ',
+       '浜松は今日も暑いね','今年は採用がうまくいかなくて','見積は3社から取ってるんだ','担当が変わったばかりでね','正直、営業の電話は多くて',
+       '値上げの連絡が来た','新しい担当者','工場の稼働率','雨の日の配送','月末の資金繰り',
+       '補助金の締切','取引先の倒産','朝一番の電話','展示会の帰り','機械の入れ替え時期',
+       '今朝は遠州のからっ風がすごくてね','台風が来る前に出荷を済ませたくて','梅雨の時期は湿気で製品が困るんだよ','今年の夏は工場の中がサウナみたいでね','朝晩はだいぶ涼しくなってきたね',
+       '雪で東名が止まって納品が遅れてね','お盆明けはなかなかエンジンがかからない','梅雨明け前の長雨','ゲリラ豪雨で駐車場が水浸しになってね','猛暑日の現場作業',
+       '秋の繁忙期の入り口','連休明けの月曜日','大型連休前の駆け込み注文','台風一過の片付け','冬場の路面凍結対策',
+       '最近、腰の調子が悪くてね','お盆前の出荷の山場','健康診断で引っかかっちゃってね','先月ちょっと入院してたんだよ','医者に酒を控えろって言われてさ',
+       '去年、軽い脳梗塞をやってね','膝が痛くてゴルフも休んでるんだ','社員のインフルが広がっちゃってね','現場の熱中症対策に追われててね','真夏の屋根上作業',
+       '家内の体調が最近あまり良くなくて','娘が東京で就職しちゃってね','孫が生まれたばかりなんだよ','息子はいま別の会社で修行中でね','娘婿が手伝ってくれてるんだ',
+       '家内が経理を全部見てるんだよ','親父がまだ毎朝工場に来るんだ','年末年始の工場休業','母が施設に入ったばかりでね','息子とは仕事の話をあまりしないね',
+       '嫁さんには早く引退しろって言われる','息子と方針でよくぶつかるんだ','そろそろ引き際を考えなきゃとは思ってる','継ぐ人がいなかったら畳むしかないかな','後継ぎの話は家でもタブーでね',
+       '仕事が薄い二月の工場','番頭さんに任せるかどうか迷っててね','70までは頑張るつもりだけどね','同業の社長が会社を売ったらしいよ','会社を売るなんて考えたこともないよ',
+       '自社株の評価が上がりすぎてね','事業承継のセミナーに行ってみたんだ','会長と社長で意見が割れててね','先代からの付き合いを大事にしてる','息子の入社一年目',
+       '創業50年の節目','社長交代のあいさつ回り','後継者が決まらない会社','二代目の社長就任','M&Aって言葉はどうもピンと来ない',
+       '引退したら何しようかと思ってね','株主の叔父が口を出してきてね','娘婿への事業承継','求人を出しても電話一本鳴らないよ','若い子が3か月で辞めちゃってね',
+       'ベテランが来年定年なんだよ','外国人の実習生が頼りでね','最低賃金がまた上がるでしょう','パートさんのシフトが組めなくてね','人が足りなくて受注を断ってるんだ',
+       '創業者の引退パーティー','職人の高齢化が一番の悩みだよ','新卒なんてもう何年も採れてない','辞めた社員が同業に移ってね','若手に技術をどう残すかだよね',
+       '社員旅行は今年もやめたんだ','ドライバー不足で配送が回らない','夏のボーナスの原資','求人票の書き直し','新人研修の準備期間',
+       '古株社員の送別会','材料費がこの2年で倍になってね','仕入れ値は上がるのに売値は据え置きでね','値上げをお願いしたら渋い顔されてね','ガソリン代がばかにならないよ',
+       '円安で輸入部品が高くなってね','運賃の値上げを言われちゃってね','若手社員の突然の退職','利益はほとんど残ってないのが本音','固定費を削れるところは全部削ったよ',
+       '飼料が高くて牛を減らそうか考えてる','米の値段が上がって仕入れが大変でね','原材料の値上げ通知','電気の契約、一度も見直したことないな','燃料費の調整額がよく分からなくて',
+       '外国人実習生の受け入れ','屋根の太陽光パネル','デマンド値の見直し','機械が古くて部品がもう出ないんだ','旋盤が止まって一日仕事にならなくてね',
+       'フォークリフトを買い替えたばかりでね','リースが来年で切れるんだよ','新しい機械を入れて人を減らせたんだ','最低賃金の改定時期','コピー機のリース、高い気がしてる',
+       '冷蔵ケースが急に壊れちゃってね','中古の機械でも十分なんだよ','設備投資は今年は見送りだね','メンテナンス業者の撤退','生産ラインの老朽化',
+       '大口の客先が発注を絞ってきてね','定年を迎えた職人の再雇用','取引先の9割は自動車関係なんだ','一社依存から抜けたいとは思ってる','お客さんの世代交代で取引が減った',
+       '常連さんが高齢で来なくなってね','急な注文ばかりで計画が立たないよ','お客さんの工場が海外に出ちゃってね','紹介でしか仕事を受けてないんだ','新規の問い合わせがめっきり減った',
+       '仕入先からの値上げ交渉','支払いサイトが長くて困ってるんだ','クレーム対応で昨日は夜中までかかった','大手との取引が始まったばかりでね','得意先の工場閉鎖',
+       '取引先からの無理な値下げ要求','新規顧客の開拓方法','取引先の社長が急に亡くなってね','夏場の電気代の請求書','近くに同業の大きい店ができてね',
+       '同業の廃業で仕事が回ってきてる','ライバルが設備を一気に入れたらしい','ネットの安いところと比べられるんだ','あそこの社長とは昔からの仲でね','同業者の廃業ラッシュ',
+       '銀行の支店長が替わってね','古い空調設備の更新','金利が上がるって銀行に言われてね','コロナの借入の返済が始まってね','信金さんとは長い付き合いなんだ',
+       '銀行は晴れの日に傘を貸すからね','借入はできるだけしたくないんだよ','決算が近くてバタバタしてるんだ','今期はなんとか黒字になりそうだよ','中古機械の買い取り査定',
+       '税理士さんに任せっきりでね','保証協会の枠がもういっぱいでね','手形がなくなるって聞いたけど','メインバンクを変えるか迷ってる','決算書を銀行に出す時期',
+       '期末の棚卸し作業','税務調査が入ったばかり','地元の銀行が合併してね','大口顧客の担当者異動','税理士が高齢で引退するらしくて',
+       '補助金は書類が多すぎて諦めたよ','ものづくり補助金、去年落ちてね','補助金ありきの提案はもういいよ','補助金コンサルに高い手数料取られた','補助金の採択待ち',
+       '省エネ補助金の申請','海外向けの初めての出荷','うちはまだFAXが現役でね','パソコンは事務の子しか触れないんだ','在庫はいまだにエクセルで管理してる',
+       'ホームページはもう何年も触ってない','インボイスでだいぶ事務が増えたよ','電子帳簿の対応がよく分からなくて','若いのがSNSをやりたいって言うんだ','競合の大型店オープン',
+       'ウイルスのメールが来て焦ったよ','ITのことは甥っ子に頼んでるんだ','タブレットを配ったけど結局紙に戻った','勤怠はまだタイムカードなんだよ','口コミに悪いこと書かれちゃってね',
+       'システム会社との保守契約','紙の伝票からの切り替え','メインバンクとの面談','浜松まつりの準備で町内が忙しくてね','地元の祭りの寄付を頼まれてね',
+       '秋祭りの屋台の準備','町内会の役が回ってきちゃってね','異業種交流会の帰り','商工会の賀詞交歓会','朝の地域清掃活動',
+       '昔はもっと元気な町だったんだけどね','設備資金の借り換え','静岡の人は慎重だからね','日曜はゴルフでね、スコアはひどいけど','週末は御前崎まで釣りに行くんだよ',
+       '最近は家庭菜園にはまっててね','ゴルフコンペの幹事','ウォーキングを始めて体重が減った','サッカーの試合を見に磐田まで行ってね','決算前の節税相談',
+       '昔はバンドをやっててね','盆栽を始めたら奥が深くてね','前の業者には高いのを売りつけられた','契約したら急に連絡が来なくなってね','資料だけ置いていってくれればいいよ',
+       '前の担当は言うことがコロコロ変わってね','無料って言われて後から請求が来た','補助金の実績報告書','リース契約でひどい目にあってね','どこも同じこと言うんだよね',
+       '結局は売りたいだけでしょう','いい話ほど怪しいと思ってるんだ','今日は時間があまりないんだけど','まあ、聞くだけなら','社長はいま不在でして',
+       '事務所の古いサーバー','担当者がいないので分かりかねます','検討はしますけど期待しないでね','そういうのは本社が決めるから','予算がもう組まれちゃってるんだよ',
+       '付き合いのある業者がいるからね','話は聞くけど、決めるのは私じゃない','前にも断ったと思うんだけど','忙しい時期だからまた秋にでも','紙とハンコの社内決裁',
+       'うちみたいな小さい所には関係ないよ','営業はお断りって書いてあるでしょ','で、何の会社さんだっけ','5分だけならいいよ','まあ座って、お茶でも飲んでって',
+       'よく来たね、道は迷わなかった','この前の話、社内でしてみたよ','浜松まつりの凧揚げ','君、どこの出身なの','うちの工場、見ていくかい',
+       'この辺はうなぎがうまいんだよ','若いのに頑張ってるね','今日は機嫌がいいんだ、いい受注が入ってね','昨日はちょっと飲みすぎちゃってね','君のとこの社長、元気にしてる',
+       '早朝の釣りの帰り','図面が来ないと見積もれないんだよ','不良率がなかなか下がらなくてね','金型の保管場所に困ってるんだ','EVの話で先が読めなくてね',
+       '客先の監査が来月あるんだよ','ISOの更新審査が近くてね','二次下請けだから情報が来ないんだ','リース契約の更新案内','材料の入荷が遅れてラインが止まった',
+       '楽器関係の仕事も減ってきたね','客先の生産計画の急な変更','量産前の試作ラッシュ','現場が重なって職人が足りないんだ','雨が続くと工期がずれるんだよ',
+       '残業規制で工期が回らなくてね','公共工事の入札が続いててね','社長不在の受付対応','資材が入らなくて現場が止まってる','リフォームの問い合わせが増えてね',
+       '解体工事の産廃処理','現場の安全パトロール','今日はさっきまで現場にいたんだ','2024年問題で運べる量が減ってね','荷主さんに運賃の話がしづらくて',
+       '本社稟議の締め日','待機時間が長くてドライバーが怒ってる','長距離の仕事は減らしていく方針でね','倉庫がいっぱいで借りるか迷ってる','夜間配送のドライバー確保',
+       '年末の物量ピーク','客数は戻ったけど単価が下がってね','駅前の人通りがめっきり減ったよ','工場見学の受け入れ','キャッシュレスの手数料が地味に痛い',
+       'セルフレジを入れるか悩んでるんだ','万引きが増えて困ってるんだよ','お中元の時期は店が回らないんだ','商店街のシャッターが増えたね','仕込みは朝4時からなんだよ',
+       '保健所の立ち入りが来てね','雨で延びた現場の工期','アレルギー表示の対応が大変でね','ふるさと納税の返礼品で注文が増えた','お茶の値段が下がって農家は大変でね',
+       '食品工場のHACCP対応','介護報酬が上がらなくてね','夜勤ができる職員がいないんだ','利用者さんのご家族からの電話が多くて','送迎の車がもう一台欲しいんだよ',
+       '荷主との運賃交渉','介護は人がいれば仕事はあるんだけど','施設の感染症対策','今年は玉ねぎの出来がいいんだよ','みかんの収穫で家族総出でね',
+       '茶畑を貸したいって人が増えてね','農機具が高くて新しいのは無理だね','イノシシに畑をやられちゃってね','配送ルートの組み直し','息子は農業はやらないって言ってる',
+       '直売所の売上が伸びてきてね','田植えの時期は電話に出られないよ','ビニールハウスの暖房代','総務は私一人で全部やってるんです','上に確認してから折り返しますね',
+       '稟議を通すのに一か月かかるんです','年末商戦の仕入れ','社長が決めたことには逆らえなくて','前任者のファイルが見つからなくて','年末調整の時期は何もできないです',
+       '社内の説得が一番大変なんです','相見積を取らないと決裁が下りなくて','担当になって三か月目なんです','社長がこういう話好きなんですよね','新茶の時期の忙しさ',
+       '健康診断の日程調整','労働基準監督署の調査','ストレスチェックの実施','株主総会の準備期間','夏季休暇の日程調整',
+       '生産は私が見てるけど予算は本社でね','ヒヤリハットの報告が増えてね','5Sを徹底しろって本社がうるさくて','介護職員の夜勤シフト','工場長になってまだ一年でね',
+       '夜勤明けのミーティング','この前、泥棒に入られてね','事務所を移転しようと思ってて','今月は売上がいまいちでね','去年よりはだいぶ持ち直したよ',
+       '景気がいいのは一部だけだよね','収穫期の人手集め','何をやっても儲からない時代だよ','最近は夜の付き合いも減ったね','地震の備えは何もしてないな',
+       '保険の更新が来たけど内容が分からない','社用車の事故が続いちゃってね','新しい事業を始めようか迷ってて','顧問の社労士を探してるんだ','労災が起きた翌日' ];
+const AS_LONG = [ /* R687: 232本 */
   '先週、長年付き合いのある仕入先から値上げの連絡が来てね。うちも客先に転嫁できるか、正直悩んでるんだよ。',
   '息子が会社を継ぐって言ってくれたんだけど、現場の職人たちがどう思うか。私の代とは空気が違うから。',
   '電気代が上がってるのは分かってる。でも見直しって言っても、契約を変える手間を考えると、担当の私が動く気にならなくてね。',
@@ -4211,7 +4391,227 @@ const AS_LONG = [
   '月末はいつも資金繰りで頭がいっぱいでね。手形の期日と給料日が重なる月は特に、夜も落ち着かない。',
   '展示会に出したけど、名刺は集まっても商談につながらない。何のために出てるのか分からなくなってきた。',
   '古い機械がそろそろ限界でね。入れ替えたいけど一台で数千万。銀行に相談するにも、今の売上だと渋い顔をされる。',
-  'うちの営業は私一人。現場も見なきゃいけないから、新規に回る時間なんてほとんど無いのが本音だよ。'
+  'うちの営業は私一人。現場も見なきゃいけないから、新規に回る時間なんてほとんど無いのが本音だよ。',
+  '娘婿に継がせるつもりで10年育ててきたんだけど、最近どうも本人の気持ちが揺れてるみたいでね。直接は聞けないんだよ。',
+  '長男は東京で銀行員やってて、帰ってくる気はないって正月に言われた。次男は現場向きだけど、経営は無理だと思う。',
+  '専務の山田は親父の代からの番頭でね。あいつがいなくなったら、取引先との話が全部止まる。本人ももう68だよ。',
+  '2代目です。父はまだ毎朝工場に来て、僕の決めたことを職人の前でひっくり返すんです。悪気はないんですけどね。',
+  '娘が継ぎたいって言ってくれてるんだけど、建設の現場で女の社長ってやっていけるのか。親としては心配でね。',
+  '株の半分は弟が持っててね。弟はもう会社に顔を出してないんだけど、売るとなったら何て言うか分からないんだよ。',
+  '甥っ子を入れたのが3年前。仕事はできるんだけど、古参の職人と口きかなくなっちゃってね。間に入るのも疲れた。',
+  '会長の父が遺言を書いてないみたいでね。自社株をどうするのか聞きたいけど、縁起でもないって怒られるんですよ。',
+  '息子に代を譲ったら、家内も経理から退くって言い出してね。30年帳簿を見てきた人がいなくなるのは、正直不安だよ。',
+  '主人は継がせるって言ってますけど、息子のお嫁さんが反対なんですよ。夜は遅いし休みもないしって。私も分かるんです。',
+  '兄弟3人で役員やってるけど、仲がいいのは今のうちだけだと思う。私が倒れたら揉めるのは目に見えてるよ。',
+  'ハローワークに出して半年、応募は2件だけ。面接に来るはずだった1人も、当日連絡なしで来なかったよ。',
+  'ベトナムの子が5人いてね。真面目でよく働くんだけど、あと2年で帰国する。その後どうするか、まだ決めてないんだ。',
+  '去年入った高卒の子がね、先輩に怒鳴られたのが嫌だって3か月で辞めたんだ。怒鳴った方は昔ながらの職人でね。',
+  '求人サイトに月20万払ってるけど、来るのは60代ばかり。ありがたいんだけど、10年後を考えると頭が痛いんだよ。',
+  '辞めた社員が同業に移って、うちの若いのに声をかけてるらしくてね。引き抜きって言っても、証拠はないんだけど。',
+  '面接は社長が全部やるんです。総務の私が書類で絞っても、最後は社長の感覚で決まるので、正直あまり意味がなくて。',
+  '新卒なんてうちには無理だと思ってたけど、地元の工業高校の先生が1人紹介してくれてね。来年どうなるかだよ。',
+  '夜勤ができる人がいなくてね。今は私と工場長が交代で入ってる。二人とももう60近いから、体が持つか分からない。',
+  '中途で来た45歳の人が、前の会社のやり方を押し付けてきてね。悪い人じゃないけど、現場がギスギスしてるんだ。',
+  'パートさんが3人同時に辞めたいって言ってきてね。理由を聞いても言わないんだ。多分、人間関係なんだろうけど。',
+  '最低賃金がまた上がって、パートさん20人分で年間いくら増えるか計算したら、ぞっとしたよ。値上げなんて言えない客ばかりなのに。',
+  '若い子の給料を上げたら、今度はベテランが面白くないって顔してね。差が縮まったのが気に入らないんだろうね。',
+  '賞与を去年から寸志にしたんだ。誰も文句は言わないけど、辞めていく理由の一つなんだろうなとは思ってる。',
+  '隣の工場が時給1300円で募集を出してね。うちは1150円。同じ工業団地の中だから、みんな比べるんだよ。',
+  '社長は給料を上げたいって言うんですけど、経理で試算すると利益がほぼ飛ぶんです。私が止め役になっちゃってて。',
+  '扶養の範囲で働きたいってパートさんが多くてね。時給を上げたら勤務時間を減らされて、結局人手が足りなくなるんだ。',
+  '鋼材が2年前の1.4倍になってね。元請けに言ったら、他もみんな我慢してるって言われた。それで話は終わりだよ。',
+  '段ボールがまた上がるって通知が来た。うちの弁当は1個480円でやってるから、10円上げるのも怖いんだ。',
+  '取引先に値上げのお願いに行ったら、じゃあ他も当たってみるって言われてね。30年の付き合いでもこれかと思ったよ。',
+  '値上げを通してくれたのは3社のうち1社だけ。残りの2社は来期に検討って言われて、もう半年経ってる。',
+  'パンを20円上げたら、常連のおばあちゃんに高くなったねって言われてね。小麦も油も上がってるんだけど、それが一番こたえた。',
+  '塗料が上がって、見積もりを出し直すたびにお客さんに説明してる。去年の見積もりと比べられると、何も言えないんだよ。',
+  '材料費が上がった分を歩留まりで吸収しろって社長は言うんですよ。工場長としては、もう限界まで詰めてるんですけどね。',
+  '肥料も資材も上がってね。米の値段は上がったって世間は言うけど、うちの手取りはそんなに変わってないんだよ。',
+  '電気代が月80万から130万になった。コンプレッサーを夜に回すとか工夫はしてるけど、焼け石に水だね。',
+  '冷凍庫が3台あって、夏場の電気代が一番の悩みでね。止めるわけにいかないし、古いから効率も悪いんだ。',
+  '太陽光を載せないかって営業が毎週来るんだよ。うちは屋根が古いから、載せる前に屋根を直せって言われそうでね。',
+  '電力会社の切り替え、3社から提案をもらって比較表まで作ったんです。でも社長の今のままでいいの一言で終わりました。',
+  'ガス代が上がって、乾燥炉の燃料をどうするか検討中でね。電気に変えると設備ごとだから、1千万は下らないんだ。',
+  '介護施設だから、利用者さんにエアコンを我慢させるわけにいかないでしょう。電気代は去年の1.3倍で、報酬は変わらないんですよ。',
+  'プレス機が昭和58年製でね。部品がもう出ないから、壊れたら中古を探すしかない。職人が直しながら使ってるんだよ。',
+  '5軸の加工機を入れたいんだけど、使いこなせる人間がいなくてね。入れても宝の持ち腐れになるんじゃないかって。',
+  '印刷機を入れ替えると2億。印刷の仕事は年々減ってるから、回収できる気がしないんだよ。でも今のはもう限界でね。',
+  '整備工場のリフトが1基動かなくなってね。修理に120万って言われて、あと何年やるかを考えると迷うんだよ。',
+  '設備の更新計画を毎年社長に出してるんですけど、毎年先送りなんです。去年はとうとうラインが2日止まりました。',
+  'トラクターが30年もので、去年は田植えの最中に止まってね。新車は800万。息子が継がないなら買う意味がないんだ。',
+  '中古の機械を買ったら、半年で制御盤が壊れてね。安物買いだったかと思うと、次の決断が怖くなるんだよ。',
+  '借入が2億あって、全部私の個人保証なんだ。息子に継がせるなら、この保証もついていくわけでしょ。それが言えない。',
+  'メインバンクの支店長が変わってね。前の人は現場まで見に来てくれたけど、今度の人は数字しか見ないんだよ。',
+  'コロナの時に借りたゼロゼロ融資の返済が始まってね。月に60万。売上は戻ってないから、正直きつい。',
+  '信用金庫から借り換えを勧められてるんだけど、条件がいいのか悪いのか、自分じゃ判断がつかないんだ。税理士に聞いても銀行の肩を持つしね。',
+  '自宅も担保に入ってるんです。主人はなんとかなるって言いますけど、私は毎月の返済表を見るたびに怖くて。',
+  '銀行が急に決算の説明に来てくれって言ってきてね。赤字が2期続いたからだと思う。何を言われるのか落ち着かない。',
+  '金利が上がるって聞いて、変動で借りてる分がどうなるか計算してみた。0.5%上がるだけで年100万増える。笑えないよ。',
+  'ものづくり補助金を申請しようとしたら、コンサルに成功報酬15%って言われてね。それって高いのか安いのか。',
+  '補助金が通ったのはいいけど、先に全額払わなきゃいけないんだよ。入金は1年後。その間の資金が回らないんだ。',
+  '補助金の書類、総務の私が一人で作ってるんです。去年は締切の前日に徹夜して、それでも落ちました。',
+  '省エネの補助金があるって商工会で聞いたけど、対象の設備が決まってるらしくてね。うちの機械が入るのか分からない。',
+  '前に補助金で入れた機械、5年は売れないし用途も変えられないって縛りがあってね。今になって足かせなんだよ。',
+  '事業承継の補助金があるって税理士に聞いたけど、そもそも誰に継ぐか決まってないからね。話が進まないんだ。',
+  '売上の7割が1社でね。そこの購買部長が来年定年なんだよ。次の人がどう出るか、今から胃が痛いんだ。',
+  '大手の自動車部品の仕事が主力でね。全部電気自動車に変わったら、うちが作ってる部品はほぼ要らなくなるんだよ。',
+  '取引先が工場を海外に移すって話が出ててね。まだ噂の段階だけど、本当なら売上の半分が消える。',
+  '一番の得意先から、来年からは相見積もりにするって通知が来た。40年、一社でずっとやってきたのにね。',
+  '地元のスーパー1社に卸してるんだけど、そこが県外の大手に買われてね。仕入れの担当がみんな変わったんだ。',
+  'うちの社長は一番のお客さんの社長と同級生でしてね。その縁で仕事が来てるんです。二人とも70過ぎですよ。',
+  '元請けが危ないって噂があってね。売掛が1800万残ってる。確かめようにも、どこに聞けばいいのか。',
+  '隣町に大きな物流センターができてね。時給も高いし、うちのドライバーが2人向こうに行っちゃったんだ。',
+  '同業の工場が3社合併して、見積もりが一気に安くなったらしい。うちの単価じゃもう勝てないって客に言われたよ。',
+  '近くにコインランドリーが2軒できて、うちのクリーニング屋はお客さんが目に見えて減ったね。自分で洗う時代なんだろうね。',
+  '若い2代目が隣の市で車検を1万円安くやり始めてね。ネットで予約できるらしい。うちはまだ電話だけなんだよ。',
+  'ライバルの印刷会社が、ネット入稿で翌日納品を始めたんだ。うちは職人の目で色を見るのが売りなんだけどね。',
+  '同業者が廃業して、その客がうちに流れてきてるんだ。ありがたいけど、人手が足りなくて断ってる分もある。',
+  '先月、出荷した部品に0.02ミリの寸法違いが見つかってね。全数検査で3日間、全員残業。原因はまだ分からない。',
+  '弁当に髪の毛が入ってたってクレームが来て、保健所にも連絡がいったんだ。それ以来パートさんが萎縮しちゃってね。',
+  '同じクレームがこれで3回目なんです。対策書は毎回出してるんですけど、現場に落とし込めてないのは自分でも分かってて。',
+  '新築の家で雨漏りがあってね。うちの施工じゃないと思うけど、施主さんはうちに言ってくる。下請けの仕事かもしれない。',
+  '車検で預かった車に傷がついてたって言われてね。うちが付けたのかどうか、入庫の時に写真も撮ってなかったんだよ。',
+  '印刷の色が見本と違うって、パンフレット5千部が刷り直しになってね。原価で80万。誰の責任か社内で揉めた。',
+  '取引先の監査が来年から厳しくなるって言われてね。書類を揃えるのに、専任を一人置かないと回らないんだ。',
+  'ドライバーの残業が年960時間までになって、静岡から大阪の日帰りが組めなくなった。運賃は上がってないのにね。',
+  '運送会社から2024年問題で値上げの連絡が来てね。うちの商品は重いから、1回の配送で2割上がったんだ。',
+  '運送会社が荷受けを朝9時からにしてくれって言ってきてね。うちの出荷は6時からだから、段取りが全部狂うんだ。',
+  'ドライバーが12人いて、平均年齢が58なんだ。大型を運転できる若い子なんて、もううちには来ないよ。',
+  '荷待ちで2時間待たされるのが当たり前でね。その時間も給料は出るのに、運賃には入ってないんだよ。',
+  '自社便をやめて全部外に出そうか迷ってるんだ。でも急な注文に対応できなくなったら、客が離れる気がしてね。',
+  'ドライバーの労働時間の管理を、総務の私がエクセルでやってるんです。法律が変わって、正直ついていけてなくて。',
+  '3年前に入れた生産管理のシステム、使ってるのは事務の子1人だけ。現場は結局紙に書いてるんだ。月5万払ってるのにね。',
+  'タブレットを10台買ったんだけど、今は倉庫の棚で眠ってる。誰も使い方を教えられなかったんだよ。',
+  '勤怠をクラウドに変えたんですけど、年配の方がスマホで打刻できなくて。結局タイムカードと二重なんです。',
+  '見積もりは全部社長の頭の中なんです。エクセルにしましょうって言ったら、そんな暇ないって。社長が倒れたら終わりですよ。',
+  'ホームページを30万で作ってもらったけど、問い合わせは2年で3件。そのうち2件は営業の電話だったよ。',
+  '息子がAIで見積もりを作れるって言うんだけど、職人たちは機械に何が分かるって顔をしてね。間に挟まれてるよ。',
+  'インボイスの対応でパソコンを買い替えたけど、使えるのが経理の家内だけでね。家内が休むと会社が止まるんだ。',
+  '受注はまだFAXが半分なんだ。客の方がFAXだから変えられない。月末は紙の山で、入力ミスも出るんだよ。',
+  'お盆明けは毎年、誰かしら来なくなるんだよ。去年は3人。夏の工場は40度近くになるから、無理もないんだけどね。',
+  'みかんの収穫が11月から始まってね。毎年人手が足りなくて、今年は親戚総出でもどうなるか分からないんだ。',
+  '年末は配送が1.5倍になるのに、ドライバーは増やせない。去年は私が自分でトラックに乗って回ったよ。',
+  '夏場は屋根の上が60度になる。熱中症の対策にファン付きの作業着を配ったけど、若い子は着たがらないんだ。',
+  '冬の早朝は現場が凍っててね。朝7時集合なのに、年配の職人は腰が痛いって休むようになったんだよ。',
+  'お茶は一番茶の2週間が勝負なんだ。その時だけ人がほしいけど、そんな都合のいい人はなかなかいないよね。',
+  'うなぎは土用の時期、店を回すのに最低8人要る。今年は5人で乗り切ったけど、来年は正直自信がない。',
+  '去年の健康診断で心臓に影があるって言われてね。精密検査はまだ行ってないんだ。行ったら何か決めなきゃいけなくなる気がして。',
+  '腰を悪くして、もう現場に上がれないんだ。でも見積もりと段取りは俺しかできない。事務所で電話ばかりしてるよ。',
+  '主人が2月に脳梗塞で入院しまして。幸い軽く済んだんですけど、それから会社のことを急に口にするようになって。',
+  '75になって、車の運転が怖くなってきてね。得意先回りは自分でやってたから、それができなくなるのが一番困る。',
+  '医者から仕事を減らせって言われてるんだけど、減らしたら誰がやるんだって話でね。家内にはまだ言ってないんだ。',
+  '最近、物忘れが増えてね。取引先の名前が出てこない時がある。笑い話にしてるけど、内心ちょっと怖いんだよ。',
+  '70で辞めるって決めてたんだけど、あと2年になった。何から手をつけていいか、全然進んでないんだよ。',
+  '同級生が去年会社をたたんでね。今は毎日釣りだって。羨ましいけど、うちには職人が15人いるからね。',
+  '引退したら女房と四国を回りたいって、もう10年言ってる。去年も結局、盆に3日休んだだけだった。女房はもう信じてないと思うよ。',
+  '辞め時が分からないんだよ。売上が落ちてからじゃ遅いって言われるけど、今は調子がいいから辞める理由もない。',
+  '社長は80まで現役だって言ってますけど、専務の私は65で引きたいんです。でも私が先に辞めるわけにもいかなくて。',
+  '会社をたたむのにもお金がかかるって、税理士に聞いて初めて知ったよ。機械の処分だけで数百万だって。',
+  '同業の社長が会社を売ったって聞いてね。いくらで売れたのか、どうやって相手を見つけたのか、正直気になってるんだ。',
+  'M&Aって聞くと、乗っ取られるみたいなイメージがあってね。社員がどうなるのか、そこが一番引っかかるんだよ。',
+  '前に仲介会社から手紙が来て、うちを買いたい会社がありますって。本当かどうか怪しくて、そのまま捨てたんだ。',
+  '売るなら社名は残してほしいんだよ。祖父が付けた名前で、町の人はみんなその名前で呼んでくれてるからね。',
+  '会社の値段なんて考えたこともなかった。決算書だけ見たら赤字の年もあるし、買う人なんているのかね。',
+  '知り合いが会社を売った後、1年で社員が半分辞めたって聞いてね。売った本人は後悔してるらしいよ。',
+  '父は売るなんて絶対に言わない人です。でも僕は正直、自分がこの会社を大きくできるとは思えないんです。',
+  '地元の同業から一緒にならないかって話が来てるんだ。相手の社長は悪い人じゃないけど、うちが下になるのがね。',
+  '売るとしたら、いつが一番いいのか。業績がいい今なのか、息子の答えを待つのか。答えが出ないんだよ。',
+  'ファンドって言葉を聞くだけで身構えちゃうんだよ。3年後に転売されたら、うちの社員はどうなるんだって。',
+  '浜松まつりで、今年はうちの町内の組長をやることになってね。5月は仕事どころじゃないんだよ。',
+  '地元の祭りの寄付を毎年30万出してるんだ。やめたいけど、やめたら何を言われるか分からない土地だからね。',
+  '商工会の役員を頼まれてね。断れなくて引き受けたけど、会議が月に3回もある。本業が回らないんだよ。',
+  '町内の人がみんなうちの社員みたいなもんでね。一人辞めると、その家族みんなと気まずくなるんだよ。',
+  '小学校の工場見学を毎年受けてるんだ。その時の子が一人、去年うちに入ってくれてね。そういうのが続けばいいけど。',
+  '秋祭りの屋台を曳く若い衆が足りなくて、うちの外国人の子たちに手伝ってもらったんだ。地元の人は喜んでたけどね。',
+  '地元の少年野球のスポンサーを20年やってる。監督が代わって、今年から協賛金を倍にしてくれって言われたよ。',
+  '去年の台風で工場の屋根が飛んでね。保険は下りたけど、復旧に2か月かかって、その間に客が1社離れたんだ。',
+  'うちは海から500メートルでね。津波が来たら全部終わり。移転も考えたけど、土地が見つからないんだ。',
+  '大雨のたびに裏の川があふれそうになってね。去年は機械の手前まで水が来た。次はどうなるか分からないよ。',
+  '夏の雷で制御盤がやられてね。修理に3週間。その間は手作業で回したけど、納期が2件遅れたんだ。',
+  'BCPを作れって取引先に言われてるんだけど、何を書けばいいのか。形だけの書類なら作れるんだけどね。',
+  '今年の猛暑で茶葉がやられてね。収量が3割減った。こればっかりは誰に文句を言えばいいのかね。',
+  '地震の時に棚が倒れて、在庫の半分がダメになったことがあってね。それ以来在庫を減らしたけど、今度は欠品が増えた。',
+  '前のコンサルには月30万で1年払ったよ。立派な報告書が残っただけで、現場は何も変わらなかったね。',
+  '前に来た営業さんは、契約した途端に来なくなってね。担当が3回変わって、今は誰に連絡すればいいのかも分からない。',
+  'リースで入れたコピー機が、途中で解約できないって分かったのが2年後でね。それ以来、契約書は全部税理士に見せてる。',
+  '経営計画を作りましょうって言われて、2日間の研修に行ったんだ。作ったけど、机の引き出しに入ったままだよ。',
+  '仲介会社の人が一回来て、うちの会社はいくらですって紙を置いていってね。それっきり。何だったのかね。',
+  '前に紹介してもらった税理士が、うちの業界のことを全然分かってなくてね。結局、元の先生に戻したんだ。',
+  '若い営業さんが熱心でね、話を聞いてやったら、上司を連れてきてその場で判を押せって。あれ以来ちょっと警戒してるんだ。',
+  '前の担当の方、資料だけ置いて説明なしで帰っちゃったんです。社長に聞かれても私が答えられなくて、恥をかきました。',
+  '私の一存では決められないんです。社長に上げるにしても、どう説明したらいいのか分からなくて。資料をもう少しいただけますか。',
+  '前任が決めた契約を変えると、何かあった時に私のせいになるんですよね。だから正直、あまり触りたくないんです。',
+  '社長は乗り気なんですけど、決算前なので経理としては今は動きたくないんです。3月を過ぎたらまた考えさせてください。',
+  '総務は私一人で、人事も経理も備品も全部なんです。新しいことを始めると、また私の仕事が増えるのかなって。',
+  '比較表を作って社長に出したら、で、どれがいいのって聞かれて。それを決めてほしくて出したんですけどね。',
+  '専務と社長で言うことが違うんです。どっちの顔も立てないといけないので、話がなかなか前に進まなくて。',
+  'そういえばね、この前ゴルフで一緒になった人が同じ業界でさ。その人の会社も人が足りないって。どこも同じだね。',
+  'うちの孫が今年から野球を始めてね。毎週末の送り迎えで、土日はほとんど会社にいないんだよ。あ、それで何の話だっけ。',
+  '昨日も組合の飲み会でね、集まれば後継ぎの話ばっかりだよ。70過ぎの社長が5人もいた。まあうちは、まだ先の話だけどね。',
+  'この前テレビで見たんだけど、どこかの町工場が宇宙の部品を作ってるって。うちもね、腕だけなら負けないと思うよ。',
+  '家内とこの前、昔住んでた借家を見に行ってね。あそこで創業したんだよ、机一つで。もう更地になってたけどね。',
+  'うちのデイサービスは職員が12人で、半分が60代なんです。送迎の運転ができる人が減って、利用をお断りする日も出てきました。',
+  '介護報酬の改定のたびに振り回されてね。加算を取るための書類ばかり増えて、職員が利用者さんと話す時間が減ってるんだよ。',
+  '施設長を任せてた人が辞めることになってね。後任を外から探すか、中で育てるか。どっちも当てがないんだ。',
+  '利用者さんのご家族から、職員の言葉遣いについて手紙が来てね。本人は覚えてないって言うし、どう扱うか悩んでる。',
+  '年賀状の印刷が20年前の5分の1になってね。秋から年末の稼ぎ頭だったのに。何で埋めればいいのか考えてるんだ。',
+  'チラシの仕事がどんどんネットに流れてね。うちに残ってるのは、昔から付き合いのある地元の商店ばかりなんだよ。',
+  '印刷の職人が今年2人定年でね。色合わせができる人間が、あとは私と工場長だけになっちゃうんだ。',
+  '車の電子化が進んで、診断機がないと何もできなくなってね。1台200万。うちみたいな町の整備屋にはきついんだよ。',
+  '整備士の資格を取った子が、ディーラーに行くって辞めていってね。給料で比べられたら、うちは勝てないんだ。',
+  'お客さんの平均年齢が70近くでね。免許を返納したって挨拶に来てくれるのは嬉しいけど、そのたびに客が一人減るんだ。',
+  '電気自動車の修理の講習、行った方がいいのは分かってるんだ。でも3日間も店を閉めるわけにいかなくてね。毎年先延ばしになってる。',
+  '百貨店の催事に出てくれって話が来てね。売れれば大きいけど、人を5日間出すと店が回らないんだよ。',
+  'うちの味噌は3年寝かせるんだ。今仕込んだ分が売れるのは3年後。その時に客がいるのか、たまに考えるよ。',
+  'ネット通販を始めたら全国から注文が来てね。嬉しいんだけど、発送作業で夜11時まで家内と箱詰めしてるんだ。',
+  '仕出しの注文が法事の減少でがくっと落ちてね。コロナで家族だけでって流れが、そのまま戻ってないんだよ。',
+  '駅前の商店街でうちが一番古いんだけど、両隣がシャッターになってね。人通りが減って、うちだけ頑張ってもね。',
+  '郊外に大型店ができてから、売上が3割落ちたままでね。常連さんは来てくれるけど、みんな年を取ってきたんだ。',
+  'レジを新しくしないかって話が来てね。キャッシュレスの手数料を考えると、現金だけでいいかなって思ってるんだ。',
+  '田んぼを15町やってるけど、近所の人から預かってくれって頼まれる一方でね。断れないけど、もう手が回らないんだ。',
+  '息子が農業法人にしようって言うんだけど、書類とか役所とか、そういうのは俺には分からないからね。任せていいのか。',
+  'イチゴのハウスの暖房費が去年の倍でね。値段は据え置きだから、冬を越すたびに赤字が膨らんでるんだよ。',
+  '公共工事の入札に出ても、最近は最低価格ギリギリの業者に取られてね。あれでちゃんと仕事になってるのか疑問だよ。',
+  '一人親方に頼んでた仕事が、最近は断られることが増えてね。どこも手一杯で、うちの単価じゃ来てくれないんだ。',
+  '現場監督が一人しかいなくて、同時に3件が限界なんだ。問い合わせはあるのに、4件目からは断ってる。',
+  '足場の職人が高齢化でね。70の人がまだ上ってる。事故が起きたら会社がつぶれるって、毎日ひやひやしてるよ。',
+  '倉庫の荷主さんが1社撤退するって言ってきてね。3千坪の半分が空く。次の荷主を探すにも、当てがないんだよ。',
+  'フォークリフトの免許を持ってる人が5人しかいなくてね。一人休むと、出荷が全部後ろにずれるんだ。',
+  '経理は私がずっとやってきたんですけど、主人は私に相談せずに機械を買ってくるんです。支払いの段になって知るんですよ。',
+  '社員の給料日の前の晩は、今でも眠れないんです。30年やってきて慣れるかと思ったら、全然慣れませんね。',
+  '売掛金の回収が遅れてる先が2社あって、社長に言っても昔からの付き合いだからって。経理の私が催促するわけにもいかなくて。',
+  '顧問の税理士の先生が80歳なんです。引退の話も出ないし、こちらから切り出すのも失礼でしょう。',
+  '息子が帰ってくるって言うんですけど、お嫁さんと孫が東京を離れたくないって。母親の私からは何も言えなくて。',
+  '社長は現場のことを分かってるつもりなんですけど、最後に機械を触ったのは10年前なんです。言いにくいですけどね。',
+  '若手に技術を教えようにも、生産に追われて時間が取れないんです。教えられる人間は私を入れて3人です。',
+  '夜勤明けの子が朝のミーティングで寝てるんです。怒るのは簡単ですけど、あの人数じゃ無理もないんですよ。',
+  '検査の自動化を提案したら、社長に人でやった方が確実だって言われまして。その人がいないって話をしてるんですけどね。',
+  '社長が決めたことを社員に伝えるのが専務の役目なんです。ただ最近は、社員の言い分の方が正しいと思うことが増えてきましてね。',
+  '私も入社して40年です。会社を売るって話が出たら、正直ほっとする気持ちと寂しい気持ちと半々ですね。',
+  '2代目がやる気なのはいいんですけど、何でも一気に変えようとするんです。ベテランが3人辞めると言い出しまして。',
+  '取引先の社長の息子が継いでから、支払いが60日から90日に延びたんだ。文句を言えば切られそうで、何も言えないよ。',
+  '手形がなくなるって聞いたけど、うちの客はまだ手形で払ってくるんだ。割引の手数料だけで年に数十万だよ。',
+  '役所の仕事を20年やってきたけど、電子入札になってからついていけなくてね。事務の子が辞めたら終わりなんだ。',
+  '社員旅行を復活させようと思ったら、行きたくないって声が半分でね。昔と違うのは分かってるけど、寂しいもんだよ。',
+  '本社を建て替えるか迷ってるんだ。築45年で耐震も怪しい。でも継ぐ人がいないのに建てるのもね。',
+  '会社の土地が私の個人名義でね。会社を誰かに渡すとなったら、土地をどうするのか。税理士も首をかしげてたよ。',
+  '息子が継ぐ前提で、今年から社長室の机を半分空けたんだ。でもまだ一度も座ってくれないんだよ。',
+  '仕事はあるんだよ。去年断った分だけで3千万にはなる。足りないのは人と、あと10年若い自分だね。',
+  '息子が新しい事業をやりたいって言ってね。キッチンカーだって。本業と関係ないし、失敗したら誰が責任取るのか。',
+  '2代目の私が社長になって3年です。父の代からのお客さんに、先代はもっと融通が利いたって言われるのが一番こたえますね。',
+  '社員の平均年齢が56歳になってね。毎年誰かの定年祝いをやってる。入社祝いはここ3年やってないんだよ。',
+  '定年を65から70に延ばしたんだ。本人たちは喜んでるけど、若い子が上に上がれないって不満も出てきてね。',
+  '外国人の受け入れの制度が変わるって聞いてね。うちは8人いるから、何がどう変わるのか。組合の説明もよく分からない。',
+  '去年、ベテランの溶接工が労災で指を怪我してね。本人は大丈夫って言うけど、それから現場の空気が変わったんだよ。',
+  '取引先から脱炭素の取り組みを報告してくれって調査票が来てね。うちのCO2なんて、どうやって測るんだか。',
+  '先代が残した借金を返し終わったのが去年でね。やっと身軽になったと思ったら、今度は設備が寿命なんだよ。',
+  '3月決算なんだけど、毎年2月に税理士から数字を聞いて慌てるんだ。途中で分かれば手も打てるんだけどね。',
+  '役員報酬を下げて社員の賞与に回したんだ。家内には内緒でね。家計の方が先に苦しくなるかもしれないけど。',
+  '東京の会社から、うちの技術を使って一緒にやりませんかってメールが来てね。ありがたいけど、話がうますぎる気もする。',
+  '今年で創業50周年でね。記念に何かやろうって社員は言うけど、そのお金があるなら機械に回したいのが本音だよ。',
+  '県外の会社が、うちの隣の土地を工場用に買いたいらしいんだ。うちの土地も売れば楽になるって親戚は言うけどね。',
+  '車検の見積もりを出したら、ネットで調べたらもっと安かったって言われてね。説明しても、分かってもらえないんだよ。',
+  '次男が大学で経営を学んでるって言うんだ。卒業したら戻るかもしれないって。期待していいのか、しちゃいけないのか。'
 ];
 const AS_FORM_W = { 1: { word: 6, short: 3, long: 1 }, 2: { word: 4, short: 4, long: 2 }, 3: { word: 2, short: 4, long: 4 }, 4: { word: 1, short: 3, long: 6 } };
 function asPickForm(lv){
@@ -4223,9 +4623,13 @@ function asPickForm(lv){
   return Object.keys(w)[0];
 }
 const AS_T = { a: 30, b: 10, c: 20 };
-let asSetup = { persona: 'none', total: 10, input: 'text', sec: 30, form: 'mix' }; // R685: 相手役の既定は「なし」
+let asSetup = { persona: 'none', total: 10, input: 'text', sec: 30, form: 'mix', mode: 'q' }; // R685: 相手役の既定は「なし」
 const AS_FORMS = ['mix', 'word', 'short', 'long'];
 const AS_SECS = [5, 10, 15, 20, 30, 45, 60]; // R686: プリセット（自由入力は3〜300秒）
+const AS_TOTALS = [3, 5, 10, 20, 30]; // R690: 題数プリセット（自由入力は1〜100）
+function asTotalOk(v){ v = Number(v); return Number.isInteger(v) && v >= 1 && v <= 100; }
+function asSetTotal(v, btn){ asSetup.total = v; selChip('as-total', btn); const c = document.getElementById('as-total-custom'); if (c) c.value = ''; }
+function asTotalCustom(el){ const v = parseInt(el.value, 10); if (!asTotalOk(v)) return; asSetup.total = v; document.querySelectorAll('#as-total .goal-btn').forEach(b => { const on = parseInt(b.dataset.v, 10) === v; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
 function asSecOk(v){ v = Number(v); return Number.isInteger(v) && v >= 3 && v <= 300; }
 function asSetSec(v, btn){ asSetup.sec = v; selChip('as-sec', btn); const c = document.getElementById('as-sec-custom'); if (c) c.value = ''; }
 function asSecCustom(el){ const v = parseInt(el.value, 10); if (!asSecOk(v)) return; asSetup.sec = v; document.querySelectorAll('#as-sec .goal-btn').forEach(b => { const on = parseInt(b.dataset.v, 10) === v; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
@@ -4233,20 +4637,22 @@ let AS = null;            // 進行中セッション
 let asTimer = null, asRecog = null, asRecogTarget = null;
 function asHist(){ try { const v = JSON.parse(localStorage.getItem('assoc_hist') || '[]'); return Array.isArray(v) ? v : []; } catch(e) { return []; } }
 function asSetupOpen(){
-  try { const p = localStorage.getItem('as_persona2'); if (p === 'none' || p === 'R' || AS_PERSONA[p]) asSetup.persona = p; /* R685: 新キー＝既定なしで始まる */ const t = safeInt(localStorage.getItem('as_total')); if ([3,5,10].includes(t)) asSetup.total = t; const i = localStorage.getItem('as_input'); if (i === 'voice' || i === 'text') asSetup.input = i; const sc = safeInt(localStorage.getItem('as_sec')); if (asSecOk(sc)) asSetup.sec = sc; const fm = localStorage.getItem('as_form'); if (AS_FORMS.includes(fm)) asSetup.form = fm; } catch(e) {}
-  markGroup('as-persona', asSetup.persona); markGroup('as-total', String(asSetup.total)); markGroup('as-input', asSetup.input); markGroup('as-sec', String(asSetup.sec)); { const c = document.getElementById('as-sec-custom'); if (c) c.value = AS_SECS.includes(asSetup.sec) ? '' : String(asSetup.sec); } /* R686: プリセット外は自由欄に表示 */ markGroup('as-form', asSetup.form);
+  try { const p = localStorage.getItem('as_persona2'); if (p === 'none' || p === 'R' || AS_PERSONA[p]) asSetup.persona = p; /* R685: 新キー＝既定なしで始まる */ const t = safeInt(localStorage.getItem('as_total')); if (asTotalOk(t)) asSetup.total = t; const i = localStorage.getItem('as_input'); if (i === 'voice' || i === 'text') asSetup.input = i; const sc = safeInt(localStorage.getItem('as_sec')); if (asSecOk(sc)) asSetup.sec = sc; const fm = localStorage.getItem('as_form'); if (AS_FORMS.includes(fm)) asSetup.form = fm; const md = localStorage.getItem('as_mode'); if (md === 'q' || md === 'free') asSetup.mode = md; } catch(e) {}
+  markGroup('as-persona', asSetup.persona); markGroup('as-total', String(asSetup.total)); { const c = document.getElementById('as-total-custom'); if (c) c.value = AS_TOTALS.includes(asSetup.total) ? '' : String(asSetup.total); } /* R690 */ markGroup('as-input', asSetup.input); markGroup('as-sec', String(asSetup.sec)); { const c = document.getElementById('as-sec-custom'); if (c) c.value = AS_SECS.includes(asSetup.sec) ? '' : String(asSetup.sec); } /* R686: プリセット外は自由欄に表示 */ markGroup('as-form', asSetup.form); markGroup('as-mode', asSetup.mode);
   const hist = asHist(); const el = document.getElementById('as-prev');
   { const L = hist[hist.length - 1]; if (el) el.textContent = !hist.length ? '' : L.solo ? ('前回: 平均' + L.avg + '個 / 初動' + (L.first == null ? '－' : L.first + '秒') + ' / レベル' + L.level + '（連想だけ・通算' + hist.length + '回）') : ('前回: 平均' + L.avg + '個 / 自分本位 ' + L.selfSel + '/' + L.n + ' / 閉じた質問 ' + L.closed + '/' + L.n + ' / レベル' + L.level + ' 到達（通算' + hist.length + '回）'); }
   nav('s-as-setup');
 }
 function asStart(){
   { const c = document.getElementById('as-sec-custom'); if (c && c.value.trim() !== '') { const v = parseInt(c.value, 10); if (!asSecOk(v)) { toast('時間は3〜300秒の整数で入力してください'); try { c.focus(); } catch(e) {} return; } asSetup.sec = v; } } // R686: 自由入力の不正値は黙って丸めず止める
-  try { localStorage.setItem('as_persona2', asSetup.persona); localStorage.setItem('as_total', String(asSetup.total)); localStorage.setItem('as_input', asSetup.input); localStorage.setItem('as_sec', String(asSetup.sec)); localStorage.setItem('as_form', asSetup.form); } catch(e) {}
+  { const c = document.getElementById('as-total-custom'); if (c && c.value.trim() !== '') { const v = parseInt(c.value, 10); if (!asTotalOk(v)) { toast('題数は1〜100の整数で入力してください'); try { c.focus(); } catch(e) {} return; } asSetup.total = v; } } // R690
+  try { localStorage.setItem('as_persona2', asSetup.persona); localStorage.setItem('as_total', String(asSetup.total)); localStorage.setItem('as_input', asSetup.input); localStorage.setItem('as_sec', String(asSetup.sec)); localStorage.setItem('as_form', asSetup.form); localStorage.setItem('as_mode', asSetup.mode); } catch(e) {}
   const keys = Object.keys(AS_PERSONA);
   const pk = asSetup.persona === 'none' ? 'none' : (AS_PERSONA[asSetup.persona] ? asSetup.persona : keys[Math.floor(Math.random() * keys.length)]); // R682: none=連想だけ
-  AS = { persona: pk, total: asSetup.total, voice: asSetup.input === 'voice', sec: asSecOk(asSetup.sec) ? asSetup.sec : 30, form: AS_FORMS.includes(asSetup.form) ? asSetup.form : 'mix', idx: 0, level: 1, lastGenre: '', lastForm: '', used: {}, rounds: [], cur: null };
+  AS = { persona: pk, total: asTotalOk(asSetup.total) ? asSetup.total : 10, voice: asSetup.input === 'voice', sec: asSecOk(asSetup.sec) ? asSetup.sec : 30, form: AS_FORMS.includes(asSetup.form) ? asSetup.form : 'mix', qmode: asSetup.mode !== 'free', idx: 0, level: 1, lastGenre: '', lastForm: '', used: {}, rounds: [], cur: null };
   { const pl = document.getElementById('as-persona-lbl'); pl.textContent = pk === 'none' ? '' : ('相手役：' + AS_PERSONA[pk].name); pl.hidden = pk === 'none'; } // R685: 連想だけの時は何も出さない
-  { const mb = document.getElementById('as-mic'); if (mb) mb.style.display = AS.voice ? '' : 'none'; const ta = document.getElementById('as-ta'); if (ta) ta.placeholder = AS.voice ? '話すと、ここに1行ずつ入ります（直接書いてもOK）' : '思いついた言葉を1行ずつ'; } // R685: 文字=書く欄だけ／声=聞き取りボタン付き
+  asRenderTypes(); // R689
+  { const mb = document.getElementById('as-mic'); if (mb) mb.style.display = AS.voice ? '' : 'none'; const ta = document.getElementById('as-ta'); if (ta) ta.placeholder = ''; } /* R688: 薄い案内文は出さない */ // R685: 文字=書く欄だけ／声=聞き取りボタン付き
   { /* R685: 前回セッションの画面(フィードバック・古いお題)が残らないよう、入力状態に戻してから表示（声モードは最初のお題まで約2.5秒あるため） */
     asShowPhase('a'); const tp = document.getElementById('as-topic'); tp.textContent = ''; tp.classList.remove('line', 'long');
     const ta = document.getElementById('as-ta'); if (ta) ta.value = ''; const cn = document.getElementById('as-count'); if (cn) cn.textContent = '0個';
@@ -4302,7 +4708,7 @@ function asAbort(){ if (AS && AS.rounds.length && !confirm('途中でやめま�
 /* 連想の追加・削除 */
 function asAddItem(raw){
   if (!AS || !AS.cur) return false;
-  const s = String(raw || '').replace(/[\s　]+/g, ' ').trim().slice(0, 24);
+  const s = String(raw || '').replace(/[\s　]+/g, ' ').trim().slice(0, 40); // R689: 疑問文が入るよう40字
   if (!s || AS.cur.items.length >= 30) return false;
   if (AS.cur.items.some(x => x === s)) return false;
   if (AS.cur.first == null && AS.cur.t0) AS.cur.first = (Date.now() - AS.cur.t0) / 1000; // R682: 初動（最初の1個までの秒数）
@@ -4314,7 +4720,7 @@ function asTaSync(){ /* R683: テキスト欄の各行 → 連想（重複・空
   if (!AS || !AS.cur) return;
   const ta = document.getElementById('as-ta'); if (!ta) return;
   const seen = {}; const items = [];
-  ta.value.split(/\r?\n/).forEach(line => { const s = line.replace(/[\s　]+/g, ' ').trim().slice(0, 24); if (s && !seen[s] && items.length < 30) { seen[s] = 1; items.push(s); } });
+  ta.value.split(/\r?\n/).forEach(line => { const s = line.replace(/[\s　]+/g, ' ').trim().slice(0, 40); if (s && !seen[s] && items.length < 30) { seen[s] = 1; items.push(s); } });
   if (items.length && AS.cur.first == null && AS.cur.t0) AS.cur.first = (Date.now() - AS.cur.t0) / 1000;
   AS.cur.items = items; asRenderList('a');
 }
@@ -4323,7 +4729,7 @@ function asRemove(i){ if (!AS || !AS.cur) return; AS.cur.items.splice(i, 1); asR
 function asRenderList(which){
   if (!AS || !AS.cur) return;
   const c = AS.cur;
-  if (which === 'a') { const cnt = document.getElementById('as-count'); if (cnt) cnt.textContent = c.items.length + '個'; return; } // R683: フェーズAはテキスト欄＋個数のみ
+  if (which === 'a') { const cnt = document.getElementById('as-count'); if (cnt) cnt.textContent = c.items.length + '個'; asRenderTypes(); return; } // R683: フェーズAはテキスト欄＋個数のみ
   const el = document.getElementById('as-list-' + which); if (!el) return;
   el.innerHTML = c.items.map((w, i) => {
     const other = !!c.other[i];
@@ -4333,7 +4739,7 @@ function asRenderList(which){
   }).join('');
 }
 function asToggleOther(i){ if (!AS || !AS.cur) return; AS.cur.other[i] = !AS.cur.other[i]; asRenderList('b'); }
-function asSelect(i){ if (!AS || !AS.cur) return; AS.cur.sel = i; asRenderList('c'); const w = AS.cur.items[i]; const q = document.getElementById('as-q'); if (q && !q.value.trim()) { q.placeholder = '「' + w + '」を相手への質問に'; } try { q.focus({ preventScroll: true }); } catch(e) {} }
+function asSelect(i){ if (!AS || !AS.cur) return; AS.cur.sel = i; asRenderList('c'); const w = AS.cur.items[i]; const q = document.getElementById('as-q'); if (q && !q.value.trim() && AS.qmode) { q.value = w; } /* R689: 問いをそのまま入れて整える。薄い案内文は出さない */ try { q.focus({ preventScroll: true }); } catch(e) {} }
 /* フェーズ遷移 */
 function asEndA(){
   if (!AS || !AS.cur) return; clearInterval(asTimer); asTimer = null; asMicStop();
@@ -4388,6 +4794,7 @@ function asFinishRound(zero){
   L.push('<b>量</b>：' + n + '個。' + (n ? ('うち相手側 ' + otherN + '個、自分側 ' + (n - otherN) + '個。') : '') + (n === 0 ? '0個です。' : n < 5 ? '量が足りない（目標5個）。' : otherN === 0 ? '相手の業界側の連想がゼロ。' : (AS.level >= 2 && otherN < 2) ? 'レベル' + AS.level + 'は相手側を2個以上。' : '量は十分。'));
   if (n) L.push('<b>選択</b>：' + (c.sel < 0 ? '選んでいない。' : ('「' + escHtml(chosen) + '」。' + (otherSide ? '選択は適切（相手側）。' : 'それは自分の話を始める入口です。相手側から選んでください。'))));
   if (n) L.push('<b>変換</b>：' + (!hasQ ? '質問が出ていない。' : !isQ ? '質問の形になっていない。「〜ですか？」で終える。' : open ? '開いた質問。相手が答えやすい。' : ('閉じた質問（はい／いいえで終わる）。言い換え：「' + escHtml(asRewrite(chosen || c.items[0], pk)) + '」')));
+  asTypeFeedback(c, L); // R689
   let alt = '';
   if (n) {
     const cand = c.items.map((w, i) => ({ w, i })).filter(x => x.i !== c.sel);
@@ -4395,7 +4802,7 @@ function asFinishRound(zero){
     if (pick) alt = '<div class="as-alt">私なら「' + escHtml(pick.w) + '」→「' + escHtml(asRewrite(pick.w, pk)) + '」。理由：' + (c.other[pick.i] ? '相手側の話題で、答えが広がる。' : '相手の側に寄せて聞けば、答えが広がる。') + '</div>';
   }
   document.getElementById('as-fb').innerHTML = L.join('<br>') + alt;
-  AS.rounds.push({ topic: c.topic, form: c.form, level: c.level, n, otherN, sel: c.sel, otherSide, q: c.q, isQ, open, tier });
+  AS.rounds.push({ topic: c.topic, form: c.form, level: c.level, n, otherN, sel: c.sel, otherSide, q: c.q, isQ, open, tier, types: c.tcounts || null });
   document.getElementById('as-next-btn').textContent = (AS.rounds.length >= AS.total) ? 'まとめを見る' : '次のお題';
   asShowPhase('d'); document.getElementById('as-cnt').textContent = '';
   if (AS.voice && !zero) speakQ(reply);
@@ -4409,9 +4816,10 @@ function asFinishSolo(){
   L.push('<b>量</b>：' + n + '個（目標5個）。' + (n === 0 ? '0個です。' : n < 5 ? '量が足りない。' : n < 8 ? '量は十分。' : '量は多い。'));
   L.push('<b>初動</b>：' + (first == null ? '出ていない。' : (first + '秒。' + (first <= 1 ? '速い。' : first <= 3 ? '普通。1秒以内を目指す。' : '遅い。考えずに最初の1個を出す。'))));
   L.push('<b>ペース</b>：10秒あたり ' + pace + ' 個。' + (pace >= 2 ? '止まらず出ている。' : pace >= 1 ? '途中で詰まっている。' : '出だしで止まっている。'));
+  asTypeFeedback(c, L); // R689
   const box = document.querySelector('#as-phase-d .as-reply'); if (box) box.hidden = true;
   document.getElementById('as-fb').innerHTML = L.join('<br>');
-  AS.rounds.push({ topic: c.topic, form: c.form, level: c.level, n, first, pace, solo: true });
+  AS.rounds.push({ topic: c.topic, form: c.form, level: c.level, n, first, pace, solo: true, types: c.tcounts || null });
   document.getElementById('as-next-btn').textContent = (AS.rounds.length >= AS.total) ? 'まとめを見る' : '次のお題';
   asShowPhase('d'); document.getElementById('as-cnt').textContent = '';
   if (AS.voice) speakQ(n + '個です。' + (AS.rounds.length >= AS.total ? 'まとめ' : '次のお題'));
@@ -4422,16 +4830,80 @@ function asFinishSessionSolo(r, N){
   const fAvg = firsts.length ? Math.round(firsts.reduce((s, x) => s + x, 0) / firsts.length * 10) / 10 : null;
   const best = N ? Math.max.apply(null, r.map(x => x.n)) : 0, worst = N ? Math.min.apply(null, r.map(x => x.n)) : 0;
   const level = Math.max.apply(null, r.map(x => x.level).concat([1]));
-  const focus = avg < 5 ? '改善すべきは量。5個を切らない。' : (fAvg != null && fAvg > 2) ? '改善すべきは初動。最初の1個を1秒以内に。' : (worst < 3) ? '改善すべきはムラ。詰まるお題の形を減らす。' : '量・初動とも基準内。次はレベル' + Math.min(level + 1, 4) + 'を狙う。';
+  let focus = avg < 5 ? '改善すべきは量。5個を切らない。' : (fAvg != null && fAvg > 2) ? '改善すべきは初動。最初の1個を1秒以内に。' : (worst < 3) ? '改善すべきはムラ。詰まるお題の形を減らす。' : '量・初動とも基準内。次はレベル' + Math.min(level + 1, 4) + 'を狙う。';
+  focus = asTypeFocus(r, focus); // R689
   const rec = { ts: Date.now(), persona: 'none', solo: true, n: N, avg, first: fAvg, best, worst, selfSel: 0, closed: 0, noQ: 0, level };
   try { const hist = asHist(); hist.push(rec); localStorage.setItem('assoc_hist', JSON.stringify(hist.slice(-100))); } catch(e) {}
   try { savePractice(); } catch(e) {}
   document.getElementById('as-sum').innerHTML =
     '<span class="big">' + avg + '<span style="font-size:16px;font-weight:700"> 個／題</span></span>' +
-    '連想は平均 ' + avg + ' 個（' + N + '題・最多 ' + best + '・最少 ' + worst + '）。<br>初動は平均 ' + (fAvg == null ? '－' : fAvg + ' 秒') + '。<br>到達レベル：' + level + '<br><b>' + escHtml(focus) + '</b>';
+    '連想は平均 ' + avg + ' 個（' + N + '題・最多 ' + best + '・最少 ' + worst + '）。<br>初動は平均 ' + (fAvg == null ? '－' : fAvg + ' 秒') + '。' + asTypeLine(r) + '<br>到達レベル：' + level + '<br><b>' + escHtml(focus) + '</b>';
   if (AS.voice) speakQ('連想は平均' + avg + '個。' + focus);
   AS = null; nav('s-as-result');
 }
+/* ── R689: 問いの型（11型: Why/What/Who/Whom/Which/When/Where/How/How much/How many/How long）。
+   各行を疑問語で1つの型に分類（先に具体的な型から判定: 何のため→Why, 何社→How many, どのくらいの期間→How long, 誰に→Whom…）。
+   書く欄の下で使った型を点灯、フィードバックで 型の数/偏り/型に当てはまらない行/次に使う型(お題入りの例) を出す。 ── */
+const AS_QTYPES = [{"k":"Why","ja":"なんで／なぜ／何のために","ex":"なんで今日その言葉が出た？"},{"k":"What","ja":"何を／何が","ex":"何を基準に高いと判断した？"},{"k":"Who","ja":"誰が","ex":"誰が最終的に決める？"},{"k":"Whom","ja":"誰に／誰に向けて","ex":"その言葉は私に向けたもの？上司に説明する前提？"},{"k":"Which","ja":"どれ／どちら","ex":"他社案とうちの案、どちらに傾いている？"},{"k":"When","ja":"いつ／いつから／いつまでに","ex":"いつまでに決めなければならない？"},{"k":"Where","ja":"どこで／どこに","ex":"予算はどこの部門から出る？"},{"k":"How","ja":"どのように／どうやって","ex":"どうやって社内で稟議を通す？"},{"k":"How much","ja":"いくら／どのくらい（程度・金額）","ex":"いくらなら通る？どのくらい本気で言っている？"},{"k":"How many","ja":"いくつ／何件・何人","ex":"比較している会社は何社？"},{"k":"How long","ja":"どのくらいの期間","ex":"検討はどのくらい続いている？"}];
+function asQType(line){
+  const s = String(line || '');
+  if (/なんで|なぜ|何で|どうして|何のため|なんのため|理由/.test(s)) return 'Why';
+  if (/どのくらいの期間|どれくらいの期間|どのくらい続|どれくらい続|何年|何ヶ月|何か月|何カ月|何日間|何週間|期間|いつまで続/.test(s)) return 'How long';
+  if (/いくつ|何件|何人|何社|何台|何個|何回|何本|何店|何名|何か所|何箇所/.test(s)) return 'How many';
+  if (/いくら|どのくらい|どれくらい|どの程度|どれほど|金額|何割|何%|何％/.test(s)) return 'How much';
+  if (/誰に|だれに|誰へ|誰向け|誰のため|どなたに|に向け|向けた|向けて|宛て|あて先/.test(s)) return 'Whom'; // 「私に向けたもの？」も Whom
+  if (/誰|だれ|どなた/.test(s)) return 'Who';
+  if (/いつ/.test(s)) return 'When';
+  if (/どこ/.test(s)) return 'Where';
+  if (/どれ|どちら|どっち|どの(?!よう|くらい|程度)/.test(s)) return 'Which';
+  if (/どうやって|どのように|どうすれば|どう/.test(s)) return 'How';
+  if (/何|なに|なん/.test(s)) return 'What';
+  return '';
+}
+function asTypeCounts(items){ const cnt = {}; (items || []).forEach(s => { const k = asQType(s); if (k) cnt[k] = (cnt[k] || 0) + 1; }); return cnt; }
+function asQExample(k, t){
+  const T = {
+    'Why': 'なぜ今、' + t + 'なんですか？', 'What': t + 'で、いちばん困っていることは何ですか？', 'Who': t + 'は、誰が最終的に決めますか？',
+    'Whom': t + 'の話は、誰に向けたものですか？', 'Which': t + 'と今のやり方、どちらに傾いていますか？', 'When': t + 'は、いつまでに決める必要がありますか？',
+    'Where': t + 'の予算は、どこから出ますか？', 'How': t + 'は、どうやって社内で進めますか？', 'How much': t + 'に、どのくらい本気ですか？',
+    'How many': t + 'で比べている先は、何社ありますか？', 'How long': t + 'は、どのくらいの期間続いていますか？' };
+  return T[k] || '';
+}
+function asRenderTypes(){
+  const el = document.getElementById('as-types'); if (!el) return;
+  if (!AS || !AS.qmode) { el.style.display = 'none'; return; }
+  el.style.display = '';
+  const cnt = AS.cur ? asTypeCounts(AS.cur.items) : {};
+  const used = AS_QTYPES.filter(t => cnt[t.k]).length;
+  el.innerHTML = AS_QTYPES.map(t => '<span class="as-type' + (cnt[t.k] ? ' on' : '') + '" title="' + escHtml(t.ja) + '">' + t.k + '</span>').join('');
+  const c = document.getElementById('as-count'); if (c && AS.cur) c.textContent = AS.cur.items.length + '個・型 ' + used + '/11';
+}
+function asTypeFeedback(c, L){
+  if (!AS || !AS.qmode) return;
+  const cnt = asTypeCounts(c.items); c.tcounts = cnt;
+  const keys = AS_QTYPES.map(t => t.k), used = keys.filter(k => cnt[k]);
+  const qn = used.reduce((a, k) => a + cnt[k], 0), none = c.items.length - qn;
+  let line = '<b>型</b>：' + used.length + '/11' + (used.length ? '（' + used.join('・') + '）' : '') + '。' + (used.length >= 6 ? '幅は十分。' : used.length >= 3 ? '幅が狭い。' : '型が少ない。');
+  const top = used.slice().sort((a, b) => cnt[b] - cnt[a])[0];
+  if (top && qn >= 4 && cnt[top] >= Math.ceil(qn / 2)) line += '「' + top + '」に偏っている（' + cnt[top] + '個）。';
+  if (none > 0) line += '型に当てはまらない行が' + none + '個（疑問の形で書く）。';
+  L.push(line);
+  const miss = keys.filter(k => !cnt[k]);
+  if (miss.length) {
+    const ref = c.form === 'word' ? c.topic : 'それ';
+    const pick = miss.sort(() => Math.random() - 0.5).slice(0, 3);
+    L.push('<b>次に使う型</b>：' + pick.map(k => k + '「' + escHtml(asQExample(k, ref)) + '」').join('　'));
+  }
+}
+function asTypeStats(r){
+  const q = r.filter(x => x.types); if (!q.length) return null;
+  const avgT = Math.round(q.reduce((s, x) => s + Object.keys(x.types).length, 0) / q.length * 10) / 10;
+  const miss = {}; AS_QTYPES.forEach(t => { miss[t.k] = q.filter(x => !x.types[t.k]).length; });
+  const top = Object.keys(miss).filter(k => miss[k] > 0).sort((a, b) => miss[b] - miss[a]).slice(0, 3);
+  return { avgT, top };
+}
+function asTypeLine(r){ const s = asTypeStats(r); return !s ? '' : ('<br>型は平均 ' + s.avgT + ' / 11 種。' + (s.top.length ? 'よく抜ける型：' + s.top.join('・') + '。' : '')); }
+function asTypeFocus(r, focus){ const s = asTypeStats(r); if (!s || s.avgT >= 4 || !s.top.length) return focus; return '改善すべきは型の幅。抜けやすい「' + s.top[0] + '」から先に使う。'; }
 function asNext(){
   if (!AS) return;
   AS.idx = AS.rounds.length;
@@ -4447,12 +4919,13 @@ function asFinishSession(){
   const noQ = r.filter(x => !x.isQ).length;
   const level = Math.max.apply(null, r.map(x => x.level).concat([1]));
   let focus = avg < 5 ? '改善すべきは量。5個を切らない。' : (selfSel / N >= 0.4) ? '改善すべきは量ではなく選択。相手側から選ぶ。' : ((closed + noQ) / N >= 0.4) ? '改善すべきは変換。開いた質問で終える。' : '量・選択・変換とも基準内。次はレベル' + Math.min(level + 1, 4) + 'を狙う。';
+  focus = asTypeFocus(r, focus); // R689
   const rec = { ts: Date.now(), persona: AS.persona, n: N, avg, selfSel, closed, noQ, level };
   try { const hist = asHist(); hist.push(rec); localStorage.setItem('assoc_hist', JSON.stringify(hist.slice(-100))); } catch(e) {}
   try { savePractice(); } catch(e) {}
   document.getElementById('as-sum').innerHTML =
     '<span class="big">' + avg + '<span style="font-size:16px;font-weight:700"> 個／題</span></span>' +
-    '連想は平均 ' + avg + ' 個（' + N + '題）。<br>選択は ' + N + ' 回中 ' + selfSel + ' 回が自分本位。<br>質問は閉じた形 ' + closed + ' 回、質問にならず ' + noQ + ' 回。<br>到達レベル：' + level + '<br><b>' + escHtml(focus) + '</b>';
+    '連想は平均 ' + avg + ' 個（' + N + '題）。<br>選択は ' + N + ' 回中 ' + selfSel + ' 回が自分本位。<br>質問は閉じた形 ' + closed + ' 回、質問にならず ' + noQ + ' 回。' + asTypeLine(r) + '<br>到達レベル：' + level + '<br><b>' + escHtml(focus) + '</b>';
   if (AS.voice) speakQ('連想は平均' + avg + '個。選択は' + N + '回中' + selfSel + '回が自分本位。' + focus);
   AS = null; nav('s-as-result');
 }
@@ -4471,7 +4944,7 @@ function asMicStart(target){
       if (!txt) return;
       if (asRecogTarget === 'q') { const q = document.getElementById('as-q'); q.value = (q.value + ' ' + txt).trim().slice(0, 80); return; }
       if (/^(以上|いじょう)/.test(txt.trim())) { asEndA(); return; }
-      txt.split(/[、,。\s]+/).forEach(w => asAddItem(w));
+      txt.split(AS && AS.qmode ? /[。？?\n]+/ : /[、,。\s]+/).forEach(w => asAddItem(w)); // R689: 問いの型モードは「、」で切らない
     };
     r.onerror = ev => { if (ev && ev.error === 'not-allowed') { toast('マイクが許可されていません（設定の「マイクをテスト」で確認）'); asMicStop(); } };
     r.onend = () => { if (asRecog === r && AS && AS.cur) { try { r.start(); } catch(e) {} } }; // 継続（自動で切れる環境対策）
