@@ -767,913 +767,248 @@
 /* 選択チップが scale(.9) のまま固まり、判定44pxを割る既存アニメを止める */
 .goal-btn.on,.prate-q.on,.tab-btn.active{ animation:none; transform:none; }
 
-/* ══ R703: Claude Design 作 theme.css（和紙の地に墨／行動は墨1色・朱は録音と印・藍は考える時間） ══ */
-/* SEIKA ロープレ theme.css
-   方針：和紙の地に墨。行動は墨1色に絞り、朱は録音・印、藍は考える時間だけに使う。影なし・枠線で区切る。
-   既存CSSの後に読み込む前提。状態クラス .on / .active は契約クラスとの組み合わせでのみ使用。 */
-
+/* ══ R705: デザインを「やわらか・青白グレー」に差し替え（R703の和紙テーマを置き換え。HTML構造・JSは不変） ══ */
+/* SEIKA ロープレ theme — 「やわらか」を青白グレーに置き換えたもの
+   方針：青みの白とグレーの面に包まれる。行動は青1色、録音と印だけ朱、考える時間は濃い藍。
+   角は大きく丸め、文字は太らせず、面で区切る。立体感レイヤーを最後に重ねる前提。 */
 :root{
-  /* 色 */
-  --bg:#F4F2ED;
+  /* 色 ── 青白グレー */
+  --bg:#EEF2F7;
   --surface:#FFFFFF;
-  --surface-2:#F8F6F1;
-  --ink:#1B1B1F;
-  --ink-2:#3A3B41;
-  --muted:#5B5C63;
-  --icon-muted:#5B5C63;
-  --bd:#85868C;
-  --line:#E3E0D8;
-  --divider:#ECE9E2;
-  --accent:#B3362C;
-  --accent-soft:#F7E7E3;
-  --accent-text:#9E2E25;
-  --think:#1F4A8A;
-  --think-soft:#E8EEF6;
-  --ok-soft:#E7F1EA;
-  --ok-text:#1D6A44;
-  --ng-soft:#F8E8E5;
-  --ng-text:#A12F27;
-  --danger:#B42318;
-  --warn:#8F5200;
-  --seal:#B83A2E;
-  --focus:#1F5FD1;
+  --surface-2:#E2E9F2;
+  --ink:#1E293B;
+  --ink-2:#33455C;
+  --muted:#55657A;
+  --icon-muted:#55657A;
+  --bd:#8794A5;
+  --line:#D9E1EB;
+  --divider:#E6ECF3;
+  --accent:#3A6FA8;
+  --accent-soft:#DCE8F6;
+  --accent-text:#2C5B8E;
+  --think:#2A3E7A;
+  --think-soft:#E2E6F4;
+  --ok-soft:#E1F0E9;
+  --ok-text:#1F5E3D;
+  --ng-soft:#F7E7EB;
+  --ng-text:#96304A;
+  --danger:#AD3049;
+  --warn:#8A5300;
+  --seal:#AD3049;
+  --focus:#3A6FA8;
 
   /* 文字 */
-  --font:"Hiragino Sans","Hiragino Kaku Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Yu Gothic","Meiryo",system-ui,sans-serif;
-  --font-num:"SF Pro Display","Segoe UI",system-ui,"Hiragino Sans","Yu Gothic UI",sans-serif;
-  --fs-xs:12px;
-  --fs-sm:13px;
-  --fs-md:15px;
-  --fs-lg:17px;
-  --fs-xl:20px;
-  --fs-2xl:24px;
-  --fs-3xl:32px;
-  --fs-num:44px;
-  --fs-cnt:128px;
+  --font:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",system-ui,sans-serif;
+  --font-num:ui-rounded,"SF Pro Rounded","Segoe UI",system-ui,sans-serif;
+  --fs-xs:12px;--fs-sm:13px;--fs-md:15px;--fs-lg:17px;--fs-xl:20px;--fs-2xl:24px;--fs-3xl:32px;
+  --fs-num:44px;--fs-cnt:136px;
 
   /* 形・余白 */
-  --r-xs:8px;
-  --r-sm:12px;
-  --r-md:14px;
-  --r-lg:16px;
-  --r:16px;
-  --pill:999px;
-  --sp-1:4px;
-  --sp-2:8px;
-  --sp-3:12px;
-  --sp-4:16px;
-  --sp-5:20px;
-  --sp-6:24px;
-  --sp-8:32px;
-  --sp-10:40px;
-  --tap:44px;
-  --btn-h:52px;
-
-  /* 旧トークンの無効化（影・グラデーションを廃止） */
-  --shadow-card:none;
-  --shadow-cta:none;
-  --grad-ink:#1B1B1F;
-  --grad-cta:#1B1B1F;
+  --r-xs:14px;--r-sm:18px;--r-md:18px;--r-lg:22px;--r:22px;--pill:999px;
+  --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;--sp-6:24px;--sp-8:32px;--sp-10:40px;
+  --tap:44px;--btn-h:54px;
+  --shadow-card:none;--shadow-cta:none;--grad-ink:#3A6FA8;--grad-cta:#3A6FA8;
 }
-
-/* ───────── 画面の枠 ───────── */
-.screen{
-  font-family:var(--font);
-  color:var(--ink);
-  overflow-x:clip;
-  line-height:1.6;
-}
-.body{
-  min-width:0;
-  padding:var(--sp-6) var(--sp-5) calc(var(--sp-8) + env(safe-area-inset-bottom,0px));
-}
-.hdr{
-  min-height:60px;
-  padding:var(--sp-2) var(--sp-3);
-  background:var(--surface);
-  background-image:none;
-  border-bottom:1px solid var(--line);
-  box-shadow:none;
-  gap:var(--sp-2);
-}
-.hdr-title{
-  font-size:var(--fs-lg);
-  font-weight:800;
-  letter-spacing:.06em;
-  color:var(--ink);
-  background:none;
-  -webkit-text-fill-color:currentColor;
-  filter:none;
-  text-align:center;
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-.hdr-back,
-.hdr-act{
-  min-width:var(--tap);
-  min-height:var(--tap);
-  border:none;
-  border-radius:var(--pill);
-  background:transparent;
-  font-family:inherit;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  transition:background .15s;
-}
-.hdr-back{
-  padding:0;
-  font-size:var(--fs-xl);
-  color:var(--ink);
-}
-.hdr-act{
-  padding:0 var(--sp-3);
-  font-size:var(--fs-sm);
-  font-weight:700;
-  color:var(--ink-2);
-}
-.hdr-back:hover,
-.hdr-act:hover{background:var(--surface-2)}
-.hdr-back:active,
-.hdr-act:active{background:var(--divider);color:var(--ink)}
-
-/* ───────── 共通部品：ボタン ───────── */
-.btn{
-  min-height:48px;
-  padding:var(--sp-3) var(--sp-5);
-  border-radius:var(--r-sm);
-  font-family:inherit;
-  font-size:var(--fs-md);
-  font-weight:700;
-  line-height:1.3;
-  letter-spacing:.04em;
-  box-shadow:none;
-  background-image:none;
-  opacity:1;
-  transition:background .15s,border-color .15s,color .15s,transform .1s;
-}
-.btn:active{opacity:1;transform:translateY(1px);box-shadow:none}
-
-/* 主要：その画面で今やること */
-.btn-black{
-  min-height:var(--btn-h);
-  background:var(--ink);
-  color:#FFFFFF;
-  border:1px solid var(--ink);
-  box-shadow:none;
-}
-.btn-black:hover{background:#2E2E34;border-color:#2E2E34}
-.btn-black:active{background:#000000;box-shadow:none;transform:translateY(1px)}
-
-/* 副次 */
-.btn-gray{
-  background:var(--surface);
-  background-image:none;
-  color:var(--ink);
-  border:1px solid var(--bd);
-  box-shadow:none;
-}
-.btn-gray:hover{background:var(--surface-2)}
-.btn-gray:active{background:var(--divider);box-shadow:none;transform:translateY(1px)}
-
-/* 録音の停止・削除系 */
-.btn-red{
-  min-height:var(--btn-h);
-  background:var(--danger);
-  color:#FFFFFF;
-  border:1px solid var(--danger);
-  box-shadow:none;
-}
-.btn-red:hover{background:#9A1E14;border-color:#9A1E14}
-
-/* 文字だけのボタン */
-.btn-sub{
-  min-height:var(--tap);
-  padding:var(--sp-2) var(--sp-3);
-  background:none;
-  border:none;
-  border-radius:var(--r-xs);
-  font-family:inherit;
-  font-size:var(--fs-sm);
-  font-weight:700;
-  color:var(--ink-2);
-  text-decoration:underline;
-  text-decoration-color:var(--bd);
-  text-underline-offset:4px;
-  cursor:pointer;
-}
-.btn-sub:hover{color:var(--ink);text-decoration-color:var(--ink)}
-.btn-sub:active{color:var(--ink);background:var(--divider)}
-
-.setup-go{
-  min-height:56px;
-  margin-top:var(--sp-8);
-  font-size:var(--fs-lg);
-  letter-spacing:.1em;
-}
-
-/* ───────── 共通部品：選択チップ ───────── */
-.chip-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:var(--sp-2);
-  min-width:0;
-}
-.goal-btn{
-  position:relative;
-  min-height:36px;
-  min-width:var(--tap);
-  padding:0 var(--sp-4);
-  border:1px solid var(--bd);
-  border-radius:var(--pill);
-  background:var(--surface);
-  background-image:none;
-  color:var(--ink-2);
-  font-family:inherit;
-  font-size:var(--fs-sm);
-  font-weight:700;
-  line-height:1.2;
-  box-shadow:none;
-  cursor:pointer;
-  transition:background .14s,color .14s,border-color .14s;
-}
-/* 見た目36px＋上下4pxで判定44px（行間8pxなので隣と重ならない） */
-.goal-btn::before{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  top:-4px;
-  bottom:-4px;
-}
-.goal-btn:hover{background:var(--surface-2);border-color:var(--ink-2)}
-.goal-btn:active{background:var(--divider);box-shadow:none;transform:translateY(1px)}
-.goal-btn.on{
-  background:var(--ink);
-  border-color:var(--ink);
-  color:#FFFFFF;
-}
-.goal-btn.on:hover{background:#2E2E34}
-.as-qsel-all{border-style:dashed}
-
-/* ───────── 共通部品：入力 ───────── */
-.inp{
-  min-height:48px;
-  padding:var(--sp-3) var(--sp-4);
-  background:var(--surface);
-  border:1px solid var(--bd);
-  border-radius:var(--r-sm);
-  color:var(--ink);
-  font-family:inherit;
-  font-size:16px;
-  line-height:1.5;
-  box-shadow:none;
-}
-.inp::placeholder{color:var(--muted);opacity:1}
-.inp:focus{
-  border-color:var(--ink);
-  box-shadow:0 0 0 3px rgba(31,95,209,.22);
-  outline:none;
-}
-
-/* ───────── 見出し・ラベル・注記（3段階に統一） ───────── */
-.set-label{
-  font-size:var(--fs-md);
-  font-weight:800;
-  letter-spacing:.04em;
-  text-transform:none;
-  color:var(--ink);
-  margin-bottom:var(--sp-3);
-}
-.setup-label{
-  font-size:var(--fs-sm);
-  font-weight:700;
-  letter-spacing:.04em;
-  color:var(--ink-2);
-  margin:var(--sp-6) 0 var(--sp-2);
-}
+.screen{font-family:var(--font);color:var(--ink);background:var(--bg);overflow-x:clip;line-height:1.75}
+.body{padding:24px 20px 48px}
+.hdr{min-height:60px;padding:8px 12px;background:var(--bg);background-image:none;border-bottom:none;box-shadow:none}
+.hdr-title{font-size:16px;font-weight:700;letter-spacing:.06em;color:var(--ink);background:none;-webkit-text-fill-color:currentColor;filter:none}
+.hdr-back,.hdr-act{min-width:44px;min-height:44px;border:none;border-radius:999px;background:var(--surface);color:var(--ink-2);font-family:inherit;font-weight:700;cursor:pointer;padding:0 14px}
+.hdr-back{padding:0}
+.btn{min-height:52px;border-radius:18px;font-family:inherit;font-size:15px;font-weight:700;letter-spacing:.04em;box-shadow:none;background-image:none;opacity:1;transition:background .2s,transform .15s}
+.btn-black{background:var(--accent);color:#FFFFFF;border:none}
+.btn-black:hover{background:#2F5C8F}
+.btn-gray{background:var(--surface-2);color:var(--ink);border:none}
+.btn-gray:hover{background:var(--accent-soft)}
+.btn-red{background:var(--danger);color:#FFFFFF;border:none}
+.btn-sub{min-height:44px;background:none;border:none;font-family:inherit;font-size:14px;font-weight:700;color:var(--accent-text);cursor:pointer}
+.btn-sub:hover{text-decoration:underline;text-underline-offset:4px}
+.btn:active,.main-btn:active,.goal-btn:active,.sub-link:active,.ft-cell:active{opacity:1;transform:scale(.98);box-shadow:none}
+.setup-go{margin-top:28px}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:var(--surface);border-radius:22px}
+.goal-btn{position:relative;min-height:40px;min-width:48px;padding:0 16px;border:none;border-radius:14px;background:var(--surface-2);box-shadow:none;color:var(--ink-2);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.goal-btn::before{content:"";position:absolute;inset:-4px 0}
+.goal-btn:hover{background:var(--accent-soft)}
+.goal-btn.on{background:var(--accent);color:#FFFFFF;font-weight:700}
+.as-qsel-all{outline:1.5px dashed var(--bd);outline-offset:-3px}
+.inp{min-height:48px;padding:12px 16px;background:var(--surface);border:1.5px solid var(--bd);border-radius:14px;color:var(--ink);font-family:inherit;font-size:16px;box-shadow:none}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);outline:none}
+.set-label{font-size:15px;font-weight:700;color:var(--accent-text);letter-spacing:.04em;text-transform:none}
+.setup-label{font-size:14px;font-weight:700;color:var(--ink-2);letter-spacing:.04em;margin:24px 0 8px 6px}
 .setup-label:first-child{margin-top:0}
-.rv-label,
-.prate-lbl{
-  font-size:var(--fs-xs);
-  font-weight:700;
-  letter-spacing:.08em;
-  text-transform:none;
-  color:var(--muted);
-}
-.rv-label{margin-bottom:var(--sp-2)}
-.set-note,
-.as-hint,
-.as-prev{
-  font-size:var(--fs-sm);
-  line-height:1.75;
-  color:var(--muted);
-}
-.set-note{margin-top:var(--sp-2)}
-
-/* ───────── カード ───────── */
-.set-section{
-  background:var(--surface);
-  background-image:none;
-  border:1px solid var(--line);
-  border-radius:var(--r-lg);
-  box-shadow:none;
-  padding:var(--sp-5);
-  margin-bottom:var(--sp-4);
-  min-width:0;
-}
-.rv-section{margin-bottom:var(--sp-6);min-width:0}
-.rv-box{
-  background:var(--surface);
-  background-image:none;
-  border:1px solid var(--line);
-  border-radius:var(--r-md);
-  box-shadow:none;
-  padding:var(--sp-4) var(--sp-5);
-  font-size:var(--fs-md);
-  line-height:1.9;
-  color:var(--ink);
-  overflow-wrap:anywhere;
-}
-
-/* ───────── バッジ ───────── */
-.badge{
-  display:inline-flex;
-  align-items:center;
-  padding:var(--sp-1) 10px;
-  border-radius:var(--pill);
-  font-size:var(--fs-xs);
-  font-weight:700;
-  line-height:1.4;
-  letter-spacing:.02em;
-  vertical-align:middle;
-}
-.badge-time{background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
-.badge-set{background:var(--ink);color:#FFFFFF;font-family:var(--font-num);font-variant-numeric:tabular-nums;letter-spacing:.06em}
-
-/* ───────── ホーム ───────── */
-.home-cols{gap:var(--sp-6)}
-.home-main{gap:var(--sp-3)}
-.main-btn{
-  position:relative;
-  min-height:88px;
-  margin-bottom:0;
-  padding:var(--sp-5) 56px var(--sp-5) var(--sp-6);
-  border:1px solid var(--bd);
-  border-radius:var(--r-lg);
-  background:var(--surface);
-  background-image:none;
-  color:var(--ink);
-  font-family:inherit;
-  box-shadow:none;
-  opacity:1;
-  transition:border-color .15s,background .15s,transform .1s;
-}
-.main-btn::after{
-  content:"";
-  position:absolute;
-  right:24px;
-  top:50%;
-  width:10px;
-  height:10px;
-  border-top:2px solid currentColor;
-  border-right:2px solid currentColor;
-  transform:translateY(-50%) rotate(45deg);
-}
-.main-btn-qa,
-.main-btn-ft{
-  background:var(--surface);
-  background-image:none;
-  color:var(--ink);
-  border:1px solid var(--bd);
-  box-shadow:none;
-}
-.main-btn:hover{border-color:var(--ink);background:var(--surface)}
-.main-btn:active,
-.main-btn-qa:active,
-.main-btn-ft:active{opacity:1;background:var(--surface-2);box-shadow:none;transform:translateY(1px)}
-.main-btn-text{min-width:0}
-.main-btn-title{
-  font-size:var(--fs-xl);
-  font-weight:800;
-  letter-spacing:.04em;
-  line-height:1.35;
-}
-.main-btn-sub,
-.main-btn-qa .main-btn-sub,
-.main-btn-ft .main-btn-sub{
-  margin-top:var(--sp-1);
-  font-size:var(--fs-sm);
-  color:var(--muted);
-  opacity:1;
-}
-.sub-links{gap:var(--sp-2);margin-top:var(--sp-2)}
-.sub-link{
-  min-height:52px;
-  padding:var(--sp-3);
-  background:var(--surface);
-  background-image:none;
-  border:1px solid var(--bd);
-  border-radius:var(--r-sm);
-  box-shadow:none;
-  color:var(--ink);
-  font-family:inherit;
-  font-size:var(--fs-sm);
-  font-weight:700;
-  letter-spacing:.04em;
-}
+.rv-label,.prate-lbl{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:none}
+.set-note,.as-hint,.as-prev{font-size:13px;line-height:1.85;color:var(--muted)}
+.set-section{background:var(--surface);background-image:none;border:none;border-radius:22px;box-shadow:none;padding:22px;margin-bottom:14px}
+.set-section .chip-row{padding:0;background:transparent}
+.rv-section{margin-bottom:18px}
+.rv-box{background:var(--surface);background-image:none;border:none;border-radius:22px;box-shadow:none;padding:18px 20px;font-size:16px;line-height:1.9;color:var(--ink)}
+.badge{padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700}
+.badge-time{background:var(--surface-2);color:var(--ink-2)}
+.badge-set{background:var(--accent-soft);color:var(--accent-text);font-family:var(--font-num)}
+.main-btn,.main-btn-qa,.main-btn-ft{min-height:100px;margin-bottom:12px;padding:22px 24px;background:var(--surface);background-image:none;color:var(--ink);border:none;border-radius:26px;box-shadow:none;font-family:inherit}
+.main-btn-qa{background:var(--accent-soft)}
+.main-btn:hover{background:var(--surface-2)}
+.main-btn-title{font-size:21px;font-weight:700;letter-spacing:.04em}
+.main-btn-sub,.main-btn-qa .main-btn-sub,.main-btn-ft .main-btn-sub{font-size:13px;color:var(--muted);opacity:1;margin-top:4px}
+.sub-links{gap:10px;margin-top:10px}
+.sub-link{min-height:52px;background:var(--surface);background-image:none;border:none;border-radius:18px;box-shadow:none;color:var(--ink-2);font-family:inherit;font-size:14px;font-weight:700}
 .sub-link:hover{background:var(--surface-2)}
-.sub-link:active{background:var(--divider);box-shadow:none;transform:translateY(1px)}
-.home-side{
-  margin-top:0;
-  background:var(--surface);
-  border:1px solid var(--line);
-  border-radius:var(--r-lg);
-  box-shadow:none;
-}
-.home-goal,
-.home-graph{padding:var(--sp-5) var(--sp-6)}
-.home-graph{border-top:1px solid var(--divider)}
-.home-goal:hover,
-.home-graph:hover{background:var(--surface-2)}
-.acct-chip{
-  padding:var(--sp-1) 10px;
-  font-size:var(--fs-xs);
-  font-weight:700;
-  color:var(--ink-2);
-  background:var(--surface);
-  border:1px solid var(--line);
-  box-shadow:none;
-}
-
-/* ───────── Q&A 出題・録音 ───────── */
-.q-text{
-  font-size:var(--fs-2xl);
-  font-weight:800;
-  line-height:1.65;
-  letter-spacing:.02em;
-  color:var(--ink);
-  overflow-wrap:anywhere;
-}
-.rec-screen{gap:var(--sp-2)}
-.set-prog{
-  font-family:var(--font-num);
-  font-size:var(--fs-sm);
-  font-weight:700;
-  letter-spacing:.12em;
-  font-variant-numeric:tabular-nums;
-  color:var(--ink-2);
-  margin-bottom:var(--sp-2);
-}
-.q-mini{
-  max-width:36em;
-  font-size:var(--fs-sm);
-  line-height:1.6;
-  color:var(--muted);
-}
-.timer-hint{
-  font-size:var(--fs-sm);
-  font-weight:700;
-  color:var(--ink-2);
-  margin-bottom:var(--sp-3);
-}
-.cnt{
-  font-family:var(--font-num);
-  font-size:var(--fs-cnt);
-  font-weight:300;
-  line-height:1;
-  letter-spacing:-.02em;
-  font-variant-numeric:tabular-nums;
-  font-feature-settings:"tnum" 1;
-  background:none;
-  -webkit-text-fill-color:currentColor;
-  filter:none;
-}
-.cnt-ok{color:var(--ink)}
-.iv-done{
-  font-family:var(--font-num);
-  font-size:40px;
-  font-weight:300;
-  font-variant-numeric:tabular-nums;
-  color:var(--ink);
-  margin-bottom:var(--sp-8);
-}
-
-/* シンキングタイム：画面全体を藍に寄せ、数字だけを見せる */
+.home-side{background:var(--surface);border:none;border-radius:26px;box-shadow:none}
+.home-graph{border-top:none;background:var(--divider)}
+.acct-chip{background:var(--surface);border:none;color:var(--ink-2);box-shadow:none}
+.q-text{font-size:24px;font-weight:700;line-height:1.75;color:var(--ink)}
+.cnt{font-family:var(--font-num);font-size:136px;font-weight:300;letter-spacing:-.02em;font-variant-numeric:tabular-nums;background:none;-webkit-text-fill-color:currentColor;filter:none}
+.cnt-ok{color:var(--accent-text)}
+.cnt.think-cnt{color:var(--think)}
 #s-think{background:var(--think-soft)}
-#s-think .hdr{background:var(--think-soft);border-bottom-color:#D3DDEB}
-.think-next{
-  font-size:var(--fs-sm);
-  font-weight:700;
-  letter-spacing:.1em;
-  color:var(--think);
-  margin-bottom:var(--sp-3);
-}
-.cnt.think-cnt{
-  color:var(--think);
-  font-size:160px;
-  font-weight:300;
-}
-
-/* ───────── 振り返り・再生速度 ───────── */
-.prate-row{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:var(--sp-2);
-  margin-top:var(--sp-4);
-}
-.prate-lbl{margin-right:var(--sp-1)}
-.prate-q{
-  position:relative;
-  min-height:36px;
-  min-width:var(--tap);
-  padding:0 var(--sp-3);
-  border:1px solid var(--bd);
-  border-radius:var(--pill);
-  background:var(--surface);
-  color:var(--ink-2);
-  font-family:var(--font-num);
-  font-size:var(--fs-sm);
-  font-weight:700;
-  font-variant-numeric:tabular-nums;
-  cursor:pointer;
-}
-.prate-q::before{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  top:-4px;
-  bottom:-4px;
-}
-.prate-q:hover{background:var(--surface-2)}
-.prate-q.on{background:var(--ink);border-color:var(--ink);color:#FFFFFF}
-.prate-range{
-  flex:1 1 160px;
-  min-width:140px;
-  max-width:320px;
-  height:var(--tap);
-  accent-color:var(--ink);
-  cursor:pointer;
-}
-.prate-val{
-  min-width:52px;
-  font-family:var(--font-num);
-  font-size:var(--fs-md);
-  font-weight:800;
-  font-variant-numeric:tabular-nums;
-  color:var(--ink);
-  text-align:center;
-}
-
-/* ───────── ログ ───────── */
-.tab-bar{
-  display:flex;
-  gap:var(--sp-1);
-  padding:var(--sp-1);
-  margin-bottom:var(--sp-4);
-  background:var(--divider);
-  border:1px solid var(--line);
-  border-radius:var(--r-md);
-}
-.tab-btn{
-  min-height:var(--tap);
-  border:1px solid transparent;
-  border-radius:10px;
-  background:transparent;
-  color:var(--ink-2);
-  font-family:inherit;
-  font-size:var(--fs-sm);
-  font-weight:700;
-  box-shadow:none;
-}
-.tab-btn:hover{color:var(--ink)}
-.tab-btn.active{
-  background:var(--surface);
-  border-color:var(--bd);
-  color:var(--ink);
-  box-shadow:none;
-}
-.sel-bar{gap:var(--sp-2)}
-.sel-bar button{
-  min-height:var(--tap);
-  border-radius:var(--r-sm);
-  font-family:inherit;
-  font-size:var(--fs-sm);
-}
-
-/* ───────── 目標・カレンダー ───────── */
-.kpi-grid{gap:var(--sp-3)}
+#s-think .hdr{background:var(--think-soft)}
+.think-next,.timer-hint,.set-prog{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.06em}
+.q-mini{color:var(--muted)}
+.iv-done{font-family:var(--font-num);font-size:44px;font-weight:300;color:var(--accent-text)}
+.prate-row{gap:8px;padding:10px 12px;background:var(--surface-2);border-radius:18px}
+.prate-q{position:relative;min-height:40px;min-width:48px;padding:0 12px;border:none;border-radius:12px;background:var(--surface);color:var(--ink-2);font-family:var(--font-num);font-size:13px;font-weight:700;cursor:pointer}
+.prate-q::before{content:"";position:absolute;inset:-4px 0}
+.prate-q.on{background:var(--accent);color:#FFFFFF}
+.prate-range{height:44px;accent-color:var(--accent)}
+.prate-val{font-family:var(--font-num);font-weight:700;color:var(--accent-text)}
+.tab-bar{background:var(--surface-2);border:none;border-radius:18px;padding:5px;gap:5px}
+.tab-btn{min-height:44px;border:none;border-radius:14px;background:transparent;color:var(--ink-2);font-family:inherit;font-weight:700;box-shadow:none}
+.tab-btn.active{background:var(--surface);color:var(--accent-text);box-shadow:none;font-weight:800}
+.sel-bar button{min-height:44px;border-radius:14px;font-family:inherit}
+.kpi-grid{gap:10px}
 .cal-grid{gap:6px}
-.cal-dow{
-  font-size:var(--fs-xs);
-  font-weight:700;
-  letter-spacing:.08em;
-  color:var(--muted);
-  padding:var(--sp-1) 0;
-}
-.hanko-row{gap:10px}
-
-/* ───────── クールタイマー ───────── */
-.ft-cell{
-  min-height:120px;
-  padding:var(--sp-6) var(--sp-3);
-  border:1px solid var(--bd);
-  border-radius:var(--r-lg);
-  background:var(--surface);
-  background-image:none;
-  box-shadow:none;
-  cursor:pointer;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  transition:background .15s,border-color .15s,transform .1s;
-}
-.ft-cell:hover{border-color:var(--ink);background:var(--surface)}
-.ft-cell:active{background:var(--surface-2);box-shadow:none;transform:translateY(1px)}
-.ft-cell-n{
-  font-family:var(--font-num);
-  font-size:var(--fs-num);
-  font-weight:300;
-  line-height:1;
-  font-variant-numeric:tabular-nums;
-  color:var(--ink);
-  background:none;
-  -webkit-text-fill-color:currentColor;
-}
-.ft-cell-u{
-  margin-top:var(--sp-2);
-  font-size:var(--fs-xs);
-  font-weight:700;
-  letter-spacing:.2em;
-  text-indent:.2em;
-  color:var(--muted);
-}
-
-/* ───────── 連想トレーニング ───────── */
-.as-row{gap:var(--sp-2);min-width:0}
-.as-sec-free{max-width:320px;margin:var(--sp-2) 0 0}
-.as-sec-unit{font-size:var(--fs-sm);font-weight:700;color:var(--ink-2)}
-.as-ref{margin:var(--sp-3) 0 0;font-size:var(--fs-sm)}
-.as-ref summary{
-  min-height:var(--tap);
-  display:flex;
-  align-items:center;
-  font-weight:700;
-  color:var(--ink-2);
-  cursor:pointer;
-  text-decoration:underline;
-  text-decoration-color:var(--bd);
-  text-underline-offset:4px;
-}
-.as-ref-wrap{
-  overflow-x:auto;
-  max-width:100%;
-  border:1px solid var(--line);
-  border-radius:var(--r-sm);
-  margin-top:var(--sp-2);
-}
-.as-ref-wrap table{border-collapse:collapse;width:100%;min-width:520px;margin:0;background:var(--surface)}
-.as-ref-wrap th,
-.as-ref-wrap td{
-  border:none;
-  border-bottom:1px solid var(--divider);
-  padding:10px 12px;
-  line-height:1.6;
-  text-align:left;
-  vertical-align:top;
-}
-.as-ref-wrap th{background:var(--surface-2);font-size:var(--fs-xs);font-weight:800;color:var(--ink-2)}
-.as-stage{
-  padding:var(--sp-6) var(--sp-4);
-  margin-bottom:var(--sp-4);
-  border-bottom:1px solid var(--line);
-}
-.as-persona{
-  font-size:var(--fs-xs);
-  font-weight:700;
-  letter-spacing:.08em;
-  color:var(--muted);
-}
-.as-topic{
-  font-weight:800;
-  letter-spacing:.02em;
-  color:var(--ink);
-  overflow-wrap:anywhere;
-}
-.as-cnt{
-  font-family:var(--font-num);
-  font-weight:300;
-  font-variant-numeric:tabular-nums;
-  color:var(--muted);
-}
-.as-ta{line-height:1.9}
-.as-types{gap:6px}
-.as-under{margin:var(--sp-2) 0 var(--sp-4)}
-.as-count{
-  font-family:var(--font-num);
-  font-size:var(--fs-md);
-  font-weight:800;
-  font-variant-numeric:tabular-nums;
-  color:var(--ink);
-}
-.as-mic{min-height:var(--tap);padding:0 var(--sp-4);font-size:var(--fs-sm)}
-.as-phase{
-  font-size:var(--fs-md);
-  font-weight:800;
-  color:var(--ink);
-  margin:var(--sp-4) 0 var(--sp-2);
-}
-.as-list{gap:var(--sp-2)}
-.as-reply,
-.as-fb,
-.as-sum{
-  border-radius:var(--r-md);
-  padding:var(--sp-4) var(--sp-5);
-  font-size:var(--fs-md);
-  line-height:1.85;
-  color:var(--ink);
-  overflow-wrap:anywhere;
-}
-.as-reply{background:var(--surface-2);border:1px solid var(--line)}
-.as-fb,
-.as-sum{background:var(--surface);border:1px solid var(--line)}
-
-/* ───────── マイク診断 ───────── */
-.mic-diag{
-  margin-top:var(--sp-3);
-  padding:var(--sp-3) var(--sp-4);
-  border:1px solid var(--line);
-  border-radius:var(--r-sm);
-  background:var(--surface-2);
-  font-size:var(--fs-sm);
-  line-height:1.75;
-  color:var(--ink);
-}
-
-/* ───────── 設定画面（既存の id 指定を上書き） ───────── */
-#s-settings .set-section{padding:var(--sp-5);margin-bottom:var(--sp-4)}
-#s-settings .set-label{margin-bottom:var(--sp-3)}
-#s-settings .set-note{font-size:var(--fs-sm);line-height:1.75}
-#s-settings .inp{padding:var(--sp-3) var(--sp-4);margin-bottom:var(--sp-2)}
-
-/* ───────── ログイン ───────── */
-#s-login .set-section{display:flex;flex-direction:column;gap:var(--sp-3)}
-#s-login .inp{margin-bottom:0;text-align:center;font-size:var(--fs-lg)}
-
-/* ───────── フォーカス ───────── */
-.btn:focus-visible,
-.btn-sub:focus-visible,
-.goal-btn:focus-visible,
-.main-btn:focus-visible,
-.sub-link:focus-visible,
-.tab-btn:focus-visible,
-.prate-q:focus-visible,
-.prate-range:focus-visible,
-.ft-cell:focus-visible,
-.hdr-back:focus-visible,
-.hdr-act:focus-visible,
-.home-goal:focus-visible,
-.home-graph:focus-visible,
-.inp:focus-visible,
-.as-ref summary:focus-visible{
-  outline:2px solid var(--focus);
-  outline-offset:2px;
-}
-
-/* ───────── ホバー（既存の立体ホバーを打ち消す） ───────── */
-@media (hover:hover) and (pointer:fine){
-  .main-btn-qa:hover,
-  .main-btn-ft:hover{transform:none;box-shadow:none;border-color:var(--ink);background:var(--surface)}
-  .btn-black:hover{transform:none;box-shadow:none;background:#2E2E34}
-  .btn-gray:hover,
-  .ft-cell:hover,
-  .sub-link:hover,
-  .goal-btn:hover{transform:none;box-shadow:none}
-  .goal-btn.on:hover{background:#2E2E34}
-}
-
-/* ───────── PC（840px以上） ───────── */
+.cal-dow{font-size:12px;font-weight:700;color:var(--muted)}
+.ft-cell{min-height:124px;background:var(--surface);background-image:none;border:none;border-radius:26px;box-shadow:none;cursor:pointer}
+.ft-cell:hover{background:var(--accent-soft)}
+.ft-cell-n{font-family:var(--font-num);font-size:52px;font-weight:300;color:var(--accent-text);background:none;-webkit-text-fill-color:currentColor}
+.ft-cell-u{font-size:12px;font-weight:700;color:var(--muted)}
+.as-stage{background:var(--surface);border-radius:26px;padding:28px 18px;margin-bottom:14px}
+.as-topic{font-weight:700;color:var(--ink)}
+.as-cnt{font-family:var(--font-num);font-weight:300;color:var(--muted)}
+.as-persona,.as-phase{font-size:13px;font-weight:700;color:var(--accent-text)}
+.as-count{font-family:var(--font-num);font-weight:700;color:var(--accent-text)}
+.as-mic{min-height:44px}
+.as-ref summary{min-height:44px;display:flex;align-items:center;font-weight:700;color:var(--accent-text)}
+.as-ref-wrap{border-radius:18px}
+.as-ref-wrap th,.as-ref-wrap td{border:none;border-bottom:1px solid var(--line)}
+.as-ref-wrap th{background:var(--surface-2)}
+.as-reply,.as-fb,.as-sum,.mic-diag{background:var(--surface);border:none;border-radius:22px;padding:18px 20px;font-size:15px;line-height:1.85;color:var(--ink)}
+.as-reply{background:var(--surface-2)}
+#s-settings .set-section{padding:22px;margin-bottom:14px}
+.btn:focus-visible,.btn-sub:focus-visible,.goal-btn:focus-visible,.main-btn:focus-visible,.sub-link:focus-visible,.tab-btn:focus-visible,.prate-q:focus-visible,.ft-cell:focus-visible,.hdr-back:focus-visible,.hdr-act:focus-visible,.inp:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+@media (hover:hover) and (pointer:fine){.main-btn-qa:hover,.main-btn-ft:hover,.btn-black:hover,.btn-gray:hover,.ft-cell:hover,.sub-link:hover,.goal-btn:hover{transform:none;box-shadow:none}}
 @media (min-width:840px){
-  .body{padding:var(--sp-8) var(--sp-8) var(--sp-10)}
-  .hdr{padding:var(--sp-2) var(--sp-5)}
-
-  /* ホーム：左にモード、右に成果 */
-  #s-home .home-cols{gap:var(--sp-8)}
-  #s-home .home-main .main-btn{min-height:104px;padding:var(--sp-6) 64px var(--sp-6) var(--sp-8)}
-  #s-home .home-main .main-btn-title{font-size:22px}
-
-  /* 1列で集中させる画面 */
-  #s-login .body{max-width:440px;margin-left:auto;margin-right:auto}
-  #s-qa-select .body,
-  #s-ft-select .body,
-  #s-as-setup .body{max-width:720px;margin-left:auto;margin-right:auto}
-  #s-history .body{max-width:800px;margin-left:auto;margin-right:auto}
-  #s-calendar .body,
-  #s-break .body,
-  #s-interval .body,
-  #s-think .body,
-  #s-as-result .body{max-width:640px;margin-left:auto;margin-right:auto}
-
-  /* 出題・録音：文字と数字を大きく */
-  #s-question .q-text{font-size:var(--fs-3xl);line-height:1.6}
-  .cnt{font-size:168px}
-  .cnt.think-cnt{font-size:200px}
-
-  /* 振り返り：2カラム（問題｜録音、文字起こし｜評価） */
-  #s-review .body{
-    max-width:1080px;
-    margin-left:auto;
-    margin-right:auto;
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:var(--sp-5) var(--sp-8);
-    align-items:start;
-  }
-  #s-review .rv-section{margin-bottom:0}
+  .body{padding:36px 36px 64px}
+  #s-review .body,#s-goal .body,#s-settings .body{max-width:1080px;margin-left:auto;margin-right:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+  #s-review .rv-section,#s-goal .set-section,#s-settings .set-section{margin:0}
   #s-review .body > :not(.rv-section){grid-column:1 / -1}
-
-  /* 目標・設定：カードを2カラムに */
-  #s-goal .body,
-  #s-settings .body{
-    max-width:1080px;
-    margin-left:auto;
-    margin-right:auto;
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:var(--sp-4) var(--sp-5);
-    align-items:start;
-  }
-  #s-goal .set-section,
-  #s-settings .set-section{margin-bottom:0}
-
-  /* 連想本番 */
-  #s-as-play .body{max-width:880px;margin-left:auto;margin-right:auto}
+  #s-qa-select .body,#s-ft-select .body,#s-as-setup .body,#s-history .body{max-width:760px;margin-left:auto;margin-right:auto}
+  .cnt{font-size:196px}
 }
-
-/* ───────── スマホ（480px未満） ───────── */
-@media (max-width:479px){
-  .body{padding:var(--sp-5) var(--sp-4) calc(var(--sp-8) + env(safe-area-inset-bottom,0px))}
-  .main-btn{padding:var(--sp-4) 48px var(--sp-4) var(--sp-5);min-height:80px}
-  .main-btn::after{right:20px}
-  .q-text{font-size:22px}
-  .cnt{font-size:112px}
-  .cnt.think-cnt{font-size:128px}
-  .set-section{padding:var(--sp-4)}
-  #s-settings .set-section{padding:var(--sp-4)}
-  .as-sec-free{max-width:100%}
-}
-
-/* ───────── 動きを減らす設定 ───────── */
-@media (prefers-reduced-motion:reduce){
-  .btn:active,
-  .btn-black:active,
-  .btn-gray:active,
-  .goal-btn:active,
-  .main-btn:active,
-  .main-btn-qa:active,
-  .main-btn-ft:active,
-  .sub-link:active,
-  .ft-cell:active{transform:none}
-  .goal-btn.on{animation:none}
-}
-
-/* ───────── 強制カラー（ハイコントラスト） ───────── */
+@media (max-width:479px){.cnt{font-size:108px}.q-text{font-size:21px}.set-section{padding:18px}.chip-row{padding:8px}}
+@media (prefers-reduced-motion:reduce){.btn:active,.goal-btn:active,.main-btn:active,.sub-link:active,.ft-cell:active{transform:none}.goal-btn.on{animation:none}}
 @media (forced-colors:active){
-  .btn,
-  .btn-sub,
-  .goal-btn,
-  .prate-q,
-  .main-btn,
-  .sub-link,
-  .tab-btn,
-  .ft-cell,
-  .hdr-back,
-  .hdr-act,
-  .inp{border:1px solid ButtonText}
-  .goal-btn.on,
-  .prate-q.on,
-  .tab-btn.active{outline:2px solid Highlight;outline-offset:-2px}
-  .main-btn::after{border-color:ButtonText}
-  .hdr-title,
-  .cnt,
-  .ft-cell-n{-webkit-text-fill-color:CanvasText;background:none}
-  .set-section,
-  .rv-box,
-  .home-side,
-  .as-fb,
-  .as-sum,
-  .as-reply,
-  .mic-diag{border:1px solid CanvasText}
-  #s-think,
-  #s-think .hdr{background:Canvas}
+  .goal-btn.on,.prate-q.on,.tab-btn.active{outline:3px solid Highlight;outline-offset:-3px}
+  .hdr-title,.cnt,.ft-cell-n{-webkit-text-fill-color:CanvasText;background:none}
+  .btn,.goal-btn,.prate-q,.tab-btn,.main-btn,.sub-link,.ft-cell,.set-section,.rv-box,.hdr-back,.hdr-act{border:1px solid ButtonText}
 }
 
+/* ══ 立体感レイヤー ══ */
+/* SEIKA ロープレ — 立体感レイヤー（どのテーマにも重ねられる）
+   狙い：押せるものが「物」に見えること。実体のある底エッジ＋浮き影、押すと沈む。
+   どのテーマの最後に読み込んでも成立するよう、色はテーマのトークンから借りる。 */
+
+/* 共通：沈み込みのための準備 */
+.btn,.btn-black,.btn-gray,.btn-red,.goal-btn,.sub-link,.main-btn,.main-btn-qa,.main-btn-ft,
+.ft-cell,.prate-q,.tab-btn,.audio-btn,.hdr-back,.hdr-act,.fbtn,.k-adv,.k-master{
+  transition:transform .09s cubic-bezier(.2,.8,.3,1), box-shadow .09s ease;
+  will-change:transform;
+}
+
+/* ── 濃い面のボタン（主要な行動）＝ 厚い底エッジ＋浮き ── */
+.btn-black,.btn-red,.setup-go,.main-btn-qa,.goal-btn.on,.prate-q.on,.tab-btn.active,.k-adv{
+  box-shadow:0 5px 0 rgba(0,0,0,.45), 0 12px 22px rgba(0,0,0,.26);
+}
+.btn-black:active,.btn-red:active,.setup-go:active,.main-btn-qa:active,
+.goal-btn.on:active,.prate-q.on:active,.k-adv:active{
+  transform:translateY(4px);
+  box-shadow:0 1px 0 rgba(0,0,0,.45), 0 3px 8px rgba(0,0,0,.20);
+}
+
+/* ── 白い面のボタン（副次）＝ 実体のある底エッジ＋やわらかい浮き ── */
+.btn-gray,.goal-btn,.sub-link,.main-btn,.main-btn-ft,.ft-cell,.prate-q,.audio-btn,.fbtn,.k-master{
+  box-shadow:0 5px 0 var(--bd), 0 12px 22px rgba(20,20,30,.20);
+}
+.btn-gray:active,.goal-btn:active,.sub-link:active,.main-btn:active,.main-btn-ft:active,
+.ft-cell:active,.prate-q:active,.audio-btn:active,.fbtn:active,.k-master:active{
+  transform:translateY(4px);
+  box-shadow:0 1px 0 var(--bd), 0 2px 6px rgba(20,20,30,.14);
+}
+
+/* ── 天面のハイライト（光が当たっているように） ── */
+.btn-black,.btn-red,.setup-go,.main-btn-qa,.k-adv{
+  background-image:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,0) 55%);
+}
+.btn-gray,.sub-link,.main-btn,.main-btn-ft,.ft-cell{
+  background-image:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0) 60%);
+}
+
+/* ── カード・面は紙から浮かせる ── */
+.set-section,.rv-box,.hist-item,.home-side,.year-prog,.as-fb,.as-sum,.as-reply,.mic-diag,.kfs-item{
+  box-shadow:0 1px 2px rgba(20,20,30,.08), 0 14px 32px rgba(20,20,30,.13);
+}
+.hdr{ box-shadow:0 2px 12px rgba(20,20,30,.10); }
+
+/* ── 入力欄は逆に彫り込む（押せるものと区別する） ── */
+.inp{ box-shadow:inset 0 2px 4px rgba(20,20,30,.10); }
+.inp:focus{ box-shadow:inset 0 2px 4px rgba(20,20,30,.08), 0 0 0 3px var(--accent-soft); }
+
+/* ── マウスのある環境だけ、乗せると少し浮く ── */
+@media (hover:hover) and (pointer:fine){
+  .btn-black:hover,.btn-red:hover,.setup-go:hover,.main-btn-qa:hover,.k-adv:hover{
+    transform:translateY(-1px);
+    box-shadow:0 7px 0 rgba(0,0,0,.45), 0 18px 30px rgba(0,0,0,.28);
+  }
+  .btn-gray:hover,.goal-btn:hover,.sub-link:hover,.main-btn:hover,.main-btn-ft:hover,.ft-cell:hover,.k-master:hover{
+    transform:translateY(-1px);
+    box-shadow:0 7px 0 var(--bd), 0 16px 28px rgba(20,20,30,.22);
+  }
+}
+
+/* ── 動きを減らす設定では沈みも浮きもしない（影は残す） ── */
+@media (prefers-reduced-motion:reduce){
+  .btn:active,.btn-black:active,.btn-gray:active,.btn-red:active,.goal-btn:active,.sub-link:active,
+  .main-btn:active,.main-btn-qa:active,.main-btn-ft:active,.ft-cell:active,.prate-q:active,
+  .audio-btn:active,.fbtn:active,.k-adv:active,.k-master:active,
+  .btn-black:hover,.btn-gray:hover,.goal-btn:hover,.sub-link:hover,.main-btn:hover,.ft-cell:hover{ transform:none; }
+}
+
+/* ── ハイコントラストでは影を使わない（OSの指定を優先） ── */
+@media (forced-colors:active){
+  .btn,.btn-black,.btn-gray,.btn-red,.goal-btn,.sub-link,.main-btn,.main-btn-qa,.main-btn-ft,
+  .ft-cell,.prate-q,.tab-btn,.audio-btn,.fbtn,.k-adv,.k-master,.inp,
+  .set-section,.rv-box,.hist-item,.home-side,.year-prog,.as-fb,.as-sum,.as-reply,.mic-diag,.hdr{
+    box-shadow:none; background-image:none;
+  }
+}
+
+
+/* ══ R706: 青白グレーに合わせ、JSが描く部分（目標メーター・成長グラフ）の暖色・墨色を差し替え ══ */
+.meter{ background:var(--divider); }
+.meter>span,.home-side .meter>span,.meter.m-ac>span{ background:linear-gradient(90deg,var(--accent),var(--accent-text)); }
+.meter.m-lo>span{ background:linear-gradient(90deg,var(--bd),var(--muted)); }
+.meter.m-ok>span{ background:linear-gradient(90deg,var(--seal),var(--ng-text)); }
+.hk-head{ border-top-color:var(--line); }
+.home-graph line{ stroke:var(--line); }
+.home-graph circle{ fill:var(--bd); }
+.home-graph path[stroke]{ stroke:var(--accent); }
+.home-graph stop{ stop-color:var(--accent); }
+.year-prog-fill{ background-image:linear-gradient(90deg,var(--accent),var(--accent-text)); }
+@media (forced-colors:active){
+  .meter>span,.year-prog-fill{ background-image:none; background:Highlight; }
+  .home-graph line,.home-graph path[stroke]{ stroke:CanvasText; }
+  .home-graph circle{ fill:CanvasText; }
+}
 </style>
 </head>
 <body>
@@ -2197,7 +1532,7 @@
     </div>
     <div class="set-section">
       <div class="set-label">バージョン情報</div>
-      <p class="set-note">SEIKA ロープレツール v8.64<br>170問（S〜D級）・録音はブラウザに保存されます</p><!-- R703/R704 (v8.63→v8.64): デザイン刷新（Claude Designが設計したtheme.cssを既存CSSの後に適用。HTML構造・JSは不変）。和紙の地(#F4F2ED)に墨(#1B1B1F)。行動＝墨1色、朱(#B3362C/--seal)は録音と印だけ、藍(#1F4A8A)は考える時間だけ。影を全廃し枠線で区切る(--shadow-card/ctaをnone)。見出し・ラベル・注記を3段階に統一、数字は等幅(--font-num/tabular-nums)。チップは見た目36px＋::beforeで判定44px。PC840px以上で振り返り・目標・設定を2カラム、他は画面ごとに最大幅を設定。スマホ480px未満の調整、forced-colors/prefers-reduced-motionの対応込み。 / R700 (v8.62→v8.63): 使用中に実害の出るバグを修正 — シンキングタイム中にアプリを切り替える/画面がロックされると、裏でカウントが0になり非表示のまま録音を開始→beginRecのhiddenガードで中断され、セットが壊れて設定画面に飛ばされていた。背面化したらカウントを止め(finalizeOnHideでstopThink、残り秒thinkLeftを保持)、復帰したら続きから再開(visibilitychangeでrunThink、残り0なら戻った時点で次の本を開始)。カウント0での自動開始にも「非表示でない」「セッション継続中」「シンキング画面がactive」の3条件を追加。 / R699 (v8.61→v8.62): 厳格デバッグ10視点で見つかった4件を修正。①R696/R697のセッション初期化(sessThink/sessPace/sessIds/histSession/stopThink)がgoHomeではなくendBatchToReviewに入っていた取り残し→goHomeに正しく追加。②その結果endBatchToReviewはsessIdsをクリアした後に参照しており、途中で止めると必ず「ここまでの0本」になり絞り込みも効かなかった→クリア前にdoneIdsへ控えて使用。③「1本ごとに振り返る」モードはsessSavedAnyが立たずセット末のまとめ振り返りが出なかった→saveAndNextでも立てる。ただし1本だけの録音は従来どおりホームへ(endSessionをn>1/Infinityに限定)。④「続ける」(無限セット)でsessIdsが無限に伸びる→直近300本に制限。 / R698 (v8.60→v8.61): 再生速度にワンタップの倍速ボタン（等倍/1.5倍/2倍/3倍, .prate-q）を追加。スライダー(0.5〜3.0倍・0.1刻み)は微調整用として併置、現在値は右に表示。reflectPlayRateが現在値のボタンを点灯。振り返り画面とログ（セット終了後のまとめ振り返りもここ）の両方に同じ行。設定はplay_rate（アカウント別）で共有、再生中の変更も即反映。 / R697 (v8.59→v8.60): フリートークの進め方を選べるように＋振り返りは最後にまとめて。設定「進め方（1本ごと）」= 1本ごとに次へ(既定, NEXTボタンだけの画面)/止まらず連続(停止なし=トーク→シンキング→トーク)/1本ごとに振り返る(従来。意識ポイントのチェックもこの時だけ)。ft_paceに保存、sessPaceで確定。セット(2本以上)では既定で1本ごとの振り返り画面を出さず、保存する設定なら即保存(batchSaveAdvance)、保存しない設定なら即破棄(discardAdvance新設)して次へ。終了/中断時はログを「このセットで録った分だけ」に絞って表示(sessIds/histSession、saveFTHist・saveQAHistでid記録、hist-ctlの「すべて表示」で解除、ホームからログを開いた時は全件)。開始ボタンに「・連続」「・毎回振り返る」を表示。Q&Aは従来どおり(sessPaceを一括保存=gate/それ以外=reviewで初期化)。 / R696 (v8.58→v8.59): フリートークに「シンキングタイム」を追加。設定=なし/5/10/15/30/55秒＋自由入力(3〜300秒, #ft-think-custom, ft_thinkに保存、プリセット外は自由欄に復元、不正値は開始時toastで停止)。セット中は1本終わるごとに専用画面(s-think)へ切り替わり、選んだ秒数を青い数字(.think-cnt #1d4ed8)でカウントダウン→自動で次の本へ。「次は n / N 本目」表示、「すぐ始める」でスキップ、←でセット終了(batchは振り返りへ)。1本目の前には出さない(doNextRep＝本と本のあいだだけ)。NEXTゲート(s-interval)とは併用=NEXT後に考える時間。画面離脱でカウント停止(nav/goHome)、0秒(なし)は従来どおり即次の本へ。開始ボタンにも「・考えるN秒」を表示。 / R695 (v8.57→v8.58): 100題セットのデバッグ10ラウンドで見つかった6件を修正。(1)保存値as_setposが負数/文字列/配列/100以上だと開始時にTypeErrorで止まる・「251/100」表示→asSetPosOfで正規化。(2)100題目をまたぐ回の見出しが「96〜100」と誤表示・1題で「38〜38」→「96題目から10題」「38題目」。(3)またいだ回のまとめに周回が出ない→「n周目を終えました」。(4)途中でやめると解いた題まで進みが消える→セットは解いた題ぶん進める(確認文も変更)。(5)スマホで選択欄の「（1周済）」が切れる→「・1周」＋幅を中身に合わせる。 / R694 (v8.56→v8.57): 連想に「お題」設定＝おまかせ／100題セット。別ファイル assoc-sets.js（AS_SETS=100題×N・順番固定[単語Lv1 33/Lv2 29/短文26/長文12]。本体の全お題＋追い足しを分割したもの。AS_EXTRA=本体に無い追い足し分だけ、おまかせの母集団へ結合 asMergeExtra）。セットは<select>で選択(asRenderSets)、進み具合を as_setpos{n:{pos,done}} に保存して次回は続きから(asSetTopic)、100で1周として先頭へ。セット中は「お題の形」を隠す。終了時にまとめへ「その n：x/100 まで済」(asSetDone)。途中でやめた回は進めない。ファイルが無い環境でも従来通り動く。 / R693 (v8.55→v8.56): 問いの型を選べるように。設定「使う型」=11型の複数選択チップ(タップで外す/戻す、「すべて」で全部、as_qselに保存、既定は全部、自由に連想の時は非表示)。1つも選ばず開始→toastで停止。本番: 選んだ型だけがチップに並び「型 n/選んだ数」、フィードバックの母数・偏り・次に使う型は選んだ型の中から、選んだ型以外の問いは「選んだ型以外の問いがn個」と別掲。まとめの平均種数・抜ける型も選んだ型が母数、改善点の閾値は min(4,選んだ数)。 / R692 (v8.54→v8.55): 連想のお題を4455本追加（生成済みの assoc-topics.js〔別セッション生成・未参照だった〕を検査して本体へ取り込み: 単語 Lv1+1426=2126 / Lv2+1437=1867、短文+1180=1690、長文+412=774、合計6457）。既存重複607件・文字種・長さを検査。ジャンル追加(職業/業種/建物・設備/暮らし/身の回り/現場/制度/人間関係/状態/趣味・学び)。ブランド・不適切語の走査で実害なし(ライオン/キリンは動物)。assoc-topics.js自体は.gitignoreで非公開・未参照のまま。 / R691 (v8.53→v8.54): 連想のお題を全国対応に（ユーザー指示「俺の地域だけに絞らずにやってこ」）。静岡/浜松以外の全地方から 単語+240=700（地名は北海道〜沖縄を均等、ご当地の食べ物・祭り/季節行事・自然）、短文+160=510、長文+130=362、合計2002。既存重複・文字種・長さ・静岡語を検査してマージ。 / R690 (v8.52→v8.53): 連想の題数を自由に — プリセット3/5/10/20/30＋自由入力(1〜100題, #as-total-custom, asTotalOk/asSetTotal/asTotalCustom)。時間(R686)と同じ挙動: プリセット一致でチップ点灯、チップで自由欄クリア、as_totalに保存しプリセット外は自由欄に復元、不正値は開始時toastで停止。書く欄はrows10→8(「次へ」が1px折り返し下に出ていた)。 / R687 (v8.51→v8.52): 連想のお題を1108本追加（単語 Lv1+280=460 / Lv2+278=430、短文+330=350、長文+220=232、合計1472）。Lv1に仕事道具/体・健康/趣味・娯楽/自然、Lv2にお金/人事/法律・制度のジャンルを新設。既存・ファイル間の重複と、文字種(引用符等)・長さ(短文8〜26字/長文45〜95字・句点2〜3)の不適合を除外してマージ。 / R689 (v8.50→v8.51): 連想に「問いの型（11型）」モード。設定「書き方」=問いの型で書く(既定)/自由に連想＋11の型の一覧(details表)。各行を疑問語で1型に分類(asQType: Why→How long→How many→How much→Whom→Who→When→Where→Which→How→What の順)、書く欄の下で使った型を点灯(#as-types)、個数表示に「型 n/11」。フィードバック(asTypeFeedback)=型の数/偏り/型に当てはまらない行/次に使う型3つ(お題入りの例, asQExample)。まとめ=型の平均種数とよく抜ける型(asTypeLine)、平均4種未満なら改善点を型の幅に(asTypeFocus)。声入力は問いの型モードでは「、」で切らない。1行40字まで。相手役の質問欄の薄い案内文も撤去し、選んだ問いをそのまま入れる。 / R688 (v8.49→v8.50): 連想の書く欄を大きく(後段の.inp{font-size}に負けないよう#s-as-playで詳細度を上げる。文字20px/高さ42vh、PCは21px/46vh、10行)＋欄内の薄い案内文(プレースホルダ)を撤去(文字/声とも)。お題エリアの上下余白を34→24vhに詰めて一画面に収める。 / R686 (v8.48→v8.49): 連想の時間を自由に — プリセットに5/10/15秒を追加(5/10/15/20/30/45/60)＋自由入力欄(3〜300秒の整数, #as-sec-custom)。自由入力がプリセットと一致すればそのチップを点灯、チップを押すと自由欄はクリア。as_secに保存しプリセット外は次回自由欄に復元。開始時に自由欄が不正値ならtoastで止める(黙って丸めない)。asSecOk/asSetSec/asSecCustom。 / R685 (v8.47→v8.48): 声モードの遅延呼び出し(最初のお題2.5秒/聞き取り開始)を「同じセッション・同じお題・まだそのフェーズ中」の時だけ実行するよう修正(書き終えてフィードバック画面に移った後にマイクが立ち上がり、採点済みの回に言葉が追加され続けていた件も)(放棄した声セッションの遅延asNewTopicが次のセッションを乗っ取り、書いた連想が消えお題とタイマーが入れ替わっていた)。開始時に本番画面を入力状態へリセット(声モードで最初のお題まで前回のフィードバック/古いお題が見えていた)。連想をさらにシンプルに（真ん中にお題→その下に書く欄 or 声の聞き取り）。本番画面: 「連想を出す（…）」見出しを撤去、連想だけの時は相手役ラベルも非表示、マイクボタンは声モードの時だけ表示(文字モードは書く欄と個数だけ)、ボタンは「次へ」。設定: 説明を1行に、相手役は一番下へ移し「相手役（任意）」既定=なし(as_persona2で既定なしから開始)。 / R684 (v8.46→v8.47): 連想の単語お題を大幅増量（49→332語。Lv1具体=180語: 物/場所/地名(静岡・浜松ほか)/季節/食べ物/乗り物/IT・家電/人、Lv2抽象=152語: 数字/ビジネス/経営/社会/感情/抽象語）。ジャンル細分化で連続同ジャンル回避が効く。重複ゼロをパッチ時に検査。 / R683 (v8.45→v8.46): 連想画面をシンプルに（ユーザー要望: 「お題：○○」等の前置き不要、お題を画面中央に、その下にテキストを出して書いていく）。.as-stageでお題を中央に大きく表示(前置きなし、短文/長文は「」のみ)、タイマーは小さく下に。フェーズAは1行入力＋チップ列を廃止し<textarea id=as-ta>に1行1連想で書く方式(asTaSync: 行→連想、重複/空行除外、初動は最初の非空行時刻)。個数表示#as-count。声入力はテキスト欄へ1行追加。 / R682 (v8.44→v8.45): 相手役「なし（連想だけ）」を追加 — パッと出た単語への反射を鍛える。印付け/質問変換/相手の反応を飛ばし、量(個数)・初動(最初の1個までの秒数 cur.first)・ペース(10秒あたり個数)を断定表示(asFinishSolo)。まとめは平均個数/最多最少/平均初動/到達Lv/改善点(asFinishSessionSolo, assoc_histにsolo:true)。 / R681 (v8.43→v8.44): 連想の設定に「お題の形」= 混ぜる／単語だけ／短文だけ／長文だけ を追加(as_form記憶, AS.form, asPickFormで固定は早期return)。 / R680 (v8.42→v8.43): 連想のお題を「単語／短文／長文」の3形に拡張（ユーザー要望: 長文だったり短文だったり一単語だったり）。AS_WORDS(Lv1具体/Lv2抽象)・AS_SHORT(相手の一言20)・AS_LONG(相手の話2〜3文×12)。asPickFormがレベル別の重み(Lv1 6:3:1→Lv4 1:3:6)で形を選び、直前と同じ形は出さない(AS.lastForm)。表示=単語「お題：」大／短文「相手の一言：」／長文「相手の話：」小さめ(.as-topic.long)。声モードは長文9秒・短文4秒待ってから聞き取り開始。 / R679 (v8.41→v8.42): 連想トレーニング（話題の引き出し強化）モードを追加【AIなし】。ホーム3つ目のボタン→s-as-setup(相手役4種/ランダム・題数3/5/10・文字/声)→s-as-play(お題→連想30秒[文字Enter/音声認識で「、」区切り]→相手側に印10秒→1つ選び質問に変換20秒→相手役のルール反応(good/mid/poor×4人格, Lv4は薄い)→断定フィードバック(量/選択/変換/代案、閉じた質問はルール判定＋言い換え))→s-as-result(平均連想数/自分本位回数/閉じた質問/到達Lv/改善点)。レベルは直近3題平均で1→2(≥5)→3(≥7)→4(≥8)、Lv3+はお題が相手の一言。お題はジャンル連続回避＋重複なし。assoc_hist(アカウント別,100件)保存＋完走でsavePractice()。声モードはspeakQで読み上げ＋専用SpeechRecognition(asRecog)。nav()離脱でasStop()。 / R678 (v8.40→v8.41): 厳格デバッグ10視点(PC/Edge環境＋R672〜R677相互作用)。確定2件修正: ①ログ画面を離れても再生中の録音が鳴り続ける(ゴースト再生)。R674の録音前suspendで一旦無音になり、次の再生でctxがresumeすると古い音が突然鳴り出す事故にも発展→nav()でs-history以外へ遷移時に#s-history内のaudioを全pause。②成功後も設定の#mic-diagに古い失敗診断が残る→getMic成功時にng表示を非表示。パス: Edgeのニューラル音声(Nanami Online Natural)優先/webm;opus対応/SpeechRecognition有/スライダーのキーボード入力(inputイベント)/Edg UA判定＋PC案内/録音前suspend→タップ内primeでresume/finalizeOnHideはマイク解放のみで再生ctx非干渉/micTestは連打不可(disabled)/track labelはtextContentでXSS安全。 / R677 (v8.39→v8.40): PC(Windows)の実例で確定した案内修正 — ユーザーPCのレジストリ実測でHKLM ConsentStoremicrophone=Deny(Windows本体の一番上「マイクへのアクセス」がオフ)。この状態ではサイト許可に関係なく全アプリでマイク不可。PC向け案内(granted分岐＋汎用分岐)で最初に「マイクへのアクセス」スイッチを示し「デスクトップ アプリ…」も併記、ブラウザ再起動を追記。 / R676 (v8.38→v8.39): 「許可したのに未許可扱い」が続く2原因を診断に追加。①サイト権限がgranted(許可)なのにNotAllowedError ＝ ブラウザアプリ自体のOS権限(Android: 設定→アプリ→Chrome→権限→マイク / iOS: 設定→Chrome/Safari→マイク / Win/Mac: プライバシー→マイク)が拒否 → ブラウザ名(Chrome/Safari/Samsung Internet/Edge/Firefox)を検出して具体案内。②アプリ内ブラウザ(LINE/Instagram/Facebook/X/Android WebView)はマイク非対応or自動拒否 → UA検出して「ブラウザで開く」を案内。状態行にブラウザ名/アプリ内を併記。Android通常ブラウザ案内にも②としてOS権限の手順を追加。 / R675 (v8.37→v8.38): 厳格デバッグ10件（マイク／録音経路中心）。確定修正5件: ①「許可したのに未許可扱い」対策=マイク診断(micEnv/micPerm/micGuide/showMicHelp/micTest)。ホーム画面アプリ(standalone)はブラウザと権限が別管理(Android=OSのアプリ権限, iOS=設定のアプリ項目)なのに案内が無かった→端末(Android/iOS/PC)×表示モード(アプリ/ブラウザ)×Permissions API状態(granted/denied/prompt/unknown)から「どこを直すか」を具体表示。②トースト3.2秒では手順を読めない→録音失敗時は設定画面の#mic-diagに固定表示しスクロール。③設定に「マイクをテスト」ボタン=タップ起点getUserMediaで即診断(成功時はトラック停止、持続マイクは不変)。④ftStartSessionの打ちかけ救済が上限8のまま(R668で20)→20に。⑤iOS: AudioContextは通話/背面化後に'interrupted'になり'suspended'判定では復帰しない→ampAudioはrunning以外を全てresume(+reject握り)。⑥iOS: 増幅接続がIDB読込後のoncanplay(非ジェスチャー)で走りctxがsuspendedのまま無音→toggleAudioのタップ内でplayCtx()生成/resume。検証済み=タップ→ftStartSession→startFT→beginRec→getUserMediaは全同期(ジェスチャー保持)/レビュー離脱(save/discard/back)はrv-audioをpause済(R473)/goHomeでreleaseStream。 / R674 (v8.36→v8.37): マイクが繋がらない不具合の診断＋対策。①失敗トーストに実エラー名を併記［NotAllowedError/NotReadableError/NotFoundError/SecurityError/OverconstrainedError］し原因を即特定できるように＋各文言を具体的な対処に改善(許可の変え方/他アプリ使用中/HTTPS)。②R672の再生用AudioContextがスピーカーを掴んだままだと一部Androidで次の録音のgetUserMediaがNotReadableError等で失敗しうるため、beginRecの録音開始前に_playCtxをsuspend()して音声デバイスを解放(次の再生でampAudioがresume)。 / R673 (v8.35→v8.36): 厳格デバッグ10視点（ブラウザ実負荷・例外ゼロ・退行なし）の確定1件を修正 — ampAudioの無音固定トラップ: createMediaElementSource成功後にゲイン/コンプ接続が万一失敗すると要素が「グラフ接続済みだが出力先なし＝無音」かつ_ampedがfalseのまま→次回createMediaElementSourceが例外で永久無音になり得た。生成成功で即_amped=true(二度と生成しない)＋増幅チェーン失敗時はsrc→destination素通し接続で必ず音を出すよう是正。検証=clamp境界/ampのidempotency・単一AudioContext(増殖なし)・フォールバック/スライダー100連打3ms/両スライダー・ラベル同期/nav100往復でactive画面常に1/履歴200件描画/実WAV再生でplaybackRate+増幅+実発音+コンソールエラー0/play_rate束隔離/意識ポイント振り返り＋スライダー共存=全パス。 / R672 (v8.34→v8.35): 録音の再生音量を底上げ。再生する<audio>だけをWeb Audioのゲイン増幅(PLAY_GAIN=2.4)＋DynamicsCompressor(クリップ防止)経由に(ampAudio)。録音経路(MediaRecorder)は不変。AudioContext不可環境は素の再生にフォールバック。createMediaElementSourceは要素毎1回のみ→el._ampedでキャッシュ、再生はタップ起点なのでresume()可。openReviewのrvAudio.onplay＋toggleAudioの両play経路で適用。 / R671 (v8.34→v8.35): 再生速度を3段階チップ→スライダー化(0.5〜3.0倍・0.1刻み)で細かく調整可能に。振り返り/ログのprate-rowを<input type=range class=prate-range>＋現在値ラベル(.prate-val, タップで等倍リセット)へ。clampRate/fmtRate、reflectPlayRateはスライダーvalueとラベルを更新、setPlayRateはoninputで即反映(トーストはドラッグ連発回避のため撤去)。play_rate(アカウント別)は従来どおり全audioに適用。 / R670 (v8.33→v8.34): 録音の再生速度(倍速)追加。振り返り画面とログに「等倍/1.5倍/2倍」チップ(.prate-btn, setPlayRate/playRate/reflectPlayRate/applyPlayRate)。play_rate(アカウント別)を全audioに適用=openReviewのrv-audio.onplay＋toggleAudioのoncanplay/elseでplaybackRate設定、速度変更は再生中にも即反映。 / R669 (v8.32→v8.33): 画面切替/タブ破棄/PWA再読込/アプリ切替で毎回ホーム(最初の選択画面)に戻る不満を解消。nav()で直前の"閲覧系"画面(s-home/s-goal/s-history/s-calendar/s-settings)をsessionStorage.last_screenに保存(s-historyはlast_histtabも)、起動時ログイン済み/スキップなら直前画面へ復帰(s-goal/s-settings=nav, s-calendar=openCal, s-history=showHistory)。録音/振り返り/設定選択など一時状態画面は保存せずホーム。 / R668 (v8.31→v8.32): 意識ポイントの追加上限を8→20に引き上げ(parseFocus/getFtFocusStoredのslice(0,20)、addFtFocusの上限チェック)。 / R667 (v8.30→v8.31): PC向けに全体拡大＋成長グラフ刷新。①デスクトップ(≥840px)を広く(body 900→1160)＋右パネル大きく(home-side 340→460, gap48)＋パネル内要素をPCで拡大(hg-big 48px/hk-title 16px/meter太く/main-btn大きく)。②グラフ刷新(renderGrowthChart)=大きく(viewBox360x192, height:auto+preserveAspectRatioでアスペクト保持し伸び防止)＋薄いグリッド3本＋週ごとの点＋到達点を白リング大ドット＋累計値ラベル(N本)。スクショで反復確認。 / R666 (v8.29→v8.30): ホーム右パネル(目標＋グラフ)の見た目調整。①各見出しの「→」矢印が点のように浮いて雑然→非表示(.hg-arrow display:none)。②進捗バーの青/紺/灰混在をやめ墨一色に統一(.home-side .meter>span)。③KGI達成率を大きな数字で主役に(.hg-figure/.hg-big 32px＋現在→目標のhg-goalnote)。スクショで確認しながら調整。 / R665 (v8.28→v8.29): 厳格デバッグ5視点(意識ポイント/目標/秒数本数/共有/ログ)。広域ストレス全パス・例外ゼロ。確定修正=①録音画面の制限時間(r-timer-lbl)がcurLimit>=60で全部「60秒」表示→3分(180)が「60秒」と誤表示していたバグ(R658のfmtDur統一の漏れ)→fmtDur化。②Claude評価プロンプトの制限時間/種類もfmtDur化(180秒→3分, 一貫性)。beginRecはnav(s-record)→getMic順でpre-start中s-record active=R663ガード正しい。XSS(KGI/KFS)・アカウント隔離(kgi/kfs/qa_voice/qa_rate/ft_focus)・fmtDur・共有・ログ3件は健全。 / R664 (v8.27→v8.28): 振り返り画面に「この録音を共有」ボタン追加(rv-share-btn/shareCurrentRec)。保存前のメモリ上audioBlobをtoShareableBlobでWAV化しnavigator.share(files)、非対応はDLフォールバック。ログのshareAudioと同挙動だが録音直後に即共有できる。 / R663 (v8.26→v8.27): 画面切替(背面化)で振り返りのチェック中の内容が消えるバグ修正。finalizeOnHideのelse if(micAlive())が画面に関係なく発火し、振り返り画面(s-review)を背面化した際も設定画面へ強制遷移＝意識ポイントのチェック等を破棄していた→「s-record が active の時だけ」中断＆遷移するようガード。他画面ではマイク解放のみで振り返りのDOM/状態は残す。 / R662 (v8.25→v8.26): 意識ポイントのマークを記号(✓/×)→文字ラベル「できた/できなかった」に変更。✓/×は端末フォントで表示されないことがあり「マークがない」と見える問題を解消。レビューは各ポイントの下にフル幅の「できた」(緑)/「できなかった」(朱)ボタン(.focus-row2縦積み/.fbtn flex)、ログも「できた/できなかった/未」の文字表示に。 / R661 (v8.24→v8.25): 意識ポイントの最終集計。目標画面に「意識ポイントの実績」セクション追加(computeFocusStats/renderFocusStats)=FT履歴のit.focusをポイント別に できた/できなかった で集計、通算のできた/できなかった数＋ポイント毎の達成率バー(.fs-row)。 / R660 (v8.23→v8.24): 意識ポイントのチェックリストに×ボタン追加 — ✓できた/×できなかった/未の3状態(setFocus, .focus-row2/.fbtn, 同ボタン再押下で未に戻る)。it.focus.ok=true/false/null、ログは✓緑/×朱/－灰、達成数はok===trueのみ。 / R659 (v8.22→v8.23): Q&A質問をBtoB営業の実戦質問に全面刷新（旧400問はテレアポ/アポ代行前提の文脈ゼロな一言ブラシオフの羅列で「現実と乖離」→撤去）。170問(S26/A40/B40/C35/D29)。品質基準=①文脈がある(予算/稟議/競合/過去の経緯)②一言で返せない(結論→根拠→次アクションを迫る)③相手の生の声(本音/迷い/駆け引き)。難度=S:失注寸前/決裁者/値下げ・競合で追い込まれる巻き返し, A:手強い定番反論(価格/競合/タイミング/稟議/現状維持), B:中立的な懸念・確認(効果裏付け/事例/導入負荷/サポート), C:ヒアリング・関係構築(課題曖昧/警戒/ニーズ喚起), D:基礎動作(初回接触/要件整理/次アクション)。ホームCTA/フッターの「400問」→「170問」。 / R658 (v8.21→v8.22): 秒数・本数の選択肢を拡張＋FTランダムを真の乱数に。秒数=3秒/1分/3分を追加(QA_SECS=[3,10,15,30,60,180]/FT_SECS=[3,5,10,15,30,60,180]、Q&A設定チップqsec-*も追加、qaSec/setQaSec検証拡張)。本数=20/30/100本を追加(REPS_OPTS=[1,3,5,10,20,30,100]、startQA/ftSetupOpenの検証)。FTランダムは固定候補[5,10,15,30]→5〜60秒の真の整数乱数(12/13/47秒などバラつく)。表示はfmtDur(60→1分/180→3分)に統一(q-tbadge/rv-tbadge/rv-ft-dur※60以上を全部「60秒」と誤表示していたバグ修正/ログlim/updateGoLabels/setQaSecトースト)。 / R657 (v8.20→v8.21): 意識ポイントを「1つずつ追加」方式に変更（旧: 改行テキストのまとまり）。FT設定に入力＋「追加」ボタン(#ft-focus-input/addFtFocus)＋追加済みリスト(#ft-focus-list, .ffx-item, ×で削除removeFtFocus)。ft_focusはJSON配列で保存(getFtFocusStoredが旧改行テキストも移行)。ftFocusList→ftStartSessionでftFocusPointsへ、打ちかけ1件は救済取り込み。録音後のチェックは従来どおり1個ずつ。 / R656 (v8.19→v8.20): ホーム右パネル(目標＋成長グラフ)のバランス改善 — 白カード2枚がバラバラに浮いて「ダサい/微妙」だったため、.home-sideを1枚の統一パネル(border/shadow/radius18/overflow:hidden)にし、内部の目標(.home-goal)と成長(.home-graph)は区切り線(border-top)で分割。各区画は個別カード装飾を撤去しpaddingのみ、押下は淡い背景で表現。 / R655 (v8.18→v8.19): フリートークに「意識ポイントモード」追加。FT設定に意識ポイント欄(#ft-focus,1行1つ・最大8・ft_focusに保存)。書くと録音のたびに振り返り画面にチェックリスト(#rv-focus, .focus-row/.focus-box, toggleFocus)が出て「できたか」を自分でチェック。意識ポイント時は一括保存でも必ず振り返りを表示(openReviewのbatch bypassにftFocusActive除外)＋自動進行しない(reviewAutoStart早期return)。結果はit.focus=[{p,ok}]で履歴保存、ログにFTの達成状況(◯/×)表示(.hist-focus)。ftFocusPoints/ftFocusChecks・parseFocus・ftFocusActive、goHomeで解除。 / R654 (v8.17→v8.18): ホームを2カラム化。目標を上の縦積みから横パネルへ移動 — 左=操作(Q&A/FT/ログ等)、右=目標パネル(#home-side: 目標カード#home-goal＋成長グラフ#home-graph)。PC(≥840px)はbody幅900で横並び(home-side sticky 340px)、他画面は560px中央カラムに固定(伸びすぎ防止)。スマホは操作→目標の縦積み。renderGrowthChart(targetId)化しホームは'home-graph-inner'に描画、データ無しはグラフカード非表示。 / R653 (v8.16→v8.17): ログは量が増えると全部見るのが面倒 → 既定でランダム3件だけ表示。「別の3件」で引き直し、「すべて表示」で全件、「ランダム3件に戻す」。renderHistBody(tab,isFT)がsampleHist(3件・新しい順維持)＋操作バー(.hist-ctl)を描画。histSample/histAllで状態管理、nav('s-history')でリセット(開くたび新3件)。histReshuffle/histSetAll。選択削除は表示中の件に作用。 / R652 (v8.15→v8.16): ホームの目標カードに進行中の課題(KFS)も直接表示。クリックせず中身が見えるよう、上位3件を課題名＋進捗メーター(m-lo/m-ac/m-ok)付きで表示、超過は「ほかN件」。renderHomeGoalを目標＋課題の両方描画に拡張(.hk-head/.hk-item/.hk-title/.hk-pct)。 / R651 (v8.14→v8.15): 目標を初期画面(ホーム)に常時表示。統計バー撤去で空いた上部にタップ可能な目標カード(#home-goal, .home-goal)を追加、KGIタイトル＋達成%メーター＋克服/課題数を表示、タップで目標画面へ。renderHomeGoal()をrefreshHomeから呼ぶ。KGI未設定時は「目標を決めて、成長を見える化しよう」。 / R650 (v8.13→v8.14): 目標画面に成長グラフ追加＋デザイン洗練(水墨トーン)。①成長グラフ: 直近10週の累積トレーニングを面グラフ(水墨の山のように積み上がる)でrenderGrowthChart()が描画(day_集計・依存ゼロSVG・墨グラデ塗り)。②デザイン: KGI見出しを墨グラデbackground-clip:text、メーターを淡墨→藍墨→朱の階調(m-lo/m-ac/m-ok)、KPI/KFSを浮遊白カード(--shadow-card)＋tnum数字、克服ボタン/殿堂を朱印トーン(緑→朱)に統一。 / R649 (v8.12→v8.13): ホーム上部の統計バー(TODAY/MONTH/TOTAL/STREAKの英字＋回数)を撤去 — 数字＋英語で頭に残らず動機づけにならない虚栄メトリクス。回数データ自体は保持(カレンダー朱印/目標KPIで意味のある形でのみ表示)。refreshHomeのh-today/h-month/h-total/h-streak代入を削除(要素不在)、reconcileStreak/緑チップ(R642)/acctRefreshは維持。.stat-*CSSは無害なため残置。 / R648 (v8.11→v8.12): 目標管理画面(KGI/KPI/KFS・課題表)を追加【フェーズ1・既存の保存フローには非干渉の追加画面】。ホーム→「目標」。KGI=最終目標(タイトル＋現在→目標＋単位, 達成%バー, localStorage.kgi)。KPI=記録から自動計算(克服課題数/取り組み中/S級クリア率/記録数, computeKPI)。KFS=課題表(localStorage.kfs配列, 追加/◎前進(prog+20)/克服(満タンで)/削除, 進捗メーター＋状態＋出所バッジ)。克服した課題は「克服の殿堂」に朱印表示。kgi/kfsはacctDataKeysに含まれアカウント別。renderGoalはnav('s-goal')で描画。escHtml/onclick id sanitizeでXSS/注入防止。次フェーズ: 練習/記録の分離＋手応え評価(信憑性)→旧回数バー格下げ＋手応え成長ライン配線。 / R647 (v8.10→v8.11): 厳格デバッグ10視点（あらゆる視点・本体実行）— 広域ストレス(画面遷移120/セッション状態機械/履歴210件描画/音声速度20連打/共有変換12連続/アカウント切替20往復/カレンダー24ヶ月/クールタイマー)は全パス・例外ゼロ・不変条件維持(active画面常に1つ・セッション0リセット・アカウントデータ無傷)。確定1件を修正: 発話の世代競合 — speechSynthesis.cancel()で止めた旧発話のonendが新発話の最中に発火しqSpeakingを誤って解除し、連続自動録音の待機(R644)が読み上げ中に早期にカウント開始しうる（「もう一度聞く」連打時）。_speakGen世代トークンで最新発話のonend/onerrorだけがqSpeakingを下ろすようにし、stopSpeakはgenを進めて保留中のonendを無効化。 / R646 (v8.9→v8.10): 相手に送った録音が聞こえないバグを修正 — toShareableBlobがiOS等のMediaRecorder出力mp4を「どこでも再生可」と誤ってパススルーしていたが、これはfragmented mp4(fMP4)で共有先(LINE/メール/他プレイヤー)ではmoov断片化のため再生不可・無音になることが多い。修正: 共有はWAVのみパススルー、mp4/webm/oggはすべてWAV(PCM)へ変換(decodeAudioDataはiOSのAAC/mp4も復号可)。WAVエンコーダ自体はラウンドトリップ実測で出力RMS>0(非無音)・ヘッダ完全を確認済み=真因はmp4パススルー。変換失敗フォールバックも元形式を正しいext/type(mp4→m4a)で返すよう是正(誤ラベル防止)。 / R645 (v8.8→v8.9): 出題音声を自然な声に＋速度可変 — ①声: 端末内蔵の日本語音声からGoogle/Online(Natural)/Enhanced/Premium等の高品質音声を優先選択(pickJaVoice, espeak系のロボット声を減点)、voiceschangedで非同期ロード対応(_jaVoiceキャッシュ)。②速度: 設定に「読み上げ速度」4段(ゆっくり0.9/標準1.1/速い1.35/最速1.6, qa_rate, アカウント別)、変更時にその場で試し読み。speakQのrateをqaRate()に、pitch1.02。※Web Speechは端末内蔵音声しか使えず、真に自然な声は端末の音声品質に依存(iOSは設定→アクセシビリティ→読み上げcoコンテンツで拡張音声DL推奨、Androidは Google TTS)。 / R644 (v8.7→v8.8): 厳格デバッグ10視点の確定2件を修正（R643音声の実効性向上）— ①F2(中): 連続セッションの自動録音は固定5秒開始のため長い質問だと読み上げが途中で切れていた→音声モード中はqaAutoArmが「読み上げ終了(qSpeaking=false)」を待ってから5秒カウント開始（onstart/onend/onerrorでqSpeaking管理、onend非対応環境向けに約15秒で安全打ち切り、待機中は「読み上げ中…」表示）。②F1(低): 背面化/画面ロック(finalizeOnHide)でTTSが残る経路→stopSpeak()追加。他8視点(録音ライフサイクル/音声認識/アカウント隔離/IDB削除/スクロールR641/状態遷移/localStorage堅牢性/XSS・a11y)はブラウザ実測で例外ゼロ・退行なしを確認。 / R643 (v8.6→v8.7): 出題の音声化 — 設定「Q&A 出題の音声」で オフ/読み上げ/音声のみ を選択(qa_voice, アカウント別)。依存ゼロのWeb Speech(speechSynthesis, ja-JP)でpickQ時に質問を発声(applyQVoice)。読み上げ=文字+声、音声のみ=q-textをblur(.q-veiled、DOMは残しSR可、タップ/「文字を見る」で表示qaReveal)＋録音画面のr-q-miniも空に=耳だけで答える実践。問題画面に「もう一度聞く」(q-replay, speakQ)追加。TTSは録音開始(beginRec)・戻る(qaBack)・ホーム(goHome)でstopSpeak()=マイク/音声認識への混入防止。既定オフで後方互換。iOSは開始タップ起点でTTS解錠、マナーモードでは鳴らない旨は設定に注記。 / R642 (v8.5→v8.6): 今日やったら右上を緑に — ホーム右上のアカウントチップ(acct-chip)を、今日1回以上トレーニングしたら緑(#166534, 白文字6.9:1 AA)に。refreshHomeで今日カウント(dayKey)>0なら.done-todayを付与、翌日はカウント0で自動的に通常表示へ。未ログインでもやった日は緑の「✓ 今日」チップを表示(acctRefreshのelse分岐)＝ログイン有無に関わらず右上が緑に。nav('s-home')経路はrefreshHomeのみ呼ぶためrefreshHome末尾でacctRefreshも呼び未ログインチップ表示を更新。切替は.3sトランジション。 / R641 (v8.4→v8.5): スクロール不能バグ修正(主にAndroid) — .body{overflow-y:auto→visible}。本アプリは.screen{min-height:100vh}で内容に応じ伸び、スクロールはドキュメント(html)側で発生(.bodyはscrollH==clientHで内部スクロールしていないと実測)。autoのままだとAndroid Chromeで「実際にはスクロールできないoverflow:auto要素」がタッチのパンを飲み込み、ドキュメントへスクロール伝播せず画面が動かなくなる(iOS/PCはジェスチャが親へバブリングするので無症状＝「主にAndroid」と一致)。visibleでドキュメントスクロールに一本化。stickyヘッダーはドキュメントスクロール基準で従来どおり固定。 / R640 (v8.3→v8.4): 録音の選択削除 — トレーニングログのヘッダー「削除」を「選択」トグルへ変更し、選択モード中は各録音の左にチェックボックス(.hist-cb)＋操作バー(.sel-bar)を表示。バーは「全選択」「選択削除（N件）」「すべて削除」の3つ。選択削除=deleteSelected()がチェックしたidのlocalStorage履歴(qa_hist/ft_hist)とIndexedDB音声(deleteAudio、生のit.id)の両方を削除。すべて削除=従来のclearCurrentHistory()(現タブ全消し)をバーへ移設。buildHistHTMLは中身を.hist-bodyで包みチェックボックスを外側に追加=audio→聴く→共有の兄弟連鎖(toggleAudio/shareAudioのprev/nextElementSibling依存)は不変。selMode/applySelMode/toggleSelMode/selectAllHist/updateSelCount/curHistBody追加。renderHistの先頭でselMode=falseにリセット(タブ切替=switchHistTabはrenderHistを通らないので選択維持、末尾でupdateSelCount)。data-idは聴く/共有/チェックで共通のsid(英数のみ)。チェックボックスはdisplay:none、.sel-modeクラス時のみ表示。 / R639 (v8.2→v8.3): 非公開運用への布石 — ①検索除け: meta robots=noindex,nofollow ＋ referrer=no-referrer ＋ robots.txt(Disallow:/) ＋ _headers(X-Robots-Tag, Cloudflare Pages用)。②移行ポータビリティ確認: github.ioのハードコード無し・start_url/scope/アイコンは全相対・外部URLはClaude APIのみ＝別オリジンへそのまま移設可。本命のアクセス制御はCloudflare Pages＋Cloudflare Access(許可メールのみ)で別途構成。移行時の注意=ストレージはオリジン単位のため新ドメインへは設定の「書き出す/復元」でデータ移行が必要。 / R638 (v8.1→v8.2): フィードバック宛先メールの平文露出を除去 — R637はFB_TO定数とこのコメントに開発者アドレスを平文で置いていた(公開リポジトリ/ソース閲覧/メール収集botから丸見え)。fbTo()でatob(base64)から実行時組み立てに変更し、ソース内の平文アドレスを全廃(このコメントの平文も削除)。※base64は難読化であって完全秘匿ではない(コードを実行/デコードすれば復元可)＝完全に隠すならフォームサービス経由が必要。 / R637 (v8.0→v8.1): ご意見フィードバック — 設定に記入欄＋「メールで送る」。sendFeedback()がmailto(開発者宛・難読化)を組み立てlocation.hrefで開く。空欄はtoastで促す。依存ゼロ・サーバー不要。 / R636 (v7.9→v8.0): 連続/セットの各本のあいだにNEXTゲート — 「毎回保存する」×連続/セット(sessActiveBatch)では、1本終わるごとに自動で次へ飛ばず s-interval 画面(「n/N 完了」or「n本完了」＋大きなNEXTボタン)を表示し、NEXTを押すまで次に進まない＝ペースを自分で決められる。sessionAfterRepでbatchならshowInterval()→NEXT(sessionNext)でdoNextRep()。通算本数sessReps追加(Infinity表示用,各出口でリセット)。intervalの戻る←はendBatchToReview(停止→保存あればログ)。最終本完了は従来どおりendSession→ログ(NEXTは挟まない)。保存しない/手動は振り返り画面が間のゲートを兼ねるため変更なし。 / R635 (v7.8→v7.9): 高負荷デバッグ10視点(本体実行)で確定した2件を修正 — ①マイク解放漏れ: endSession/endBatchToReview(保存あり分岐)がreleaseStream()せずログ/ホーム画面でもOSのマイク表示が点灯し続けた(R585の解放はgoHome/page-hideのみでR627/R633の新出口が漏れ)→両関数で解放(許可は残るので次回は無音再取得) ②一括保存の文字起こし尻切れ: batchSaveAdvanceは停止直後のtranscriptを即保存するが認識最終結果は〜1.2s遅延(通常経路の1200ms待ち相当が無い、特にFTは次startRecogが即リセット)→trPatch機構: 保存直後に予約し、次のstartRecogのリセット直前 or 1.3s後の早い方で、transcriptが伸びていれば保存済みアイテムのtrを差し替え。ブラウザ実負荷テスト(開始10連打/戻る5連打/nav200往復1.26s/チップ100連打40ms/休憩タイマー30回転/qaAuto 50回転リーク0/インク300イベント6ms/一括20本22ms/履歴200件上限確認)は全パス。サブエージェント版はプラン上限(23時JSTリセット)で実行不可だったため本体で10視点を実施。 / R634 (v7.7→v7.8): クールタイマー終了音 — 依存ゼロのWeb Audio(playChime)で柔らかいベル風チャイム(E5/A5/C#6上行アルペジオ×2、サイン+倍音、ふわっと減衰)を終了時に再生。モバイル自動再生制限対策として開始タップ(startBreak/startBreakCustom経由)でchimeUnlock()によりAudioContextを解錠。既存のvibrate/トーストは維持。 / R633 (v7.6→v7.7): 一括保存セットは振り返りスキップ→終了/停止時にまとめて振り返り — 「毎回保存する」×連続/セット(sessActiveBatch)では各本の振り返り画面を一切出さず、openReviewからbatchSaveAdvance()でストレージへ即保存しsessionAfterRepで次へ(QA=次問題＋5s自動録音/FT=即次録音)。0.9秒の一拍すら無し。セット完走(endSession)または途中停止(cancelRec/qaBack=新規)時に、保存があればトレーニングログ(s-history)を開いてまとめて振り返り。sessSavedAnyで保存有無を追跡、goHome/開始でリセット。保存しない連続は従来どおりR632の即時自動破棄レビュー。Claude評価は一括時はスキップ(API節約)。 / R632 (v7.5→v7.6): 自動進行の待ち時間短縮 — R630の3秒カウントダウンが「だるい」ため、setInterval(3×1000)を撤廃しsetTimeout(900ms)の一拍に。バナーはカウント数字なしで「自動で保存して次へ/記録せず次へ」表示。clearIntervalもclearTimeoutへ。一拍残す理由は「止めて確認」の最小猶予と画面瞬間遷移の違和感回避。単発1本は従来どおり手動。 / R631 (v7.4→v7.5): 一括保存方針をカウント開始前に選択 — Q&A/FT設定画面に「記録（このセット全体）: 毎回保存する/保存しない」チップを追加。開始時にsessSaveへ格納し、R630の自動進行が方針どおりに saveAndNext()(保存) or discardAndNext()(非保存) を自動実行。バナー文言も「自動で保存して次へ/自動で記録せず次へ」に分岐。qa_save/ft_saveを永続化し次回反映(既定=保存)。開始ボタンには保存しない時のみ「・保存なし」を明示。goHomeでsessSave=trueにリセット。「止めて確認」での手動上書きは従来どおり。 / R630 (v7.3→v7.4): 連続/セット中の自動保存・自動進行 — 1本ごとに保存/保存しないを選ぶ手間を解消。複数本セッション(sessTarget>1 or Infinity)では振り返り画面に入ると3秒カウントダウンで自動 saveAndNext()。「止めて確認」ボタンでいつでも停止し手動操作(保存/保存しない)に戻れる。単発1本では従来どおり手動。reviewAutoStart/Stop、saveAndNext/discardAndNext/reviewBack/goHomeでタイマー確実停止、s-review離脱でも自動停止。最終本はラベル「自動で保存して完了」。rv-autoバナー＋rv-save-box切替。 / R629 (v7.2→v7.3): 画面切替のラグ解消 — 水墨インクが「開始」ボタンや秒数チップ等の操作部タップでも発火し、全画面blur(shadowBlur)のrAF描画ループが画面遷移(録音開始等)と同時に立ち上がってメインスレッド/コンポジタを奪い、切替がカクついていた。pointerdownで e.target.closest('button,input,textarea,select,a,label,[role=button],[onclick]') に当たる場合は start()しないようガード。墨は背景・余白のなぞり描き専用になり、機能ボタンのタップは即応に。なぞり/タップの演出自体は背景上で従来どおり。 / R628 (v7.1→v7.2): 選択〜実行のスムーズ化 — ①前回構成の完全復元: qa_rank/ft_secも保存し、Q&A/FTの設定画面を開くと前回の出題・秒数・回数がそのまま選択済み(=開いて「開始」1タップ) ②開始ボタンに選択内容をライブ表示(updateGoLabels:「ランダム・30秒 × 3本 ─ 開始」) ③チップ選択のポップアニメ(chipPop .18s, reduced-motion対応, void offsetWidthで連打でも再発火) ④連続セッション中のQ&A自動録音: 問題表示から5秒カウントダウン(qa-auto, role=status)→自動beginRec。「録音開始」で即時/「別の問題」で再カウント/画面離脱・goHomeで停止(qaAutoArm/Cancel)。1本のみは従来どおり手動。FTは元々全自動。 / R627 (v7.0→v7.1): まとめ選択＋連続セッション — Q&A/フリートークの選択画面を「秒数×回数（＋Q&Aは出題ランク）」を1画面でチップ選択し1タップ開始する形に刷新。選んだ回数ぶん「録音→振り返り→保存/破棄→次」を休憩なしで自動継続(sessTarget/sessDone、Infinity=続ける)。進捗を問題画面バッジ(qa-set-badge)と録音画面(r-set)に n/N 表示、最終本は保存ボタンを「保存して完了」に切替、完了でホームへ達成トースト。saveAndNext/discardAndNextの末尾分岐をsessionAfterRepに統一、reviewBack(FT)/goHomeでセッション解除。qa_reps/ft_reps/qa_secを保存し次回反映。旧qaGo/qaKey/ftRandom/ftKey撤去。selChip/markGroupでチップ選択UI。 / R615-R624 (v6.8→v7.0): 大型アップデート ①R615 文言整理 — ホームCTAの秒数表記削除(400問・S〜D級/自由なテーマで話す)、「目標は設定から」短縮、空ログメッセージ非表示、ログインNAME/PASSWORD表記、設定の説明文を全面要約 ②R616 ログアウト追加(設定) — 現束保存→acct_currentクリア→reload→ログイン画面 ③R617 Q&A刷新 — 秒数ランダム廃止(qa_sec固定10/15/30, 既定30, 旧rnd_timer廃止)＋出題振り分け画面s-qa-select新設(ランダム=ALL/S/A/B/C/D級→setFilter→pickQ)。設定のレベルフィルターセクションは撤去(出題時選択に一本化、lv_filter機構は維持)。q-tbadgeが15秒を30秒と表示する旧バグも修正 ④R618 FTランダムセル — 5/10/15/30秒から抽選、toastで秒数表示 ⑤R619 背景スマホ修正 — cover→100% auto(縦長画面で富士・波が切れる問題) ⑥R620 共有のWAV変換 — webm/oggをdecodeAudioData→モノラル22.05kHz 16bit PCM WAVへ(60秒≈2.6MB)。iOS/Android/PCどこでも追加アプリなしで即再生。mp4/wavはそのまま、変換失敗時は元形式 ⑦R621 飛沫 — 着筆9-16粒(全方位)/速筆(d>16,50%)1-3粒(前方コーン)/筆離れ(速度>8)4-9粒。生成時に位置/径(0.5+rnd²*2.8)/濃さ確定しストロークと同齢フェード、上限90粒 ⑧R622 カレンダー＋朱印 — 月グリッド(day_YYYY-MM-DD集計)、トレーニング日に朱印スタンプ(回数入り朱円,-8deg)、日タップでひとことメモ(cal_note_*≤60字,束に同梱)、月合計表示。ホームにカレンダー入口 ⑨R623→R625 アイコン刷新(ユーザー画像指定で再変更) — 紙白の角丸に太い墨のS字ブラシストローク(Catmull-Romテーパー)＋かすれ筋(ラン&ギャップ)＋墨だまりスプラッシュ(22塊+12小滴)＋飛沫84粒。icon.svgとPNG(512/192/180)を_gen_icons.mjs(シードRNG・円スタンプラスタ・zlib PNG・依存ゼロ)で同一ジオメトリ生成 ⑩R624 設定画面の圧縮(セクション余白/文字密度) ⑪R626 デバッグキャンペーン(73エージェント・10視点finder→3票adversarial検証、所見21件→確定2件+追加採用3件)の修正 — (a)toShareableBlob: decodeAudioData失敗時にAudioContextがclose漏れ(連続失敗でiOSのコンテキスト上限到達→以後の音声再生不能) → acをtry外に出しfinallyで一括close(close拒否Promiseも握る)、正常経路の旧closeは二重close回避で削除 (b)水墨エンジンのマルチタッチ: pointerId未追跡で2本目の指がcurを上書きし、孤児ストロークがdone=falseのまま永久残留→rAFが60fpsで無限回転＋ジグザグ混線。start/move/endにpointerId追跡を導入、新指のdownで旧筆を確定 (c)move()の360点上限後は飛沫生成も停止(凍結線から離れた粒の浮遊防止) (d)acctLogoutでsessionStorage.login_skipも除去(スキップ歴タブでもログアウト後ちゃんとログイン画面へ) (e)forced-colorsで.cal-dot可視維持。棄却19件は3票反証で偽陽性確認(一部は検証者のセッション上限失敗により少数票判定) / R614 (v6.7→v6.8): リアル水墨ストローク — R611の点描DIV(26px間隔のradialグラデ)を全面刷新し、全画面Canvas(#ink-canvas, multiply, dpr≤2)に筆の連続線を描画。ストローク=点列{x,y,w,j}(jはフレーム間不変の乱数)で、毎フレーム全筆致を年齢αで再描画(rAFは筆致がある間のみ)。リアリティ要素: ①速度→太さ(遅い=MAXW30で墨溜まり/速い=MINW3.5へ細る、lerp0.3で滑らか、4px刻み補間で連続) ②3層描画=にじみ暈し(shadowBlur12+太線α.07)→本体(セグメント毎にlineWidth/α.40-.62のムラ)→穂先かすれ(直交オフセットの毛3本がj+位相で途切れる) ③起筆・タップに墨だまり(不規則楕円7枚重ね) ④描き終え1.4s保持→smoothstepで5.4sかけ紙に還る。同時8筆/360点上限。墨基調+藍朱緑青紫が時折混ざる巡回。reduced-motion/forced-colorsで消灯 / R612/R613 (v6.6→v6.7): ①R612 背景を富嶽三十六景風に — 北斎「神奈川沖浪裏」に倣った藍の大波(爪波2つ＋うねり帯)＋白い波頭しぶき11粒＋雪冠の富士＋朱の日輪をインラインSVG(浮世絵の平塗り・blurなし・低不透明度)で描画(R610の水墨山水を置換)。なぞり水墨(R611)と墨の霞(R604)は維持 ②R613 起動時ログイン画面 — s-login新設(名前+4桁+ログイン+「ログインせずに始める」)。acctLoginの認証/切替コアをacctAuthAndSwitch(id,pin)に抽出し設定画面と共用。起動分岐: acct_currentなし＆sessionStorage.login_skipなしの時だけnav('s-login')、ログイン済みは従来どおりホーム直行。スキップはセッション限り(次回起動時は再表示)。ログイン成功はreload→ログイン済み→ホーム / R610/R611 (v6.5→v6.6): 水彩→水墨へ刷新 ①R610 水墨山水画の背景 — 遠山(blur9/op.11)・中山(blur4.5/.15+.13)・近山(blur2/.19×2)の三層をインラインSVG(data URI・依存ゼロ)で描き、白い霞の帯(blur9)で山裾を抜く古典構図。body::before=cover/bottom固定。body::afterの彩雲は薄墨の霞2＋白靄1に置換(30sドリフト) ②R611 タップ＋なぞりの色墨 — pointerdown=大きめの滲み(64-110px/peak.8)、pointermoveで26px間隔の筆点(22-48px/peak.7)が連なる筆致。和顔料6色(墨/藍/朱/緑青/古代紫/黄土)巡回、芯濃く縁暈ける二層radial、multiply+blur6px、3.2〜6.1秒のsumiBloom(--dur/--peak CSS変数)でゆっくり紙に還る。同時36粒上限・doneフラグ・pointerup/cancelで描画終了。reduced-motion/forced-colors消灯は維持 / R609 (v6.4→v6.5): 録音画面のカウントダウン数字上に出ていた残り時間バー(.prog-wrap/#r-prog)を削除 — 数字のみのミニマル表示へ。setCnt()のバー更新は元から if(p) ガード済みのためJS変更なしで安全、残り時間のスクリーンリーダー通知は #r-cnt(role=timer) の aria-label が引き続き担う。CSS(.prog-wrap/.prog-bar)は他画面流用に備え残置 / R608 (v6.3→v6.4): アカウントを「名前＋4桁パスワード」構成に — 4桁はSHA-256(id:pin:salt)で acct_pins 登録簿(端末共通・束に含めない)へ保存し平文を残さない。登録済みの名前はハッシュ一致時のみ切替（不一致は「パスワードが違います」＋入力クリア）。未登録の名前は初回入力の4桁で作成、既存束あり×未登録(v6.2-6.3からの移行)は初回入力を「設定」として登録。acctLoginはasync化(crypto.subtle.digest)、subtle非対応の稀環境はbtoa難読化フォールバック。ログインの永続保存・切替時の束入替ロジック(R605)・常時IDチップ(R607)は不変。acctDataKeysの除外リストにacct_pinsを追加(束に混入しない) / R606/R607 (v6.2→v6.3): ①R606 白カード型ボタンの立体感増強 — 半透明2px底エッジでは黒CTAに比べ浮きが弱かったため、実体のある底エッジ4px(#d4d7dc)＋深い浮遊影(0 14px 26px .14)＋天面ハイライト強化へ。押下も黒と同じ3px沈下、ホバー浮上時はエッジ6px。色不変=コントラスト影響なし ②R607 アカウントの永続ログイン明確化 — ログインは元々localStorage永続(期限切れ/自動ログアウトなし)だが見えなかったため、(a)ホームヘッダーに常時IDチップ表示(歯車と右側グループ化) (b)設定の状態文に「ログインは保存されています」明記 (c)入力欄プレースホルダに現ID表示。挙動変更なし=切替ロジック不変 / R599-R605 (v6.1→v6.2): ①R599 練習→トレーニング(ログ画面/年間進捗/バックアップ説明/簡易評価アドバイス/評価プロンプト; 評価パーサーはSCORE/GOOD等の英語ラベル依存なので影響なし) ②R600 記録→ログ(Q&Aログ/フリートークログ/トレーニングログ/空メッセージ) ③R601 ヘッダータイトル立体化(墨グラデbackground-clip:text＋上=白光/下=落ち影のdrop-shadowで紙から浮く表現; forced-colorsでCanvasText) ④R602 カウントダウン数字刷新(900極太→200極細112px・tnum維持・色グラデ柔らか化) ⑤R603 選択画面の数字洗練(.ft-cell-n 38px/900→48px/200墨グラデ、単位は.3emトラッキングのマイクロタイポ) ⑥R604 水彩ドリフト(body::afterに彩雲3つ、26sでゆっくり漂う、reduced-motionで静止) ⑦R605 シンプルアカウント — IDだけのログイン。既存コードのキーは不変のまま、切替時に平キー一式⇄u§<id>束を入替。初回ログインは現データをIDが引継ぎ、未ログイン→既存IDは共用データをu§_backup_anonに退避(どちらも消えない)。録音IDBは時刻IDで衝突せず履歴経由参照のみのため入替不要。api_keyとu§*束は端末共通。R586バックアップに束ごと含まれ端末間移行も可 / R596-R598 (v6.0→v6.1): ①R596 録音の共有 — 履歴の各録音に「共有」ボタン。Web Share API(canShare files)対応ならOS共有シート(LINE/メール等)へ、非対応(PC等)やジェスチャ失効時はファイル保存にフォールバック。AbortError(シートを閉じただけ)は無音。toggleAudioのprevious/nextElementSibling依存を壊さぬよう audio→聴く→共有 の兄弟順を維持し聴くボタンをcalc(100%-86px)に縮小 ②R597 名称変更: 休憩タイマー→クールタイマー(ホームのサブリンク/画面ヘッダー) ③R598 水彩のあそび — body::before(z-index:-1,blur26px)で四隅に空色/藤/青磁/桜貝の淡いウォッシュ、pointerdownでインクがポワンと広がる演出(.ink-drop: multiply+blur10px, 1.15s bloom, 同時6滴上限, doneフラグで二重減算防止, reduced-motion/forced-colorsで消灯)。装飾のみpointer-events:none・カード/文字色不変=コントラスト影響なし / R594/R595 (v5.9→v6.0): ①R594 休憩タイマー刷新 — プリセットを2/3/4/5分に変更(旧1/3/5/10分)＋自由入力追加(1〜180分の整数, number入力+開始ボタン, Enter対応, 不正値はtoastで明示し黙って丸めない) ②R595 統計バーのラベルを英字マイクロタイポへ(今日/今月/累計/連続→TODAY/MONTH/TOTAL/STREAK, 9px/.22em広トラッキング, sr-onlyの日本語で読み上げ意味維持) ③R593追従: manifest descriptionの「即興Q&A」→「Q&A」 / R592 (v5.8→v5.9): 全ボタンの立体化 — 即興Q&A/黒ボタン(.main-btn-qa/.btn-black)は天面ハイライト＋黒い底エッジ4px＋浮遊影で物理キー風、押下でtranslateY(3px)沈下(基底opacity:.75を打消し)。白カード型(.main-btn-ft/.btn-gray/.ft-cell/.sub-link/.goal-btn)は白の天面ハイライト＋薄い底エッジ＋層化影で隆起、押下でtranslateY(2px)。マウス環境のみホバーで浮上(R575の.main-btn:hover/.ft-cell:hoverを後段上書き)。色/コントラストは不変・影とtransformのみ、prefers-reduced-motionでtransform無効化。R588ブロック直後に後段カスケード追加 / R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
+      <p class="set-note">SEIKA ロープレツール v8.66<br>170問（S〜D級）・録音はブラウザに保存されます</p><!-- R706 (v8.65→v8.66): 青白グレーに合わせた補完 — JSが描いていて契約書に載っていなかった部分の暖色・墨色を差し替え。目標メーターの地を--divider、伸びを青のグラデーションに。成長グラフの罫線を--line、点を--bd、折れ線と面の色を青に。いま潰す課題の区切り線を--line。forced-colorsではOSの色に戻す。 / R705 (v8.64→v8.65): デザインを「やわらか・青白グレー」に差し替え（CSSのみ。HTML構造・JSは不変）。R703の和紙テーマを置き換え、地を青みの白(#EEF2F7)、面を白、副次の面を青灰(#E2E9F2)に。行動＝青(#3A6FA8)1色、朱(#AD3049)は録音と印だけ、考える時間は濃い藍(#2A3E7A)。角を大きく丸め(22〜26px)、文字色は墨青(#1E293B)。立体感レイヤーを追加 — 押せるものに実体のある底エッジ(濃い面は黒5px/白い面は枠線色5px)と浮き影、押すと4px沈む、天面に光のグラデーション、カードは浮かせ入力欄は彫り込む、マウス環境のみホバーで1px浮く。prefers-reduced-motionでは沈み・浮きを止め、forced-colorsでは影を全て切る。 / R703/R704 (v8.63→v8.64): デザイン刷新（Claude Designが設計したtheme.cssを既存CSSの後に適用。HTML構造・JSは不変）。和紙の地(#F4F2ED)に墨(#1B1B1F)。行動＝墨1色、朱(#B3362C/--seal)は録音と印だけ、藍(#1F4A8A)は考える時間だけ。影を全廃し枠線で区切る(--shadow-card/ctaをnone)。見出し・ラベル・注記を3段階に統一、数字は等幅(--font-num/tabular-nums)。チップは見た目36px＋::beforeで判定44px。PC840px以上で振り返り・目標・設定を2カラム、他は画面ごとに最大幅を設定。スマホ480px未満の調整、forced-colors/prefers-reduced-motionの対応込み。 / R700 (v8.62→v8.63): 使用中に実害の出るバグを修正 — シンキングタイム中にアプリを切り替える/画面がロックされると、裏でカウントが0になり非表示のまま録音を開始→beginRecのhiddenガードで中断され、セットが壊れて設定画面に飛ばされていた。背面化したらカウントを止め(finalizeOnHideでstopThink、残り秒thinkLeftを保持)、復帰したら続きから再開(visibilitychangeでrunThink、残り0なら戻った時点で次の本を開始)。カウント0での自動開始にも「非表示でない」「セッション継続中」「シンキング画面がactive」の3条件を追加。 / R699 (v8.61→v8.62): 厳格デバッグ10視点で見つかった4件を修正。①R696/R697のセッション初期化(sessThink/sessPace/sessIds/histSession/stopThink)がgoHomeではなくendBatchToReviewに入っていた取り残し→goHomeに正しく追加。②その結果endBatchToReviewはsessIdsをクリアした後に参照しており、途中で止めると必ず「ここまでの0本」になり絞り込みも効かなかった→クリア前にdoneIdsへ控えて使用。③「1本ごとに振り返る」モードはsessSavedAnyが立たずセット末のまとめ振り返りが出なかった→saveAndNextでも立てる。ただし1本だけの録音は従来どおりホームへ(endSessionをn>1/Infinityに限定)。④「続ける」(無限セット)でsessIdsが無限に伸びる→直近300本に制限。 / R698 (v8.60→v8.61): 再生速度にワンタップの倍速ボタン（等倍/1.5倍/2倍/3倍, .prate-q）を追加。スライダー(0.5〜3.0倍・0.1刻み)は微調整用として併置、現在値は右に表示。reflectPlayRateが現在値のボタンを点灯。振り返り画面とログ（セット終了後のまとめ振り返りもここ）の両方に同じ行。設定はplay_rate（アカウント別）で共有、再生中の変更も即反映。 / R697 (v8.59→v8.60): フリートークの進め方を選べるように＋振り返りは最後にまとめて。設定「進め方（1本ごと）」= 1本ごとに次へ(既定, NEXTボタンだけの画面)/止まらず連続(停止なし=トーク→シンキング→トーク)/1本ごとに振り返る(従来。意識ポイントのチェックもこの時だけ)。ft_paceに保存、sessPaceで確定。セット(2本以上)では既定で1本ごとの振り返り画面を出さず、保存する設定なら即保存(batchSaveAdvance)、保存しない設定なら即破棄(discardAdvance新設)して次へ。終了/中断時はログを「このセットで録った分だけ」に絞って表示(sessIds/histSession、saveFTHist・saveQAHistでid記録、hist-ctlの「すべて表示」で解除、ホームからログを開いた時は全件)。開始ボタンに「・連続」「・毎回振り返る」を表示。Q&Aは従来どおり(sessPaceを一括保存=gate/それ以外=reviewで初期化)。 / R696 (v8.58→v8.59): フリートークに「シンキングタイム」を追加。設定=なし/5/10/15/30/55秒＋自由入力(3〜300秒, #ft-think-custom, ft_thinkに保存、プリセット外は自由欄に復元、不正値は開始時toastで停止)。セット中は1本終わるごとに専用画面(s-think)へ切り替わり、選んだ秒数を青い数字(.think-cnt #1d4ed8)でカウントダウン→自動で次の本へ。「次は n / N 本目」表示、「すぐ始める」でスキップ、←でセット終了(batchは振り返りへ)。1本目の前には出さない(doNextRep＝本と本のあいだだけ)。NEXTゲート(s-interval)とは併用=NEXT後に考える時間。画面離脱でカウント停止(nav/goHome)、0秒(なし)は従来どおり即次の本へ。開始ボタンにも「・考えるN秒」を表示。 / R695 (v8.57→v8.58): 100題セットのデバッグ10ラウンドで見つかった6件を修正。(1)保存値as_setposが負数/文字列/配列/100以上だと開始時にTypeErrorで止まる・「251/100」表示→asSetPosOfで正規化。(2)100題目をまたぐ回の見出しが「96〜100」と誤表示・1題で「38〜38」→「96題目から10題」「38題目」。(3)またいだ回のまとめに周回が出ない→「n周目を終えました」。(4)途中でやめると解いた題まで進みが消える→セットは解いた題ぶん進める(確認文も変更)。(5)スマホで選択欄の「（1周済）」が切れる→「・1周」＋幅を中身に合わせる。 / R694 (v8.56→v8.57): 連想に「お題」設定＝おまかせ／100題セット。別ファイル assoc-sets.js（AS_SETS=100題×N・順番固定[単語Lv1 33/Lv2 29/短文26/長文12]。本体の全お題＋追い足しを分割したもの。AS_EXTRA=本体に無い追い足し分だけ、おまかせの母集団へ結合 asMergeExtra）。セットは<select>で選択(asRenderSets)、進み具合を as_setpos{n:{pos,done}} に保存して次回は続きから(asSetTopic)、100で1周として先頭へ。セット中は「お題の形」を隠す。終了時にまとめへ「その n：x/100 まで済」(asSetDone)。途中でやめた回は進めない。ファイルが無い環境でも従来通り動く。 / R693 (v8.55→v8.56): 問いの型を選べるように。設定「使う型」=11型の複数選択チップ(タップで外す/戻す、「すべて」で全部、as_qselに保存、既定は全部、自由に連想の時は非表示)。1つも選ばず開始→toastで停止。本番: 選んだ型だけがチップに並び「型 n/選んだ数」、フィードバックの母数・偏り・次に使う型は選んだ型の中から、選んだ型以外の問いは「選んだ型以外の問いがn個」と別掲。まとめの平均種数・抜ける型も選んだ型が母数、改善点の閾値は min(4,選んだ数)。 / R692 (v8.54→v8.55): 連想のお題を4455本追加（生成済みの assoc-topics.js〔別セッション生成・未参照だった〕を検査して本体へ取り込み: 単語 Lv1+1426=2126 / Lv2+1437=1867、短文+1180=1690、長文+412=774、合計6457）。既存重複607件・文字種・長さを検査。ジャンル追加(職業/業種/建物・設備/暮らし/身の回り/現場/制度/人間関係/状態/趣味・学び)。ブランド・不適切語の走査で実害なし(ライオン/キリンは動物)。assoc-topics.js自体は.gitignoreで非公開・未参照のまま。 / R691 (v8.53→v8.54): 連想のお題を全国対応に（ユーザー指示「俺の地域だけに絞らずにやってこ」）。静岡/浜松以外の全地方から 単語+240=700（地名は北海道〜沖縄を均等、ご当地の食べ物・祭り/季節行事・自然）、短文+160=510、長文+130=362、合計2002。既存重複・文字種・長さ・静岡語を検査してマージ。 / R690 (v8.52→v8.53): 連想の題数を自由に — プリセット3/5/10/20/30＋自由入力(1〜100題, #as-total-custom, asTotalOk/asSetTotal/asTotalCustom)。時間(R686)と同じ挙動: プリセット一致でチップ点灯、チップで自由欄クリア、as_totalに保存しプリセット外は自由欄に復元、不正値は開始時toastで停止。書く欄はrows10→8(「次へ」が1px折り返し下に出ていた)。 / R687 (v8.51→v8.52): 連想のお題を1108本追加（単語 Lv1+280=460 / Lv2+278=430、短文+330=350、長文+220=232、合計1472）。Lv1に仕事道具/体・健康/趣味・娯楽/自然、Lv2にお金/人事/法律・制度のジャンルを新設。既存・ファイル間の重複と、文字種(引用符等)・長さ(短文8〜26字/長文45〜95字・句点2〜3)の不適合を除外してマージ。 / R689 (v8.50→v8.51): 連想に「問いの型（11型）」モード。設定「書き方」=問いの型で書く(既定)/自由に連想＋11の型の一覧(details表)。各行を疑問語で1型に分類(asQType: Why→How long→How many→How much→Whom→Who→When→Where→Which→How→What の順)、書く欄の下で使った型を点灯(#as-types)、個数表示に「型 n/11」。フィードバック(asTypeFeedback)=型の数/偏り/型に当てはまらない行/次に使う型3つ(お題入りの例, asQExample)。まとめ=型の平均種数とよく抜ける型(asTypeLine)、平均4種未満なら改善点を型の幅に(asTypeFocus)。声入力は問いの型モードでは「、」で切らない。1行40字まで。相手役の質問欄の薄い案内文も撤去し、選んだ問いをそのまま入れる。 / R688 (v8.49→v8.50): 連想の書く欄を大きく(後段の.inp{font-size}に負けないよう#s-as-playで詳細度を上げる。文字20px/高さ42vh、PCは21px/46vh、10行)＋欄内の薄い案内文(プレースホルダ)を撤去(文字/声とも)。お題エリアの上下余白を34→24vhに詰めて一画面に収める。 / R686 (v8.48→v8.49): 連想の時間を自由に — プリセットに5/10/15秒を追加(5/10/15/20/30/45/60)＋自由入力欄(3〜300秒の整数, #as-sec-custom)。自由入力がプリセットと一致すればそのチップを点灯、チップを押すと自由欄はクリア。as_secに保存しプリセット外は次回自由欄に復元。開始時に自由欄が不正値ならtoastで止める(黙って丸めない)。asSecOk/asSetSec/asSecCustom。 / R685 (v8.47→v8.48): 声モードの遅延呼び出し(最初のお題2.5秒/聞き取り開始)を「同じセッション・同じお題・まだそのフェーズ中」の時だけ実行するよう修正(書き終えてフィードバック画面に移った後にマイクが立ち上がり、採点済みの回に言葉が追加され続けていた件も)(放棄した声セッションの遅延asNewTopicが次のセッションを乗っ取り、書いた連想が消えお題とタイマーが入れ替わっていた)。開始時に本番画面を入力状態へリセット(声モードで最初のお題まで前回のフィードバック/古いお題が見えていた)。連想をさらにシンプルに（真ん中にお題→その下に書く欄 or 声の聞き取り）。本番画面: 「連想を出す（…）」見出しを撤去、連想だけの時は相手役ラベルも非表示、マイクボタンは声モードの時だけ表示(文字モードは書く欄と個数だけ)、ボタンは「次へ」。設定: 説明を1行に、相手役は一番下へ移し「相手役（任意）」既定=なし(as_persona2で既定なしから開始)。 / R684 (v8.46→v8.47): 連想の単語お題を大幅増量（49→332語。Lv1具体=180語: 物/場所/地名(静岡・浜松ほか)/季節/食べ物/乗り物/IT・家電/人、Lv2抽象=152語: 数字/ビジネス/経営/社会/感情/抽象語）。ジャンル細分化で連続同ジャンル回避が効く。重複ゼロをパッチ時に検査。 / R683 (v8.45→v8.46): 連想画面をシンプルに（ユーザー要望: 「お題：○○」等の前置き不要、お題を画面中央に、その下にテキストを出して書いていく）。.as-stageでお題を中央に大きく表示(前置きなし、短文/長文は「」のみ)、タイマーは小さく下に。フェーズAは1行入力＋チップ列を廃止し<textarea id=as-ta>に1行1連想で書く方式(asTaSync: 行→連想、重複/空行除外、初動は最初の非空行時刻)。個数表示#as-count。声入力はテキスト欄へ1行追加。 / R682 (v8.44→v8.45): 相手役「なし（連想だけ）」を追加 — パッと出た単語への反射を鍛える。印付け/質問変換/相手の反応を飛ばし、量(個数)・初動(最初の1個までの秒数 cur.first)・ペース(10秒あたり個数)を断定表示(asFinishSolo)。まとめは平均個数/最多最少/平均初動/到達Lv/改善点(asFinishSessionSolo, assoc_histにsolo:true)。 / R681 (v8.43→v8.44): 連想の設定に「お題の形」= 混ぜる／単語だけ／短文だけ／長文だけ を追加(as_form記憶, AS.form, asPickFormで固定は早期return)。 / R680 (v8.42→v8.43): 連想のお題を「単語／短文／長文」の3形に拡張（ユーザー要望: 長文だったり短文だったり一単語だったり）。AS_WORDS(Lv1具体/Lv2抽象)・AS_SHORT(相手の一言20)・AS_LONG(相手の話2〜3文×12)。asPickFormがレベル別の重み(Lv1 6:3:1→Lv4 1:3:6)で形を選び、直前と同じ形は出さない(AS.lastForm)。表示=単語「お題：」大／短文「相手の一言：」／長文「相手の話：」小さめ(.as-topic.long)。声モードは長文9秒・短文4秒待ってから聞き取り開始。 / R679 (v8.41→v8.42): 連想トレーニング（話題の引き出し強化）モードを追加【AIなし】。ホーム3つ目のボタン→s-as-setup(相手役4種/ランダム・題数3/5/10・文字/声)→s-as-play(お題→連想30秒[文字Enter/音声認識で「、」区切り]→相手側に印10秒→1つ選び質問に変換20秒→相手役のルール反応(good/mid/poor×4人格, Lv4は薄い)→断定フィードバック(量/選択/変換/代案、閉じた質問はルール判定＋言い換え))→s-as-result(平均連想数/自分本位回数/閉じた質問/到達Lv/改善点)。レベルは直近3題平均で1→2(≥5)→3(≥7)→4(≥8)、Lv3+はお題が相手の一言。お題はジャンル連続回避＋重複なし。assoc_hist(アカウント別,100件)保存＋完走でsavePractice()。声モードはspeakQで読み上げ＋専用SpeechRecognition(asRecog)。nav()離脱でasStop()。 / R678 (v8.40→v8.41): 厳格デバッグ10視点(PC/Edge環境＋R672〜R677相互作用)。確定2件修正: ①ログ画面を離れても再生中の録音が鳴り続ける(ゴースト再生)。R674の録音前suspendで一旦無音になり、次の再生でctxがresumeすると古い音が突然鳴り出す事故にも発展→nav()でs-history以外へ遷移時に#s-history内のaudioを全pause。②成功後も設定の#mic-diagに古い失敗診断が残る→getMic成功時にng表示を非表示。パス: Edgeのニューラル音声(Nanami Online Natural)優先/webm;opus対応/SpeechRecognition有/スライダーのキーボード入力(inputイベント)/Edg UA判定＋PC案内/録音前suspend→タップ内primeでresume/finalizeOnHideはマイク解放のみで再生ctx非干渉/micTestは連打不可(disabled)/track labelはtextContentでXSS安全。 / R677 (v8.39→v8.40): PC(Windows)の実例で確定した案内修正 — ユーザーPCのレジストリ実測でHKLM ConsentStoremicrophone=Deny(Windows本体の一番上「マイクへのアクセス」がオフ)。この状態ではサイト許可に関係なく全アプリでマイク不可。PC向け案内(granted分岐＋汎用分岐)で最初に「マイクへのアクセス」スイッチを示し「デスクトップ アプリ…」も併記、ブラウザ再起動を追記。 / R676 (v8.38→v8.39): 「許可したのに未許可扱い」が続く2原因を診断に追加。①サイト権限がgranted(許可)なのにNotAllowedError ＝ ブラウザアプリ自体のOS権限(Android: 設定→アプリ→Chrome→権限→マイク / iOS: 設定→Chrome/Safari→マイク / Win/Mac: プライバシー→マイク)が拒否 → ブラウザ名(Chrome/Safari/Samsung Internet/Edge/Firefox)を検出して具体案内。②アプリ内ブラウザ(LINE/Instagram/Facebook/X/Android WebView)はマイク非対応or自動拒否 → UA検出して「ブラウザで開く」を案内。状態行にブラウザ名/アプリ内を併記。Android通常ブラウザ案内にも②としてOS権限の手順を追加。 / R675 (v8.37→v8.38): 厳格デバッグ10件（マイク／録音経路中心）。確定修正5件: ①「許可したのに未許可扱い」対策=マイク診断(micEnv/micPerm/micGuide/showMicHelp/micTest)。ホーム画面アプリ(standalone)はブラウザと権限が別管理(Android=OSのアプリ権限, iOS=設定のアプリ項目)なのに案内が無かった→端末(Android/iOS/PC)×表示モード(アプリ/ブラウザ)×Permissions API状態(granted/denied/prompt/unknown)から「どこを直すか」を具体表示。②トースト3.2秒では手順を読めない→録音失敗時は設定画面の#mic-diagに固定表示しスクロール。③設定に「マイクをテスト」ボタン=タップ起点getUserMediaで即診断(成功時はトラック停止、持続マイクは不変)。④ftStartSessionの打ちかけ救済が上限8のまま(R668で20)→20に。⑤iOS: AudioContextは通話/背面化後に'interrupted'になり'suspended'判定では復帰しない→ampAudioはrunning以外を全てresume(+reject握り)。⑥iOS: 増幅接続がIDB読込後のoncanplay(非ジェスチャー)で走りctxがsuspendedのまま無音→toggleAudioのタップ内でplayCtx()生成/resume。検証済み=タップ→ftStartSession→startFT→beginRec→getUserMediaは全同期(ジェスチャー保持)/レビュー離脱(save/discard/back)はrv-audioをpause済(R473)/goHomeでreleaseStream。 / R674 (v8.36→v8.37): マイクが繋がらない不具合の診断＋対策。①失敗トーストに実エラー名を併記［NotAllowedError/NotReadableError/NotFoundError/SecurityError/OverconstrainedError］し原因を即特定できるように＋各文言を具体的な対処に改善(許可の変え方/他アプリ使用中/HTTPS)。②R672の再生用AudioContextがスピーカーを掴んだままだと一部Androidで次の録音のgetUserMediaがNotReadableError等で失敗しうるため、beginRecの録音開始前に_playCtxをsuspend()して音声デバイスを解放(次の再生でampAudioがresume)。 / R673 (v8.35→v8.36): 厳格デバッグ10視点（ブラウザ実負荷・例外ゼロ・退行なし）の確定1件を修正 — ampAudioの無音固定トラップ: createMediaElementSource成功後にゲイン/コンプ接続が万一失敗すると要素が「グラフ接続済みだが出力先なし＝無音」かつ_ampedがfalseのまま→次回createMediaElementSourceが例外で永久無音になり得た。生成成功で即_amped=true(二度と生成しない)＋増幅チェーン失敗時はsrc→destination素通し接続で必ず音を出すよう是正。検証=clamp境界/ampのidempotency・単一AudioContext(増殖なし)・フォールバック/スライダー100連打3ms/両スライダー・ラベル同期/nav100往復でactive画面常に1/履歴200件描画/実WAV再生でplaybackRate+増幅+実発音+コンソールエラー0/play_rate束隔離/意識ポイント振り返り＋スライダー共存=全パス。 / R672 (v8.34→v8.35): 録音の再生音量を底上げ。再生する<audio>だけをWeb Audioのゲイン増幅(PLAY_GAIN=2.4)＋DynamicsCompressor(クリップ防止)経由に(ampAudio)。録音経路(MediaRecorder)は不変。AudioContext不可環境は素の再生にフォールバック。createMediaElementSourceは要素毎1回のみ→el._ampedでキャッシュ、再生はタップ起点なのでresume()可。openReviewのrvAudio.onplay＋toggleAudioの両play経路で適用。 / R671 (v8.34→v8.35): 再生速度を3段階チップ→スライダー化(0.5〜3.0倍・0.1刻み)で細かく調整可能に。振り返り/ログのprate-rowを<input type=range class=prate-range>＋現在値ラベル(.prate-val, タップで等倍リセット)へ。clampRate/fmtRate、reflectPlayRateはスライダーvalueとラベルを更新、setPlayRateはoninputで即反映(トーストはドラッグ連発回避のため撤去)。play_rate(アカウント別)は従来どおり全audioに適用。 / R670 (v8.33→v8.34): 録音の再生速度(倍速)追加。振り返り画面とログに「等倍/1.5倍/2倍」チップ(.prate-btn, setPlayRate/playRate/reflectPlayRate/applyPlayRate)。play_rate(アカウント別)を全audioに適用=openReviewのrv-audio.onplay＋toggleAudioのoncanplay/elseでplaybackRate設定、速度変更は再生中にも即反映。 / R669 (v8.32→v8.33): 画面切替/タブ破棄/PWA再読込/アプリ切替で毎回ホーム(最初の選択画面)に戻る不満を解消。nav()で直前の"閲覧系"画面(s-home/s-goal/s-history/s-calendar/s-settings)をsessionStorage.last_screenに保存(s-historyはlast_histtabも)、起動時ログイン済み/スキップなら直前画面へ復帰(s-goal/s-settings=nav, s-calendar=openCal, s-history=showHistory)。録音/振り返り/設定選択など一時状態画面は保存せずホーム。 / R668 (v8.31→v8.32): 意識ポイントの追加上限を8→20に引き上げ(parseFocus/getFtFocusStoredのslice(0,20)、addFtFocusの上限チェック)。 / R667 (v8.30→v8.31): PC向けに全体拡大＋成長グラフ刷新。①デスクトップ(≥840px)を広く(body 900→1160)＋右パネル大きく(home-side 340→460, gap48)＋パネル内要素をPCで拡大(hg-big 48px/hk-title 16px/meter太く/main-btn大きく)。②グラフ刷新(renderGrowthChart)=大きく(viewBox360x192, height:auto+preserveAspectRatioでアスペクト保持し伸び防止)＋薄いグリッド3本＋週ごとの点＋到達点を白リング大ドット＋累計値ラベル(N本)。スクショで反復確認。 / R666 (v8.29→v8.30): ホーム右パネル(目標＋グラフ)の見た目調整。①各見出しの「→」矢印が点のように浮いて雑然→非表示(.hg-arrow display:none)。②進捗バーの青/紺/灰混在をやめ墨一色に統一(.home-side .meter>span)。③KGI達成率を大きな数字で主役に(.hg-figure/.hg-big 32px＋現在→目標のhg-goalnote)。スクショで確認しながら調整。 / R665 (v8.28→v8.29): 厳格デバッグ5視点(意識ポイント/目標/秒数本数/共有/ログ)。広域ストレス全パス・例外ゼロ。確定修正=①録音画面の制限時間(r-timer-lbl)がcurLimit>=60で全部「60秒」表示→3分(180)が「60秒」と誤表示していたバグ(R658のfmtDur統一の漏れ)→fmtDur化。②Claude評価プロンプトの制限時間/種類もfmtDur化(180秒→3分, 一貫性)。beginRecはnav(s-record)→getMic順でpre-start中s-record active=R663ガード正しい。XSS(KGI/KFS)・アカウント隔離(kgi/kfs/qa_voice/qa_rate/ft_focus)・fmtDur・共有・ログ3件は健全。 / R664 (v8.27→v8.28): 振り返り画面に「この録音を共有」ボタン追加(rv-share-btn/shareCurrentRec)。保存前のメモリ上audioBlobをtoShareableBlobでWAV化しnavigator.share(files)、非対応はDLフォールバック。ログのshareAudioと同挙動だが録音直後に即共有できる。 / R663 (v8.26→v8.27): 画面切替(背面化)で振り返りのチェック中の内容が消えるバグ修正。finalizeOnHideのelse if(micAlive())が画面に関係なく発火し、振り返り画面(s-review)を背面化した際も設定画面へ強制遷移＝意識ポイントのチェック等を破棄していた→「s-record が active の時だけ」中断＆遷移するようガード。他画面ではマイク解放のみで振り返りのDOM/状態は残す。 / R662 (v8.25→v8.26): 意識ポイントのマークを記号(✓/×)→文字ラベル「できた/できなかった」に変更。✓/×は端末フォントで表示されないことがあり「マークがない」と見える問題を解消。レビューは各ポイントの下にフル幅の「できた」(緑)/「できなかった」(朱)ボタン(.focus-row2縦積み/.fbtn flex)、ログも「できた/できなかった/未」の文字表示に。 / R661 (v8.24→v8.25): 意識ポイントの最終集計。目標画面に「意識ポイントの実績」セクション追加(computeFocusStats/renderFocusStats)=FT履歴のit.focusをポイント別に できた/できなかった で集計、通算のできた/できなかった数＋ポイント毎の達成率バー(.fs-row)。 / R660 (v8.23→v8.24): 意識ポイントのチェックリストに×ボタン追加 — ✓できた/×できなかった/未の3状態(setFocus, .focus-row2/.fbtn, 同ボタン再押下で未に戻る)。it.focus.ok=true/false/null、ログは✓緑/×朱/－灰、達成数はok===trueのみ。 / R659 (v8.22→v8.23): Q&A質問をBtoB営業の実戦質問に全面刷新（旧400問はテレアポ/アポ代行前提の文脈ゼロな一言ブラシオフの羅列で「現実と乖離」→撤去）。170問(S26/A40/B40/C35/D29)。品質基準=①文脈がある(予算/稟議/競合/過去の経緯)②一言で返せない(結論→根拠→次アクションを迫る)③相手の生の声(本音/迷い/駆け引き)。難度=S:失注寸前/決裁者/値下げ・競合で追い込まれる巻き返し, A:手強い定番反論(価格/競合/タイミング/稟議/現状維持), B:中立的な懸念・確認(効果裏付け/事例/導入負荷/サポート), C:ヒアリング・関係構築(課題曖昧/警戒/ニーズ喚起), D:基礎動作(初回接触/要件整理/次アクション)。ホームCTA/フッターの「400問」→「170問」。 / R658 (v8.21→v8.22): 秒数・本数の選択肢を拡張＋FTランダムを真の乱数に。秒数=3秒/1分/3分を追加(QA_SECS=[3,10,15,30,60,180]/FT_SECS=[3,5,10,15,30,60,180]、Q&A設定チップqsec-*も追加、qaSec/setQaSec検証拡張)。本数=20/30/100本を追加(REPS_OPTS=[1,3,5,10,20,30,100]、startQA/ftSetupOpenの検証)。FTランダムは固定候補[5,10,15,30]→5〜60秒の真の整数乱数(12/13/47秒などバラつく)。表示はfmtDur(60→1分/180→3分)に統一(q-tbadge/rv-tbadge/rv-ft-dur※60以上を全部「60秒」と誤表示していたバグ修正/ログlim/updateGoLabels/setQaSecトースト)。 / R657 (v8.20→v8.21): 意識ポイントを「1つずつ追加」方式に変更（旧: 改行テキストのまとまり）。FT設定に入力＋「追加」ボタン(#ft-focus-input/addFtFocus)＋追加済みリスト(#ft-focus-list, .ffx-item, ×で削除removeFtFocus)。ft_focusはJSON配列で保存(getFtFocusStoredが旧改行テキストも移行)。ftFocusList→ftStartSessionでftFocusPointsへ、打ちかけ1件は救済取り込み。録音後のチェックは従来どおり1個ずつ。 / R656 (v8.19→v8.20): ホーム右パネル(目標＋成長グラフ)のバランス改善 — 白カード2枚がバラバラに浮いて「ダサい/微妙」だったため、.home-sideを1枚の統一パネル(border/shadow/radius18/overflow:hidden)にし、内部の目標(.home-goal)と成長(.home-graph)は区切り線(border-top)で分割。各区画は個別カード装飾を撤去しpaddingのみ、押下は淡い背景で表現。 / R655 (v8.18→v8.19): フリートークに「意識ポイントモード」追加。FT設定に意識ポイント欄(#ft-focus,1行1つ・最大8・ft_focusに保存)。書くと録音のたびに振り返り画面にチェックリスト(#rv-focus, .focus-row/.focus-box, toggleFocus)が出て「できたか」を自分でチェック。意識ポイント時は一括保存でも必ず振り返りを表示(openReviewのbatch bypassにftFocusActive除外)＋自動進行しない(reviewAutoStart早期return)。結果はit.focus=[{p,ok}]で履歴保存、ログにFTの達成状況(◯/×)表示(.hist-focus)。ftFocusPoints/ftFocusChecks・parseFocus・ftFocusActive、goHomeで解除。 / R654 (v8.17→v8.18): ホームを2カラム化。目標を上の縦積みから横パネルへ移動 — 左=操作(Q&A/FT/ログ等)、右=目標パネル(#home-side: 目標カード#home-goal＋成長グラフ#home-graph)。PC(≥840px)はbody幅900で横並び(home-side sticky 340px)、他画面は560px中央カラムに固定(伸びすぎ防止)。スマホは操作→目標の縦積み。renderGrowthChart(targetId)化しホームは'home-graph-inner'に描画、データ無しはグラフカード非表示。 / R653 (v8.16→v8.17): ログは量が増えると全部見るのが面倒 → 既定でランダム3件だけ表示。「別の3件」で引き直し、「すべて表示」で全件、「ランダム3件に戻す」。renderHistBody(tab,isFT)がsampleHist(3件・新しい順維持)＋操作バー(.hist-ctl)を描画。histSample/histAllで状態管理、nav('s-history')でリセット(開くたび新3件)。histReshuffle/histSetAll。選択削除は表示中の件に作用。 / R652 (v8.15→v8.16): ホームの目標カードに進行中の課題(KFS)も直接表示。クリックせず中身が見えるよう、上位3件を課題名＋進捗メーター(m-lo/m-ac/m-ok)付きで表示、超過は「ほかN件」。renderHomeGoalを目標＋課題の両方描画に拡張(.hk-head/.hk-item/.hk-title/.hk-pct)。 / R651 (v8.14→v8.15): 目標を初期画面(ホーム)に常時表示。統計バー撤去で空いた上部にタップ可能な目標カード(#home-goal, .home-goal)を追加、KGIタイトル＋達成%メーター＋克服/課題数を表示、タップで目標画面へ。renderHomeGoal()をrefreshHomeから呼ぶ。KGI未設定時は「目標を決めて、成長を見える化しよう」。 / R650 (v8.13→v8.14): 目標画面に成長グラフ追加＋デザイン洗練(水墨トーン)。①成長グラフ: 直近10週の累積トレーニングを面グラフ(水墨の山のように積み上がる)でrenderGrowthChart()が描画(day_集計・依存ゼロSVG・墨グラデ塗り)。②デザイン: KGI見出しを墨グラデbackground-clip:text、メーターを淡墨→藍墨→朱の階調(m-lo/m-ac/m-ok)、KPI/KFSを浮遊白カード(--shadow-card)＋tnum数字、克服ボタン/殿堂を朱印トーン(緑→朱)に統一。 / R649 (v8.12→v8.13): ホーム上部の統計バー(TODAY/MONTH/TOTAL/STREAKの英字＋回数)を撤去 — 数字＋英語で頭に残らず動機づけにならない虚栄メトリクス。回数データ自体は保持(カレンダー朱印/目標KPIで意味のある形でのみ表示)。refreshHomeのh-today/h-month/h-total/h-streak代入を削除(要素不在)、reconcileStreak/緑チップ(R642)/acctRefreshは維持。.stat-*CSSは無害なため残置。 / R648 (v8.11→v8.12): 目標管理画面(KGI/KPI/KFS・課題表)を追加【フェーズ1・既存の保存フローには非干渉の追加画面】。ホーム→「目標」。KGI=最終目標(タイトル＋現在→目標＋単位, 達成%バー, localStorage.kgi)。KPI=記録から自動計算(克服課題数/取り組み中/S級クリア率/記録数, computeKPI)。KFS=課題表(localStorage.kfs配列, 追加/◎前進(prog+20)/克服(満タンで)/削除, 進捗メーター＋状態＋出所バッジ)。克服した課題は「克服の殿堂」に朱印表示。kgi/kfsはacctDataKeysに含まれアカウント別。renderGoalはnav('s-goal')で描画。escHtml/onclick id sanitizeでXSS/注入防止。次フェーズ: 練習/記録の分離＋手応え評価(信憑性)→旧回数バー格下げ＋手応え成長ライン配線。 / R647 (v8.10→v8.11): 厳格デバッグ10視点（あらゆる視点・本体実行）— 広域ストレス(画面遷移120/セッション状態機械/履歴210件描画/音声速度20連打/共有変換12連続/アカウント切替20往復/カレンダー24ヶ月/クールタイマー)は全パス・例外ゼロ・不変条件維持(active画面常に1つ・セッション0リセット・アカウントデータ無傷)。確定1件を修正: 発話の世代競合 — speechSynthesis.cancel()で止めた旧発話のonendが新発話の最中に発火しqSpeakingを誤って解除し、連続自動録音の待機(R644)が読み上げ中に早期にカウント開始しうる（「もう一度聞く」連打時）。_speakGen世代トークンで最新発話のonend/onerrorだけがqSpeakingを下ろすようにし、stopSpeakはgenを進めて保留中のonendを無効化。 / R646 (v8.9→v8.10): 相手に送った録音が聞こえないバグを修正 — toShareableBlobがiOS等のMediaRecorder出力mp4を「どこでも再生可」と誤ってパススルーしていたが、これはfragmented mp4(fMP4)で共有先(LINE/メール/他プレイヤー)ではmoov断片化のため再生不可・無音になることが多い。修正: 共有はWAVのみパススルー、mp4/webm/oggはすべてWAV(PCM)へ変換(decodeAudioDataはiOSのAAC/mp4も復号可)。WAVエンコーダ自体はラウンドトリップ実測で出力RMS>0(非無音)・ヘッダ完全を確認済み=真因はmp4パススルー。変換失敗フォールバックも元形式を正しいext/type(mp4→m4a)で返すよう是正(誤ラベル防止)。 / R645 (v8.8→v8.9): 出題音声を自然な声に＋速度可変 — ①声: 端末内蔵の日本語音声からGoogle/Online(Natural)/Enhanced/Premium等の高品質音声を優先選択(pickJaVoice, espeak系のロボット声を減点)、voiceschangedで非同期ロード対応(_jaVoiceキャッシュ)。②速度: 設定に「読み上げ速度」4段(ゆっくり0.9/標準1.1/速い1.35/最速1.6, qa_rate, アカウント別)、変更時にその場で試し読み。speakQのrateをqaRate()に、pitch1.02。※Web Speechは端末内蔵音声しか使えず、真に自然な声は端末の音声品質に依存(iOSは設定→アクセシビリティ→読み上げcoコンテンツで拡張音声DL推奨、Androidは Google TTS)。 / R644 (v8.7→v8.8): 厳格デバッグ10視点の確定2件を修正（R643音声の実効性向上）— ①F2(中): 連続セッションの自動録音は固定5秒開始のため長い質問だと読み上げが途中で切れていた→音声モード中はqaAutoArmが「読み上げ終了(qSpeaking=false)」を待ってから5秒カウント開始（onstart/onend/onerrorでqSpeaking管理、onend非対応環境向けに約15秒で安全打ち切り、待機中は「読み上げ中…」表示）。②F1(低): 背面化/画面ロック(finalizeOnHide)でTTSが残る経路→stopSpeak()追加。他8視点(録音ライフサイクル/音声認識/アカウント隔離/IDB削除/スクロールR641/状態遷移/localStorage堅牢性/XSS・a11y)はブラウザ実測で例外ゼロ・退行なしを確認。 / R643 (v8.6→v8.7): 出題の音声化 — 設定「Q&A 出題の音声」で オフ/読み上げ/音声のみ を選択(qa_voice, アカウント別)。依存ゼロのWeb Speech(speechSynthesis, ja-JP)でpickQ時に質問を発声(applyQVoice)。読み上げ=文字+声、音声のみ=q-textをblur(.q-veiled、DOMは残しSR可、タップ/「文字を見る」で表示qaReveal)＋録音画面のr-q-miniも空に=耳だけで答える実践。問題画面に「もう一度聞く」(q-replay, speakQ)追加。TTSは録音開始(beginRec)・戻る(qaBack)・ホーム(goHome)でstopSpeak()=マイク/音声認識への混入防止。既定オフで後方互換。iOSは開始タップ起点でTTS解錠、マナーモードでは鳴らない旨は設定に注記。 / R642 (v8.5→v8.6): 今日やったら右上を緑に — ホーム右上のアカウントチップ(acct-chip)を、今日1回以上トレーニングしたら緑(#166534, 白文字6.9:1 AA)に。refreshHomeで今日カウント(dayKey)>0なら.done-todayを付与、翌日はカウント0で自動的に通常表示へ。未ログインでもやった日は緑の「✓ 今日」チップを表示(acctRefreshのelse分岐)＝ログイン有無に関わらず右上が緑に。nav('s-home')経路はrefreshHomeのみ呼ぶためrefreshHome末尾でacctRefreshも呼び未ログインチップ表示を更新。切替は.3sトランジション。 / R641 (v8.4→v8.5): スクロール不能バグ修正(主にAndroid) — .body{overflow-y:auto→visible}。本アプリは.screen{min-height:100vh}で内容に応じ伸び、スクロールはドキュメント(html)側で発生(.bodyはscrollH==clientHで内部スクロールしていないと実測)。autoのままだとAndroid Chromeで「実際にはスクロールできないoverflow:auto要素」がタッチのパンを飲み込み、ドキュメントへスクロール伝播せず画面が動かなくなる(iOS/PCはジェスチャが親へバブリングするので無症状＝「主にAndroid」と一致)。visibleでドキュメントスクロールに一本化。stickyヘッダーはドキュメントスクロール基準で従来どおり固定。 / R640 (v8.3→v8.4): 録音の選択削除 — トレーニングログのヘッダー「削除」を「選択」トグルへ変更し、選択モード中は各録音の左にチェックボックス(.hist-cb)＋操作バー(.sel-bar)を表示。バーは「全選択」「選択削除（N件）」「すべて削除」の3つ。選択削除=deleteSelected()がチェックしたidのlocalStorage履歴(qa_hist/ft_hist)とIndexedDB音声(deleteAudio、生のit.id)の両方を削除。すべて削除=従来のclearCurrentHistory()(現タブ全消し)をバーへ移設。buildHistHTMLは中身を.hist-bodyで包みチェックボックスを外側に追加=audio→聴く→共有の兄弟連鎖(toggleAudio/shareAudioのprev/nextElementSibling依存)は不変。selMode/applySelMode/toggleSelMode/selectAllHist/updateSelCount/curHistBody追加。renderHistの先頭でselMode=falseにリセット(タブ切替=switchHistTabはrenderHistを通らないので選択維持、末尾でupdateSelCount)。data-idは聴く/共有/チェックで共通のsid(英数のみ)。チェックボックスはdisplay:none、.sel-modeクラス時のみ表示。 / R639 (v8.2→v8.3): 非公開運用への布石 — ①検索除け: meta robots=noindex,nofollow ＋ referrer=no-referrer ＋ robots.txt(Disallow:/) ＋ _headers(X-Robots-Tag, Cloudflare Pages用)。②移行ポータビリティ確認: github.ioのハードコード無し・start_url/scope/アイコンは全相対・外部URLはClaude APIのみ＝別オリジンへそのまま移設可。本命のアクセス制御はCloudflare Pages＋Cloudflare Access(許可メールのみ)で別途構成。移行時の注意=ストレージはオリジン単位のため新ドメインへは設定の「書き出す/復元」でデータ移行が必要。 / R638 (v8.1→v8.2): フィードバック宛先メールの平文露出を除去 — R637はFB_TO定数とこのコメントに開発者アドレスを平文で置いていた(公開リポジトリ/ソース閲覧/メール収集botから丸見え)。fbTo()でatob(base64)から実行時組み立てに変更し、ソース内の平文アドレスを全廃(このコメントの平文も削除)。※base64は難読化であって完全秘匿ではない(コードを実行/デコードすれば復元可)＝完全に隠すならフォームサービス経由が必要。 / R637 (v8.0→v8.1): ご意見フィードバック — 設定に記入欄＋「メールで送る」。sendFeedback()がmailto(開発者宛・難読化)を組み立てlocation.hrefで開く。空欄はtoastで促す。依存ゼロ・サーバー不要。 / R636 (v7.9→v8.0): 連続/セットの各本のあいだにNEXTゲート — 「毎回保存する」×連続/セット(sessActiveBatch)では、1本終わるごとに自動で次へ飛ばず s-interval 画面(「n/N 完了」or「n本完了」＋大きなNEXTボタン)を表示し、NEXTを押すまで次に進まない＝ペースを自分で決められる。sessionAfterRepでbatchならshowInterval()→NEXT(sessionNext)でdoNextRep()。通算本数sessReps追加(Infinity表示用,各出口でリセット)。intervalの戻る←はendBatchToReview(停止→保存あればログ)。最終本完了は従来どおりendSession→ログ(NEXTは挟まない)。保存しない/手動は振り返り画面が間のゲートを兼ねるため変更なし。 / R635 (v7.8→v7.9): 高負荷デバッグ10視点(本体実行)で確定した2件を修正 — ①マイク解放漏れ: endSession/endBatchToReview(保存あり分岐)がreleaseStream()せずログ/ホーム画面でもOSのマイク表示が点灯し続けた(R585の解放はgoHome/page-hideのみでR627/R633の新出口が漏れ)→両関数で解放(許可は残るので次回は無音再取得) ②一括保存の文字起こし尻切れ: batchSaveAdvanceは停止直後のtranscriptを即保存するが認識最終結果は〜1.2s遅延(通常経路の1200ms待ち相当が無い、特にFTは次startRecogが即リセット)→trPatch機構: 保存直後に予約し、次のstartRecogのリセット直前 or 1.3s後の早い方で、transcriptが伸びていれば保存済みアイテムのtrを差し替え。ブラウザ実負荷テスト(開始10連打/戻る5連打/nav200往復1.26s/チップ100連打40ms/休憩タイマー30回転/qaAuto 50回転リーク0/インク300イベント6ms/一括20本22ms/履歴200件上限確認)は全パス。サブエージェント版はプラン上限(23時JSTリセット)で実行不可だったため本体で10視点を実施。 / R634 (v7.7→v7.8): クールタイマー終了音 — 依存ゼロのWeb Audio(playChime)で柔らかいベル風チャイム(E5/A5/C#6上行アルペジオ×2、サイン+倍音、ふわっと減衰)を終了時に再生。モバイル自動再生制限対策として開始タップ(startBreak/startBreakCustom経由)でchimeUnlock()によりAudioContextを解錠。既存のvibrate/トーストは維持。 / R633 (v7.6→v7.7): 一括保存セットは振り返りスキップ→終了/停止時にまとめて振り返り — 「毎回保存する」×連続/セット(sessActiveBatch)では各本の振り返り画面を一切出さず、openReviewからbatchSaveAdvance()でストレージへ即保存しsessionAfterRepで次へ(QA=次問題＋5s自動録音/FT=即次録音)。0.9秒の一拍すら無し。セット完走(endSession)または途中停止(cancelRec/qaBack=新規)時に、保存があればトレーニングログ(s-history)を開いてまとめて振り返り。sessSavedAnyで保存有無を追跡、goHome/開始でリセット。保存しない連続は従来どおりR632の即時自動破棄レビュー。Claude評価は一括時はスキップ(API節約)。 / R632 (v7.5→v7.6): 自動進行の待ち時間短縮 — R630の3秒カウントダウンが「だるい」ため、setInterval(3×1000)を撤廃しsetTimeout(900ms)の一拍に。バナーはカウント数字なしで「自動で保存して次へ/記録せず次へ」表示。clearIntervalもclearTimeoutへ。一拍残す理由は「止めて確認」の最小猶予と画面瞬間遷移の違和感回避。単発1本は従来どおり手動。 / R631 (v7.4→v7.5): 一括保存方針をカウント開始前に選択 — Q&A/FT設定画面に「記録（このセット全体）: 毎回保存する/保存しない」チップを追加。開始時にsessSaveへ格納し、R630の自動進行が方針どおりに saveAndNext()(保存) or discardAndNext()(非保存) を自動実行。バナー文言も「自動で保存して次へ/自動で記録せず次へ」に分岐。qa_save/ft_saveを永続化し次回反映(既定=保存)。開始ボタンには保存しない時のみ「・保存なし」を明示。goHomeでsessSave=trueにリセット。「止めて確認」での手動上書きは従来どおり。 / R630 (v7.3→v7.4): 連続/セット中の自動保存・自動進行 — 1本ごとに保存/保存しないを選ぶ手間を解消。複数本セッション(sessTarget>1 or Infinity)では振り返り画面に入ると3秒カウントダウンで自動 saveAndNext()。「止めて確認」ボタンでいつでも停止し手動操作(保存/保存しない)に戻れる。単発1本では従来どおり手動。reviewAutoStart/Stop、saveAndNext/discardAndNext/reviewBack/goHomeでタイマー確実停止、s-review離脱でも自動停止。最終本はラベル「自動で保存して完了」。rv-autoバナー＋rv-save-box切替。 / R629 (v7.2→v7.3): 画面切替のラグ解消 — 水墨インクが「開始」ボタンや秒数チップ等の操作部タップでも発火し、全画面blur(shadowBlur)のrAF描画ループが画面遷移(録音開始等)と同時に立ち上がってメインスレッド/コンポジタを奪い、切替がカクついていた。pointerdownで e.target.closest('button,input,textarea,select,a,label,[role=button],[onclick]') に当たる場合は start()しないようガード。墨は背景・余白のなぞり描き専用になり、機能ボタンのタップは即応に。なぞり/タップの演出自体は背景上で従来どおり。 / R628 (v7.1→v7.2): 選択〜実行のスムーズ化 — ①前回構成の完全復元: qa_rank/ft_secも保存し、Q&A/FTの設定画面を開くと前回の出題・秒数・回数がそのまま選択済み(=開いて「開始」1タップ) ②開始ボタンに選択内容をライブ表示(updateGoLabels:「ランダム・30秒 × 3本 ─ 開始」) ③チップ選択のポップアニメ(chipPop .18s, reduced-motion対応, void offsetWidthで連打でも再発火) ④連続セッション中のQ&A自動録音: 問題表示から5秒カウントダウン(qa-auto, role=status)→自動beginRec。「録音開始」で即時/「別の問題」で再カウント/画面離脱・goHomeで停止(qaAutoArm/Cancel)。1本のみは従来どおり手動。FTは元々全自動。 / R627 (v7.0→v7.1): まとめ選択＋連続セッション — Q&A/フリートークの選択画面を「秒数×回数（＋Q&Aは出題ランク）」を1画面でチップ選択し1タップ開始する形に刷新。選んだ回数ぶん「録音→振り返り→保存/破棄→次」を休憩なしで自動継続(sessTarget/sessDone、Infinity=続ける)。進捗を問題画面バッジ(qa-set-badge)と録音画面(r-set)に n/N 表示、最終本は保存ボタンを「保存して完了」に切替、完了でホームへ達成トースト。saveAndNext/discardAndNextの末尾分岐をsessionAfterRepに統一、reviewBack(FT)/goHomeでセッション解除。qa_reps/ft_reps/qa_secを保存し次回反映。旧qaGo/qaKey/ftRandom/ftKey撤去。selChip/markGroupでチップ選択UI。 / R615-R624 (v6.8→v7.0): 大型アップデート ①R615 文言整理 — ホームCTAの秒数表記削除(400問・S〜D級/自由なテーマで話す)、「目標は設定から」短縮、空ログメッセージ非表示、ログインNAME/PASSWORD表記、設定の説明文を全面要約 ②R616 ログアウト追加(設定) — 現束保存→acct_currentクリア→reload→ログイン画面 ③R617 Q&A刷新 — 秒数ランダム廃止(qa_sec固定10/15/30, 既定30, 旧rnd_timer廃止)＋出題振り分け画面s-qa-select新設(ランダム=ALL/S/A/B/C/D級→setFilter→pickQ)。設定のレベルフィルターセクションは撤去(出題時選択に一本化、lv_filter機構は維持)。q-tbadgeが15秒を30秒と表示する旧バグも修正 ④R618 FTランダムセル — 5/10/15/30秒から抽選、toastで秒数表示 ⑤R619 背景スマホ修正 — cover→100% auto(縦長画面で富士・波が切れる問題) ⑥R620 共有のWAV変換 — webm/oggをdecodeAudioData→モノラル22.05kHz 16bit PCM WAVへ(60秒≈2.6MB)。iOS/Android/PCどこでも追加アプリなしで即再生。mp4/wavはそのまま、変換失敗時は元形式 ⑦R621 飛沫 — 着筆9-16粒(全方位)/速筆(d>16,50%)1-3粒(前方コーン)/筆離れ(速度>8)4-9粒。生成時に位置/径(0.5+rnd²*2.8)/濃さ確定しストロークと同齢フェード、上限90粒 ⑧R622 カレンダー＋朱印 — 月グリッド(day_YYYY-MM-DD集計)、トレーニング日に朱印スタンプ(回数入り朱円,-8deg)、日タップでひとことメモ(cal_note_*≤60字,束に同梱)、月合計表示。ホームにカレンダー入口 ⑨R623→R625 アイコン刷新(ユーザー画像指定で再変更) — 紙白の角丸に太い墨のS字ブラシストローク(Catmull-Romテーパー)＋かすれ筋(ラン&ギャップ)＋墨だまりスプラッシュ(22塊+12小滴)＋飛沫84粒。icon.svgとPNG(512/192/180)を_gen_icons.mjs(シードRNG・円スタンプラスタ・zlib PNG・依存ゼロ)で同一ジオメトリ生成 ⑩R624 設定画面の圧縮(セクション余白/文字密度) ⑪R626 デバッグキャンペーン(73エージェント・10視点finder→3票adversarial検証、所見21件→確定2件+追加採用3件)の修正 — (a)toShareableBlob: decodeAudioData失敗時にAudioContextがclose漏れ(連続失敗でiOSのコンテキスト上限到達→以後の音声再生不能) → acをtry外に出しfinallyで一括close(close拒否Promiseも握る)、正常経路の旧closeは二重close回避で削除 (b)水墨エンジンのマルチタッチ: pointerId未追跡で2本目の指がcurを上書きし、孤児ストロークがdone=falseのまま永久残留→rAFが60fpsで無限回転＋ジグザグ混線。start/move/endにpointerId追跡を導入、新指のdownで旧筆を確定 (c)move()の360点上限後は飛沫生成も停止(凍結線から離れた粒の浮遊防止) (d)acctLogoutでsessionStorage.login_skipも除去(スキップ歴タブでもログアウト後ちゃんとログイン画面へ) (e)forced-colorsで.cal-dot可視維持。棄却19件は3票反証で偽陽性確認(一部は検証者のセッション上限失敗により少数票判定) / R614 (v6.7→v6.8): リアル水墨ストローク — R611の点描DIV(26px間隔のradialグラデ)を全面刷新し、全画面Canvas(#ink-canvas, multiply, dpr≤2)に筆の連続線を描画。ストローク=点列{x,y,w,j}(jはフレーム間不変の乱数)で、毎フレーム全筆致を年齢αで再描画(rAFは筆致がある間のみ)。リアリティ要素: ①速度→太さ(遅い=MAXW30で墨溜まり/速い=MINW3.5へ細る、lerp0.3で滑らか、4px刻み補間で連続) ②3層描画=にじみ暈し(shadowBlur12+太線α.07)→本体(セグメント毎にlineWidth/α.40-.62のムラ)→穂先かすれ(直交オフセットの毛3本がj+位相で途切れる) ③起筆・タップに墨だまり(不規則楕円7枚重ね) ④描き終え1.4s保持→smoothstepで5.4sかけ紙に還る。同時8筆/360点上限。墨基調+藍朱緑青紫が時折混ざる巡回。reduced-motion/forced-colorsで消灯 / R612/R613 (v6.6→v6.7): ①R612 背景を富嶽三十六景風に — 北斎「神奈川沖浪裏」に倣った藍の大波(爪波2つ＋うねり帯)＋白い波頭しぶき11粒＋雪冠の富士＋朱の日輪をインラインSVG(浮世絵の平塗り・blurなし・低不透明度)で描画(R610の水墨山水を置換)。なぞり水墨(R611)と墨の霞(R604)は維持 ②R613 起動時ログイン画面 — s-login新設(名前+4桁+ログイン+「ログインせずに始める」)。acctLoginの認証/切替コアをacctAuthAndSwitch(id,pin)に抽出し設定画面と共用。起動分岐: acct_currentなし＆sessionStorage.login_skipなしの時だけnav('s-login')、ログイン済みは従来どおりホーム直行。スキップはセッション限り(次回起動時は再表示)。ログイン成功はreload→ログイン済み→ホーム / R610/R611 (v6.5→v6.6): 水彩→水墨へ刷新 ①R610 水墨山水画の背景 — 遠山(blur9/op.11)・中山(blur4.5/.15+.13)・近山(blur2/.19×2)の三層をインラインSVG(data URI・依存ゼロ)で描き、白い霞の帯(blur9)で山裾を抜く古典構図。body::before=cover/bottom固定。body::afterの彩雲は薄墨の霞2＋白靄1に置換(30sドリフト) ②R611 タップ＋なぞりの色墨 — pointerdown=大きめの滲み(64-110px/peak.8)、pointermoveで26px間隔の筆点(22-48px/peak.7)が連なる筆致。和顔料6色(墨/藍/朱/緑青/古代紫/黄土)巡回、芯濃く縁暈ける二層radial、multiply+blur6px、3.2〜6.1秒のsumiBloom(--dur/--peak CSS変数)でゆっくり紙に還る。同時36粒上限・doneフラグ・pointerup/cancelで描画終了。reduced-motion/forced-colors消灯は維持 / R609 (v6.4→v6.5): 録音画面のカウントダウン数字上に出ていた残り時間バー(.prog-wrap/#r-prog)を削除 — 数字のみのミニマル表示へ。setCnt()のバー更新は元から if(p) ガード済みのためJS変更なしで安全、残り時間のスクリーンリーダー通知は #r-cnt(role=timer) の aria-label が引き続き担う。CSS(.prog-wrap/.prog-bar)は他画面流用に備え残置 / R608 (v6.3→v6.4): アカウントを「名前＋4桁パスワード」構成に — 4桁はSHA-256(id:pin:salt)で acct_pins 登録簿(端末共通・束に含めない)へ保存し平文を残さない。登録済みの名前はハッシュ一致時のみ切替（不一致は「パスワードが違います」＋入力クリア）。未登録の名前は初回入力の4桁で作成、既存束あり×未登録(v6.2-6.3からの移行)は初回入力を「設定」として登録。acctLoginはasync化(crypto.subtle.digest)、subtle非対応の稀環境はbtoa難読化フォールバック。ログインの永続保存・切替時の束入替ロジック(R605)・常時IDチップ(R607)は不変。acctDataKeysの除外リストにacct_pinsを追加(束に混入しない) / R606/R607 (v6.2→v6.3): ①R606 白カード型ボタンの立体感増強 — 半透明2px底エッジでは黒CTAに比べ浮きが弱かったため、実体のある底エッジ4px(#d4d7dc)＋深い浮遊影(0 14px 26px .14)＋天面ハイライト強化へ。押下も黒と同じ3px沈下、ホバー浮上時はエッジ6px。色不変=コントラスト影響なし ②R607 アカウントの永続ログイン明確化 — ログインは元々localStorage永続(期限切れ/自動ログアウトなし)だが見えなかったため、(a)ホームヘッダーに常時IDチップ表示(歯車と右側グループ化) (b)設定の状態文に「ログインは保存されています」明記 (c)入力欄プレースホルダに現ID表示。挙動変更なし=切替ロジック不変 / R599-R605 (v6.1→v6.2): ①R599 練習→トレーニング(ログ画面/年間進捗/バックアップ説明/簡易評価アドバイス/評価プロンプト; 評価パーサーはSCORE/GOOD等の英語ラベル依存なので影響なし) ②R600 記録→ログ(Q&Aログ/フリートークログ/トレーニングログ/空メッセージ) ③R601 ヘッダータイトル立体化(墨グラデbackground-clip:text＋上=白光/下=落ち影のdrop-shadowで紙から浮く表現; forced-colorsでCanvasText) ④R602 カウントダウン数字刷新(900極太→200極細112px・tnum維持・色グラデ柔らか化) ⑤R603 選択画面の数字洗練(.ft-cell-n 38px/900→48px/200墨グラデ、単位は.3emトラッキングのマイクロタイポ) ⑥R604 水彩ドリフト(body::afterに彩雲3つ、26sでゆっくり漂う、reduced-motionで静止) ⑦R605 シンプルアカウント — IDだけのログイン。既存コードのキーは不変のまま、切替時に平キー一式⇄u§<id>束を入替。初回ログインは現データをIDが引継ぎ、未ログイン→既存IDは共用データをu§_backup_anonに退避(どちらも消えない)。録音IDBは時刻IDで衝突せず履歴経由参照のみのため入替不要。api_keyとu§*束は端末共通。R586バックアップに束ごと含まれ端末間移行も可 / R596-R598 (v6.0→v6.1): ①R596 録音の共有 — 履歴の各録音に「共有」ボタン。Web Share API(canShare files)対応ならOS共有シート(LINE/メール等)へ、非対応(PC等)やジェスチャ失効時はファイル保存にフォールバック。AbortError(シートを閉じただけ)は無音。toggleAudioのprevious/nextElementSibling依存を壊さぬよう audio→聴く→共有 の兄弟順を維持し聴くボタンをcalc(100%-86px)に縮小 ②R597 名称変更: 休憩タイマー→クールタイマー(ホームのサブリンク/画面ヘッダー) ③R598 水彩のあそび — body::before(z-index:-1,blur26px)で四隅に空色/藤/青磁/桜貝の淡いウォッシュ、pointerdownでインクがポワンと広がる演出(.ink-drop: multiply+blur10px, 1.15s bloom, 同時6滴上限, doneフラグで二重減算防止, reduced-motion/forced-colorsで消灯)。装飾のみpointer-events:none・カード/文字色不変=コントラスト影響なし / R594/R595 (v5.9→v6.0): ①R594 休憩タイマー刷新 — プリセットを2/3/4/5分に変更(旧1/3/5/10分)＋自由入力追加(1〜180分の整数, number入力+開始ボタン, Enter対応, 不正値はtoastで明示し黙って丸めない) ②R595 統計バーのラベルを英字マイクロタイポへ(今日/今月/累計/連続→TODAY/MONTH/TOTAL/STREAK, 9px/.22em広トラッキング, sr-onlyの日本語で読み上げ意味維持) ③R593追従: manifest descriptionの「即興Q&A」→「Q&A」 / R592 (v5.8→v5.9): 全ボタンの立体化 — 即興Q&A/黒ボタン(.main-btn-qa/.btn-black)は天面ハイライト＋黒い底エッジ4px＋浮遊影で物理キー風、押下でtranslateY(3px)沈下(基底opacity:.75を打消し)。白カード型(.main-btn-ft/.btn-gray/.ft-cell/.sub-link/.goal-btn)は白の天面ハイライト＋薄い底エッジ＋層化影で隆起、押下でtranslateY(2px)。マウス環境のみホバーで浮上(R575の.main-btn:hover/.ft-cell:hoverを後段上書き)。色/コントラストは不変・影とtransformのみ、prefers-reduced-motionでtransform無効化。R588ブロック直後に後段カスケード追加 / R586 (v5.5→v5.6): データ保全 — ①設定にバックアップ/復元を追加: 全localStorage(統計/履歴/設定)＋IndexedDBの全録音を1つのJSONに書き出し、別ファイルから復元(location.reload)。URL(オリジン)変更・端末変更・更新・破損でも既存の記録を失わない保険。データはブラウザのオリジン単位保存なので更新自体では消えないが、これで明示的に移行/復元可能に ②破損時の非破壊化: getQAHist/getFTHist のJSON.parse失敗時に removeItem で消していたのを quarantineKey()で *__bak へ退避してから初期化(消さない) / R585 (v5.4→v5.5): マイク許可を一度きりに — マイクストリームを毎録音で取り直さず、一度getMic()で取得して保持・再利用。録音終了/キャンセル/onstop/エラー時はマイクを停止せず維持し、解放はgoHome()とページ非表示(finalizeOnHide)のpre-roll中断時のみ。これにより連続録音(録音→振り返り→次の問題→録音…)で許可ダイアログは最初の1回だけ。トラックがOSに切られたらmicAlive()がfalseで自動再取得。Node単体検証: 3録音でgetUserMedia 1回・ホームで解放・再取得2回目・dead-track再取得=pass / R581-R584 (v5.3→v5.4): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R5多視点デバッグ(3票多数決)で確定5件 — ①advM正規表現を遅延＋ルックアヘッド終端に(R580の貪欲キャプチャが順序乱れADVICE出力で後続を飲み込み＋重複; これも自分の修正の欠陥でNode検証が捕捉) ②lv-fb選択状態をforced-colors/HCMで可視化(.tab-btn.activeと対称) ③年間目標の入力欄margin-bottom:0でボタンとの5pxズレ解消 ④F6: iOS用PNGアイコン(180/192/512)を依存ゼロのCanvas/Node生成で供給しmanifest/apple-touch-icon更新(SVGはChrome用に保持)。受容: 複数タブのstats lost-update(μ秒レース・表示のみ・レビュアーも許容) / R579/R580 (v5.2→v5.3): R4多視点デバッグ(3票多数決)で確定2件＋自己修正の修正 — ①renderEvalセクション正規表現のReDoS(O(n²))解消。ただしR579で/mを導入したら$=行末となり複数行セクションを1項目に切り詰める退行を生み、ブラウザ厳密DOM検証で捕捉→R580で終端を(?![\s\S])(真の文字列終端)＋改行除外クラスに修正し複数行とReDoS耐性を両立 ②PWA theme-color/status-bar/manifestを暗色#111→ライト#fff(暖色UIと不整合だった)。注: R558-R578でfinalizeOnHide pre-start窓は適用済(下記R577の「未適用」表記は当時のKAIGO判断で、その後3票で実バグ確定し修正済) / R577 (v5.1→v5.2): 多視点デバッグ(5班)＋実コード照合で確定した4件を修正 — ①Claude評価セクション解析を堅牢化(**GOOD:**/##/インライン値/・-*•箇条書き対応; 従来は装飾付き出力で講評が丸ごと消失) ②beginRec getUserMedia .catch にsupersessionガード(キャンセル→即再録音の競合で新録音破壊) ③loadAudio に tx/req onerror 対称化(再生ボタン無限無効化ハング防止) ④履歴inline muted色をAA是正(#767676→--muted)。偽陽性却下: IME二重追加(到達不能), 多数の競合(recAttempt世代ガードで既閉). 未適用(低危険/自己回復): finalizeOnHide pre-start窓 / R571: UI絵文字を全廃しテキスト主体の洗練デザインへ（🎯🔥🎤📋🔊📝🤖💾✅⚡⏱⏭⏹等を全除去, v4.8→v4.9） / R558-R570: v4.7→v4.8 — recorder-lifecycle race (recAttempt+curStream), recognition pre-roll restart, eval-timeout body coverage, streak decay, background auto-stop, year-progress floor, fast-save transcript, FT badge guard, pickQ anti-repeat, SCORE full-width/markdown, copy focus restore, year-goal guard / R572-R574: regression fixes from adversarial review — stopRec() releaseStream symmetry (pre-start mic leak), SCORE regex O(n²) backtracking, pickQ re-roll loop bound / R576 (v5.0→v5.1): 全コンポーネントをR575のデザイントークンへ統一移行（hdr/ft-cell/btn-gray/rv-box/tab/audio-btn/inp/toggle/lv-fb/goal-btn/sub-link/設定セクションを白カード化）＋muted文字色を暖色キャンバスでAA是正(#767676→#5f6168) -->
     </div>
   </div>
 </div>
@@ -3851,7 +3186,7 @@ function sendFeedback(){
   let who = '';
   try { who = localStorage.getItem('acct_current') || '未ログイン'; } catch(e) { who = '不明'; }
   const subject = 'SEIKAロープレ ご意見・ご要望';
-  const body = msg + '\n\n----------------\n（自動付記）アカウント: ' + who + ' / アプリ: SEIKA ロープレツール v8.64';
+  const body = msg + '\n\n----------------\n（自動付記）アカウント: ' + who + ' / アプリ: SEIKA ロープレツール v8.66';
   const href = 'mailto:' + fbTo() + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   try { window.location.href = href; toast('メールアプリを開きます'); }
   catch(e) { toast('メールアプリを開けませんでした'); }
